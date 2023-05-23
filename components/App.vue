@@ -13,6 +13,7 @@
       <b-col cols="7">
         <ImportData v-on:set-child-data="updateParent" />
         <div>Search</div>
+        <div>{{ files }}</div>
       </b-col>
     </b-row>
     <b-row>

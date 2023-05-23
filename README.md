@@ -1,5 +1,18 @@
 # Visual Document Index
 
+## Build
+
+This project builds into a single file: `./dist/index.html` using the [plugin](https://github.com/richardtallent/vite-plugin-singlefile) with command:
+
+```
+npm run build
+```
+
+## Develop
+
+```
+npm run dev
+```
 
 ## References
 
