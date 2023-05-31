@@ -11,7 +11,7 @@
     <b-row>
       <b-col cols="5">Image</b-col>
       <b-col cols="7">
-        <ImportData v-on:set-child-data="updateParent" />
+        <ImportData v-on:imported-records="updateParent" />
         <div>Search</div>
         <div>{{ files }}</div>
       </b-col>
@@ -27,8 +27,11 @@
 <script>
 import { BIcon, BIconCamera } from 'bootstrap-vue';
 import ImportData from './ImportData.vue';
+
+
+
 export default {
-  name: '',
+  name: 'app',
   components: {
     ImportData
   },
@@ -38,9 +41,7 @@ export default {
   },
   methods: {
     updateParent (newFiles){
-      for(const file of newFiles){
-        this.files.push(file);
-      }
+      this.files.push(...newFiles)
     }
     /*
     showModal() {
