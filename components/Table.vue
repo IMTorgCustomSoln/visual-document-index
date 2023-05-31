@@ -31,6 +31,31 @@
                   thead-class="tableHead bg-dark text-white"
                   @row-clicked="expandAdditionalInfo"                     
                   >
+
+                  <template #cell(show_details)="row">
+                      <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+                      <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
+                        -
+                      </b-form-checkbox>
+                    </template>
+
+                <template #row-details="row">
+                      <b-card>
+                        <b-row class="mb-2">
+                        
+                        <b-col sm="2" class="text-sm-left">
+                        <b-row >Author: {{row.item.author}}</b-row>
+                        <b-row >Subject: {{row.item.subject}}</b-row>
+                        <b-row >Keywords: {{row.item.keywords}}</b-row>
+                        </b-col>
+                        <b-col sm="3" class="text-sm-left">Contents: <br><span v-html="row.item.pp_toc"></span> </b-col>
+                        <b-col sm="6" class="text-sm-left">Search results: <br>{{ row.item.snippet }}</b-col>
+                        
+                        </b-row>
+                      </b-card>
+                    </template>
+
+
                 </b-table>
             </div>
     </div>
@@ -54,11 +79,10 @@ export default ({
                     this.$props.records.length > 0
                     ){
                     console.log('its an array')
-                    this.$data.items.push(...this.$props.records);
                     this.createTable();
                 }
             },
-            deep: true
+            deep: false
         }
     },
     data(){return {
@@ -74,15 +98,18 @@ export default ({
         createTable() {
             //modify data items
             let idx = 0;
-            for (const item of this.$data.items) {
-                console.log(item)
-                this.$data.items[idx].id = String(idx);
-                let lengthLines =  item.length_lines_array.length > 0 ? item.length_lines_array.reduce((s, v) => s += (v | 0)) : 0;
-                this.$data.items[idx].length_lines = lengthLines;
-                let bodyArr = Object.values(item.body);
+            for (const item of this.$props.records) {
+                const record = JSON.parse(JSON.stringify(item));   //remove reactivity
+                console.log(record)
+                record.id = String(idx);
+                let lengthLines =  record.length_lines_array.length > 0 ? record.length_lines_array.reduce((s, v) => s += (v | 0)) : 0;
+                record.length_lines = lengthLines;
+                let bodyArr = Object.values(record.body);
                 let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : null;
-                this.$data.items[idx].clean_body = clean_body;
+                record.clean_body = clean_body;
+
                 idx++;
+                this.$data.items.push(record);
             }
             //create lunr index
             console.log('start')
