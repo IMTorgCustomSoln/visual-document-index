@@ -7,6 +7,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 Vue.use(BootstrapVue);
-const app = createApp(App);
+export const app = createApp(App);
 PDF.install(app);
 app.mount('#app');

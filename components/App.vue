@@ -9,22 +9,21 @@
   </div>
   <b-container>
     <b-row>
-      <b-col cols="5">Image</b-col>
+      <!--<b-col cols="5">Image Placeholder</b-col>-->
       <b-col cols="7">
-        <ImportData v-on:imported-records="updateParent" />
+        <ImportData v-on:imported-records="updateParent" v-if="showImportBtn"/>
         <!--<div>{{ files }}</div>-->
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-        <Table :records="files">{{ onRecordsUpdate }}</Table>
+        <Table :records="files" v-show="showTablePanel">{{ createTable }}</Table>
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-import { BIcon, BIconCamera } from 'bootstrap-vue';
 import ImportData from './ImportData.vue';
 import Table from './Table.vue';
 
@@ -37,12 +36,16 @@ export default {
     Table
   },
   data(){return {
+    showImportBtn: true,
+    showTablePanel: false,
     files: []
     }
   },
   methods: {
     updateParent (newFiles){
       this.files.push(...newFiles);
+      this.showImportBtn = false;
+      this.showTablePanel = true;
     }
     /*
     showModal() {

@@ -1,19 +1,19 @@
 <template>
 
-<div class="item12 search_box">
-    <span>
-        <h5 style="display:inline">Search: </h5>
-        <input type="text" class="form-control" id="search-field" oninput="search()" placeholder="type search text here..." />
-    </span>
-    
-    <div v-if="initializeTable">
-        <b-button size="sm" v-on:click="expandAll">Expand All</b-button>
-        <b-button size="sm" v-on:click="collapseAll">Collapse All</b-button>
+<div>
+    <div>
+        <span>
+            <h5 style="display:inline">Search: </h5>
+            <input type="text" class="form-control" id="search-field" @change="search()" placeholder="type search text here..." />
+        </span>
+        <div>
+            <b-button size="sm" v-on:click="expandAll">Expand All</b-button>
+            <b-button size="sm" v-on:click="collapseAll">Collapse All</b-button>
+        </div>
     </div>
     
-    <div v-if="initializeTable">
-        <template>
-            <div>
+    <div>
+            <div v-if="initializeTable">
                 <!--refs
                     * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
                     * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
@@ -31,33 +31,8 @@
                   thead-class="tableHead bg-dark text-white"
                   @row-clicked="expandAdditionalInfo"                     
                   >
-
-                <template #cell(show_details)="row">
-                    <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-                    <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
-                        -
-                    </b-form-checkbox>
-                </template>
-
-                <template #row-details="row">
-                    <b-card>
-                        <b-row class="mb-2">
-
-                        <b-col sm="2" class="text-sm-left">
-                        <b-row >Author: [[row.item.author]]</b-row>
-                        <b-row >Subject: [[row.item.subject]]</b-row>
-                        <b-row >Keywords: [[row.item.keywords]]</b-row>
-                        </b-col>
-                        <b-col sm="3" class="text-sm-left">Contents: <br><span v-html="row.item.pp_toc"></span> </b-col>
-                        <b-col sm="6" class="text-sm-left">Search results: <br>[[ row.item.snippet ]]</b-col>
-                        
-                        </b-row>
-                    </b-card>
-                </template>
-
                 </b-table>
             </div>
-        </template>
     </div>
 </div>
 
@@ -70,52 +45,100 @@ export default ({
     props:{
         records: Array
     },
+    watch: { 
+        records: {
+            handler: function(newVal, oldVal) {
+                console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+                if (this.$data.initializeTable==false && 
+                    Array.isArray(this.$props.records) && 
+                    this.$props.records.length > 0
+                    ){
+                    console.log('its an array')
+                    this.$data.items.push(...this.$props.records);
+                    this.createTable();
+                }
+            },
+            deep: true
+        }
+    },
     data(){return {
             fields: fields,
             items: [],
             lunrIndex: null,
             filter: [],
             filterString: [],
-            showImportBtn: true,
             initializeTable: false
         }
     },
-    computed:{
-        onRecordsUpdate(){
-            this.$data.items.push(...this.$props.records);
-            if (this.$data.items.length > 0){
-            this.createTable();
-            }
-        }
-    },
     methods: {
-
         createTable() {
             //modify data items
             let idx = 0;
             for (const item of this.$data.items) {
-                let lengthLines = item.length_lines_array.reduce((s, v) => s += (v | 0));
+                console.log(item)
+                this.$data.items[idx].id = String(idx);
+                let lengthLines =  item.length_lines_array.length > 0 ? item.length_lines_array.reduce((s, v) => s += (v | 0)) : 0;
                 this.$data.items[idx].length_lines = lengthLines;
                 let bodyArr = Object.values(item.body);
                 let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : null;
                 this.$data.items[idx].clean_body = clean_body;
                 idx++;
             }
-            /*create lunr index
+            //create lunr index
+            console.log('start')
+            const docs = this.$data.items;
             const lunrIndex = lunr(function() {
                 this.ref('id')
                 this.field('clean_body')
-                vm._data.items.forEach(function(doc) {
+                docs.forEach(function(doc) {
                     this.add(doc)
                 }, this)
             })
+            console.log(lunrIndex);
             this.$data.lunrIndex = lunrIndex;
-            */
-            this.$data.showImportBtn = false;
             this.$data.initializeTable = true;
+            console.log('done')
         },
 
         // Table logic
+        /*
+        Onclick handler for search button
+        When we call search, we will call the search function on lunr with the parameters from 
+        the input. Lunr is going to return an array containing a score and URL. We are using the 
+        filter function to match that with the items from the response (saved in allposts) so 
+        that we can grab the title as well.
+        I am doing another filter at the end to remove all the null elements. 
+        */
+        search() {
+            //document.getElementById("results").innerHTML = "results go here...";
+            let query = document.getElementById("search-field").value;
+            if (query == '') {
+                while (this.$data.filter.length > 0) {
+                    this.$data.filter.pop()
+                }
+                this.$data.filterString.pop()
+                return []
+            }
+            let results = this.$data.lunrIndex.search(query).map(result => {
+                return this.$data.items.filter(file => {
+                    return String(file.id) === result.ref; //&& result.score > .4;
+                })[0];
+            });
+            results = results.filter(p => {
+                if (p) {
+                    return true;
+                }
+            });
+            while (this.$data.filter.length > 0) {
+                this.$data.filter.pop()
+            }
+            this.$data.filterString.pop()
+            this.$data.filterString.push(query)
+            results.map(p => this.$data.filter.push(String(p.id)))
+                //displayResults = results.map(p => (` ${p.id})  ${p.body} \n`))
+                //document.getElementById("results").innerHTML = displayResults;
+        },
+
         onFiltered(row, filter) {
             row.snippet = null
             if (filter.length == 0) {
@@ -157,43 +180,7 @@ export default ({
 
 
 
-/*
-Onclick handler for search button
-When we call search, we will call the search function on lunr with the parameters from 
-the input. Lunr is going to return an array containing a score and URL. We are using the 
-filter function to match that with the items from the response (saved in allposts) so 
-that we can grab the title as well.
-I am doing another filter at the end to remove all the null elements. 
-*/
-function search() {
-    //document.getElementById("results").innerHTML = "results go here...";
-    let query = document.getElementById("search-field").value;
-    if (query == '') {
-        while (vm._data.filter.length > 0) {
-            vm._data.filter.pop()
-        }
-        vm._data.filterString.pop()
-        return []
-    }
-    let results = vm._data.lunrIndex.search(query).map(result => {
-        return vm._data.items.filter(file => {
-            return String(file.id) === result.ref; //&& result.score > .4;
-        })[0];
-    });
-    results = results.filter(p => {
-        if (p) {
-            return true;
-        }
-    });
-    while (vm._data.filter.length > 0) {
-        vm._data.filter.pop()
-    }
-    vm._data.filterString.pop()
-    vm._data.filterString.push(query)
-    results.map(p => vm._data.filter.push(String(p.id)))
-        //displayResults = results.map(p => (` ${p.id})  ${p.body} \n`))
-        //document.getElementById("results").innerHTML = displayResults;
-}
+
 
 
 // Table data items

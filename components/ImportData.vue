@@ -165,8 +165,8 @@ function getFileRecord(file){
                             for (let item of textContent.items) {
                                 page_text += String(item.str);
                             }
-                            let sentences = (page_text.match(/./g) || []).length;
-                            length_lines_array.push(sentences);
+                            let sentence_count = (page_text.match(/./g) || []).length;
+                            length_lines_array.push(sentence_count);
                             layers[n] = page_text + "\n\n";
                         });
                     });
