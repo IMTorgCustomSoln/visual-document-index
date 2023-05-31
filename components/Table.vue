@@ -117,7 +117,9 @@ export default ({
                 }else{
                     length_lines = 1;
                 }
-                //let lengthLines =  record.length_lines_array.length > 1 ? record.length_lines_array.reduce((s, v) => s += (v | 0)) : record.length_lines_array[0];
+                let dt = getDateFromJsNumber(record.date);
+                record.original_date = record.date;
+                record.date = dt;
                 record.length_lines = length_lines;
                 let bodyArr = Object.values(record.body);
                 let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
@@ -208,10 +210,8 @@ export default ({
             row._showDetails = !row._showDetails;
         },
         formatDateAssigned(value) {
-            //const dt = getDateFromString(value)
-            //const formattedDate = dt.toLocaleDateString()
-            //return formattedDate;
-            return value;
+            const dt = getDateFromJsNumber(value)
+            return dt;
         },
         getFormattedFileSize(value) {
             return getFormattedFileSize(value);
@@ -259,7 +259,7 @@ const fields = [{
     }, {
         key: 'date',
         sortable: true,
-        formatter: "formatDateAssigned"
+        //formatter: "formatDateAssigned"
     }]
 
 
@@ -270,7 +270,12 @@ const fields = [{
 
 
        //support functions
-        const getDateFromString = str => {
+        const getDateFromPythonString = str => {
+            /* Usage:
+            //const dt = getDateFromString(value)
+            //const formattedDate = dt.toLocaleDateString()
+            //return formattedDate;
+            */
             if (str.length > 10) {
                 const [date, time] = str.split(" ");
                 long_date = `${date}T${time}.000Z`; // reformat string into YYYY-MM-DDTHH:mm:ss.sssZ
@@ -279,6 +284,22 @@ const fields = [{
                 dt = new Date(str)
             }
             return dt;
+        };
+
+        const getDateFromJsNumber = num => {
+            let result = ''
+            if (typeof(num)=='number'){
+                if (String(num).length > 10) {
+                    let dt = new Date(num)
+                    result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
+                }
+            } else if (typeof(num)=='string' && num.length > 10) {
+                const int = parseInt(num) 
+                let dt = new Date(int)
+                result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
+            } 
+            console.log(result)
+            return result;
         };
 
         function getFormattedFileSize(numberOfBytes) {
