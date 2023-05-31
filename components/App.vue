@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <b-jumbotron
+    <b-jumbotron id="jumbotron"
       header="Visual Document Index"
       lead="Bring your files to life"
     >
@@ -9,17 +9,13 @@
   </div>
   <b-container>
     <b-row>
-      <!--<b-col cols="5">Image Placeholder</b-col>-->
+      <b-col cols="5"></b-col><!--Image Placeholder -->
       <b-col cols="7">
         <ImportData v-on:imported-records="updateParent" v-if="showImportBtn"/>
         <!--<div>{{ files }}</div>-->
       </b-col>
     </b-row>
-    <b-row>
-      <b-col>
         <Table :records="files" v-show="showTablePanel">{{ createTable }}</Table>
-      </b-col>
-    </b-row>
   </b-container>
 </template>
 
@@ -54,3 +50,9 @@ export default {
   },
 };
 </script>
+
+<style>
+#jumbotron{
+  padding-bottom: 16px;
+}
+</style>

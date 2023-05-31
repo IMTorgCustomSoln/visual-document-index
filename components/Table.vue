@@ -1,17 +1,22 @@
 <template>
 
 <div>
-    <div>
+    <b-row id="table-panel">
+        <!--
+        <b-col cols="5"></b-col>
+        <b-col cols="7">-->
+        <b-col>
         <span>
             <h5 style="display:inline">Search: </h5>
-            <input type="text" class="form-control" id="search-field" @change="search()" placeholder="type search text here..." />
+            <input type="text" class="form-control" id="search-field" @input="search()" placeholder="type search text here..." />
         </span>
         <div>
             <b-button size="sm" v-on:click="expandAll">Expand All</b-button>
             <b-button size="sm" v-on:click="collapseAll">Collapse All</b-button>
         </div>
-    </div>
-    
+    </b-col>
+</b-row>
+
     <div>
             <div v-if="initializeTable">
                 <!--refs
@@ -58,7 +63,7 @@
 
                 </b-table>
             </div>
-    </div>
+        </div>
 </div>
 
 </template>
@@ -102,10 +107,20 @@ export default ({
                 const record = JSON.parse(JSON.stringify(item));   //remove reactivity
                 console.log(record)
                 record.id = String(idx);
-                let lengthLines =  record.length_lines_array.length > 0 ? record.length_lines_array.reduce((s, v) => s += (v | 0)) : 0;
-                record.length_lines = lengthLines;
+                let length_lines = 0;
+                if (record.length_lines_array.length > 0){
+                    if (record.length_lines_array.length > 1){
+                        length_lines = record.length_lines_array.reduce((s, v) => s += (v | 0));
+                    }else{
+                        length_lines = record.length_lines_array[0];
+                    }
+                }else{
+                    length_lines = 1;
+                }
+                //let lengthLines =  record.length_lines_array.length > 1 ? record.length_lines_array.reduce((s, v) => s += (v | 0)) : record.length_lines_array[0];
+                record.length_lines = length_lines;
                 let bodyArr = Object.values(record.body);
-                let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : null;
+                let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
                 record.clean_body = clean_body;
 
                 idx++;
@@ -151,6 +166,7 @@ export default ({
                     return String(file.id) === result.ref; //&& result.score > .4;
                 })[0];
             });
+            console.log(results)
             results = results.filter(p => {
                 if (p) {
                     return true;
@@ -167,13 +183,14 @@ export default ({
         },
 
         onFiltered(row, filter) {
-            row.snippet = null
+            const MARGIN = 250;
+            row.snippet = null;
             if (filter.length == 0) {
-                row.snippet = null
+                row.snippet = null;
                 return true;
             } else if (filter.includes(row.id)) {
-                body = row.clean_body
-                idx = body.indexOf(vm._data.filterString)
+                let body = row.clean_body;
+                let idx = body.indexOf(this.$data.filterString)
                 row.snippet = body.slice(idx - MARGIN, idx + MARGIN)
                 return true;
             } else {
@@ -290,7 +307,17 @@ const fields = [{
                     } (${numberOfBytes} bytes)`;
             return output;
         }
-
-
-
 </script>
+
+
+<style>
+
+#table-panel input {
+    margin:5px;
+}
+#table-panel button {
+    margin:5px;
+}
+
+
+</style>

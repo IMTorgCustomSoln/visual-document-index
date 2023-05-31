@@ -7,7 +7,8 @@ https://github.com/arkokoley/pdfvuer/issues/78
     <!--
     <b-button variant="primary" @click="setChildData">Import Files</b-button>
     -->
-    <b-button size="sm" v-b-modal="'import-modal'">Import Files</b-button>
+    <p>Click to import files and populate a table:</p>
+    <b-button size="sm" v-b-modal="'import-modal'" class="btn btn-success btn-sm m-1">Import Files</b-button>
     <div>
         <!-- The modal -->
         <b-modal id="import-modal" ok-only>
@@ -18,7 +19,7 @@ https://github.com/arkokoley/pdfvuer/issues/78
             <form name="uploadForm">
                 <div>
                     <input id="uploadInput" type="file" @change="previewFiles" multiple /><br>
-                    <label for="fileSize">Total size:</label>
+                    <label for="fileSize">Total size: &nbsp</label>
                     <output id="fileSize">0</output>
                 </div>
             </form>
