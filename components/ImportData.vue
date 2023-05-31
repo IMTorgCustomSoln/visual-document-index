@@ -98,7 +98,6 @@ async function processFiles(files){
     const newFiles = []
     for (const file of files) {
         let data = await getFileRecord(file);
-        console.log(data)
 
         //DocumentRecord
         const record = {};

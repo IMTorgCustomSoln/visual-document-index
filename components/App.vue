@@ -12,14 +12,13 @@
       <b-col cols="5">Image</b-col>
       <b-col cols="7">
         <ImportData v-on:imported-records="updateParent" />
-        <div>Search</div>
-        <div>{{ files }}</div>
+        <!--<div>{{ files }}</div>-->
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-      Table
-    </b-col>
+        <Table :records="files">{{ onRecordsUpdate }}</Table>
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -27,13 +26,15 @@
 <script>
 import { BIcon, BIconCamera } from 'bootstrap-vue';
 import ImportData from './ImportData.vue';
+import Table from './Table.vue';
 
 
 
 export default {
   name: 'app',
   components: {
-    ImportData
+    ImportData,
+    Table
   },
   data(){return {
     files: []
@@ -41,7 +42,7 @@ export default {
   },
   methods: {
     updateParent (newFiles){
-      this.files.push(...newFiles)
+      this.files.push(...newFiles);
     }
     /*
     showModal() {
