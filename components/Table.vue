@@ -56,7 +56,10 @@
                         <b-row >Keywords: {{row.item.keywords}}</b-row>
                         </b-col>
                         <b-col sm="3" class="text-sm-left">Contents: <br><span v-html="row.item.pp_toc"></span> </b-col>
-                        <b-col sm="6" class="text-sm-left">Search results: <br>{{ row.item.snippet }}</b-col>
+                        <b-col sm="6" class="text-sm-left">
+                            Search results: 
+                            <div id="search-results">{{ row.item.snippet }}</div> 
+                        </b-col>
                         
                         </b-row>
                       </b-card>
@@ -107,31 +110,23 @@ export default ({
         createTable() {
             // Populate the table with the transformed data records
             //modify data items (each row) before populating table
+            //TODO: move to earlier in ImportData
             let idx = 0;
             for (const record of this.$props.records) {
                 const item = JSON.parse(JSON.stringify(record));   //remove reactivity
 
                 // row items
-                item.id = String(idx);
-                let length_lines = 0;
-                if (item.length_lines_array.length > 0){
-                    if (item.length_lines_array.length > 1){
-                        length_lines = item.length_lines_array.reduce((s, v) => s += (v | 0));
-                    }else{
-                        length_lines = item.length_lines_array[0];
-                    }
-                }else{
-                    length_lines = 1;
-                }
-                let dt = getDateFromJsNumber(item.date);
-                item.original_date = item.date;
-                item.date = dt;
-                item.length_lines = length_lines;
+                //item.id = String(idx);
 
-                // body items
+                let dt = getDateFromJsNumber(item.date_mod);
+                //item.original_date = item.date_mod;
+                item.date = dt;
+                //item.length_lines = length_lines;
+
+                /* body items
                 let bodyArr = JSON.parse(JSON.stringify( Object.values(record.body) ));
                 let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
-                item.clean_body = clean_body
+                item.clean_body = clean_body*/
 
                 idx++;
                 console.log(item)
@@ -193,6 +188,11 @@ export default ({
 
         updateSnippets(){
             // Update snippets for every item in table
+            /*
+            :body [{'pg_no':rawtext}] - page number keys with raw text for original
+            :clean_body [{'pg_no':[sentences]}] - page number keys with sentence text for snippet search, then groups of sentences for snippet 
+            :clean_single_body(str) - all text for lunrIndex
+            */
             const MARGIN = 250;
             for(const item of this.items){
                 if(this.tableFilter.length == 0){
@@ -311,7 +311,7 @@ const getDateFromJsNumber = num => {
 };
 
 function getFormattedFileSize(numberOfBytes) {
-    // TODO: move to utils.js, (also in ImportData)
+    // TODO: move to utils.js, (also in ImportData), but slight change (last line)
     const units = [
         "B",
         "KiB",
@@ -333,7 +333,7 @@ function getFormattedFileSize(numberOfBytes) {
         `${numberOfBytes} bytes` :
         `${approx.toFixed(3)} ${
               units[exponent]
-            } (${numberOfBytes} bytes)`;
+            }`;     //<<<removed
     return output;
 }
 </script>
@@ -348,5 +348,8 @@ function getFormattedFileSize(numberOfBytes) {
     margin:5px;
 }
 
+#search-results{
+    font-size:12px;
+}
 
 </style>

@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import {DocumentRecord} from './utils.js'
+
 export default ({
     name:'ImportData',
     emits:['imported-records'],
@@ -89,12 +91,10 @@ function getFormattedFileSize(numberOfBytes) {
 async function processFiles(files){
     // process files selected for upload and return an array of records
     let idx = 0
-    const newFiles = []
+    const newRecords = []
     for (const file of files) {
-        let data = await getFileRecord(file);
-
+        let record = await getFileRecord(file);
         //DocumentRecord
-        const record = {};
 
         // file indexing
         record.id = String(idx);
@@ -107,75 +107,106 @@ async function processFiles(files){
 
         // raw
         record.file_extension = extension;
-        record.filetype = file.type;
-        record.page_nos = data.page_nos;
-        record.length_lines_array = data.length_lines_array;
-        record.length_lines = null;
-        record.file_size_mb = file.size;
+        //record.filetype = file.type;
+        //record.page_nos = data.page_nos;
+        //record.length_lines_array = data.length_lines_array;
+        record.length_lines = 1;
+        if (record.length_lines_array.length > 0){
+            if (record.length_lines_array.length > 1){
+                record.length_lines = record.length_lines_array.reduce((s, v) => s += (v | 0));
+            }else{
+                record.length_lines = record.length_lines_array[0];
+            }
+        }
+        //record.file_size_mb = file.size;
         record.date = file.lastModified;
 
-        //inferred / searchable
+        /*inferred / searchable
         record.title = null;
         record.author = null;
         record.subject = null;
         record.toc = null;
-        record.pp_toc = null;
-
+        record.pp_toc = null;*/
+        /*
         record.body = data.body;
         record.clean_body = null;
         record.readability_score = null;
         record.tag_categories = null;
         record.keywords = null;
-        record.summary = null;
+        record.summary = null;*/
+        let bodyArr = JSON.parse(JSON.stringify( Object.values(record.body) ));
+        let clean_body_proc1 = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
+        let clean_body_proc2 = clean_body_proc1.replaceAll('- ','')
+        record.clean_body = clean_body_proc2
 
         //frontend field
         record.snippet = null;
         record._showDetails = false;
 
-        newFiles.push(record);
+        newRecords.push(record);
         }
-    return newFiles;
+    return newRecords;
 }
 
 
+
 function getFileRecord(file){
-    // create a file record from the FileReader() API
+    // Create a DocumentRecord from the FileReader() API
     return new Promise(function(resolve, reject) {
+        const record = new DocumentRecord()
+        record.length_lines_array = []
+        record.body = {}
         const reader = new FileReader();
         reader.onload = (e) => {
             let typedarray = new Uint8Array(e.target.result); //Step 4:turn array buffer into typed array
             const loadingTask = pdfjsLib.getDocument(typedarray); //Step 5:pdfjs should be able to read this
             loadingTask.promise.then(pdf => {
                 //document is loaded
-                let total = pdf.numPages;
-                let length_lines_array = [];
-                let layers = {};
-                for (let i = 1; i <= total; i++) {
-                    pdf.getPage(i).then(function(page) {
-                        let n = page.pageNumber;
-                        let page_text = "";
-                        page.getTextContent().then(function(textContent) {
+                record.page_nos = pdf.numPages;
+                pdf.getDestinations().then(dest => {
+                    record.destinations = dest
+                })
+                pdf.getMetadata().then(meta => {
+                    record.title = meta.info.Title
+                    record.subject = meta.info.Subject
+                    record.author = meta.info.Author
+                    record.date_created = meta.info.CreationDate
+                    record.date_mod = meta.info.ModDate
+                    record.keywords = meta.info.Keywords
+                })
+                pdf.getOutline().then(outline => {
+                    if (outline){
+                        record.toc_js = outline.map(item => item.title ? item.title : null)
+                    }
+                    return record
+                }).then(record => {
+                    for (let i = 1; i <= record.page_nos; i++) {
+                        const page = pdf.getPage(i)
+                        return page
+                        .then(page => {
+                            const n = page.pageNumber;
+                            let page_text = "";
+                            const textContent = page.getTextContent()
+                            return textContent
+                        .then(textContent => {
                             for (let item of textContent.items) {
                                 page_text += String(item.str);
+                                if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
                             }
                             let sentence_count = (page_text.match(/./g) || []).length;
-                            length_lines_array.push(sentence_count);
-                            layers[n] = page_text + "\n\n";
-                        });
-                    });
-                };
-                console.log(`${file} pdf loaded with body: ${layers}`)
-                resolve({
-                    //index: idx,
-                    page_nos: total,
-                    length_lines_array: length_lines_array,
-                    body: layers
-                });
+                            record.length_lines_array.push(sentence_count);
+                            record.body[n] = page_text + "\n\n";
+                        })
+                        })
+                    }
+                })
             });
         }
         reader.readAsArrayBuffer(file);
         reader.onerror = reject;
+        resolve(record);
     })
 }
+
 
 </script>

@@ -28,9 +28,11 @@ npm run dev
 
 * ~~pdfjs-dist~~
 * bootstrap-vue
+  - row file_size - only keep human readable (check column sort)
   - clean_body - improve formatting and determination of sentences
   - search - sort id by highest lunr score
   - snippet - reduce font size
+  - snippet - include page numbers, paragraph
   - snippet - enable multiple search hits within a document `more...`
   - snippet - change between summary and search results
   - tooltips - create tips for search, others
