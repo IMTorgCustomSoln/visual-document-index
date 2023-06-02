@@ -24,9 +24,24 @@ npm run dev
 * pdfjs-dist: `Warning: Setting up fake worker` is just a warning, not an error to worry about, [ref](https://stackoverflow.com/questions/74452371/pdfjs-what-is-a-fake-worker-how-to-solve-it)
 * alternative module [pdfjs](https://github.com/rkusa/pdfjs)
 
-## Useful Modules
+## ToDo
 
-* pdfjs-dist
-* file-type
-* textract
+* ~~pdfjs-dist~~
+* bootstrap-vue
+  - clean_body - improve formatting and determination of sentences
+  - search - sort id by highest lunr score
+  - snippet - reduce font size
+  - snippet - enable multiple search hits within a document `more...`
+  - snippet - change between summary and search results
+  - tooltips - create tips for search, others
 * wink
+  - subject
+  - keywords
+  - snippet - extract summary
+  - snippet - improve search results
+* file-type: ensure only `.pdf` can be uploaded
+* textract: improve raw data extraction
+* advanced
+  - allow selecting / highlighting of text within search results
+  - open sidebar to reveal topics management
+  - save selected text to specific topic
