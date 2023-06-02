@@ -8,7 +8,7 @@
         <b-col>
         <span>
             <h5 style="display:inline">Search: </h5>
-            <input type="text" class="form-control" id="search-field" @input="search()" placeholder="type search text here..." />
+            <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
         </span>
         <div>
             <b-button size="sm" v-on:click="expandAll">Expand All</b-button>
@@ -22,13 +22,15 @@
                 <!--refs
                     * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
                     * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
-                    * ...
+                    * max recursion error can occur if filtering or other props are not correct
                 -->
                 <b-table hover 
                   :items="items" 
                   :fields="fields"
-                  :filter="filter"
+                  :filter="tableFilter"
                   :filter-function="onFiltered"
+                  
+                  
                   primary-key='id'
                   striped small
                   responsive="sm" sticky-header="1000px"
@@ -83,54 +85,61 @@ export default ({
                     Array.isArray(this.$props.records) && 
                     this.$props.records.length > 0
                     ){
-                    console.log('its an array')
                     this.createTable();
                 }
             },
             deep: false
         }
     },
-    data(){return {
-            fields: fields,
+    data(){
+        this.fields = fields
+        this.lunrIndex = null
+        
+        return {
+            initializeTable: false,
             items: [],
-            lunrIndex: null,
-            filter: [],
-            filterString: [],
-            initializeTable: false
+            query: '',
+            tableFilter: [],
         }
     },
+
     methods: {
         createTable() {
-            //modify data items
+            // Populate the table with the transformed data records
+            //modify data items (each row) before populating table
             let idx = 0;
-            for (const item of this.$props.records) {
-                const record = JSON.parse(JSON.stringify(item));   //remove reactivity
-                console.log(record)
-                record.id = String(idx);
+            for (const record of this.$props.records) {
+                const item = JSON.parse(JSON.stringify(record));   //remove reactivity
+
+                // row items
+                item.id = String(idx);
                 let length_lines = 0;
-                if (record.length_lines_array.length > 0){
-                    if (record.length_lines_array.length > 1){
-                        length_lines = record.length_lines_array.reduce((s, v) => s += (v | 0));
+                if (item.length_lines_array.length > 0){
+                    if (item.length_lines_array.length > 1){
+                        length_lines = item.length_lines_array.reduce((s, v) => s += (v | 0));
                     }else{
-                        length_lines = record.length_lines_array[0];
+                        length_lines = item.length_lines_array[0];
                     }
                 }else{
                     length_lines = 1;
                 }
-                let dt = getDateFromJsNumber(record.date);
-                record.original_date = record.date;
-                record.date = dt;
-                record.length_lines = length_lines;
-                let bodyArr = Object.values(record.body);
+                let dt = getDateFromJsNumber(item.date);
+                item.original_date = item.date;
+                item.date = dt;
+                item.length_lines = length_lines;
+
+                // body items
+                let bodyArr = JSON.parse(JSON.stringify( Object.values(record.body) ));
                 let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
-                record.clean_body = clean_body;
+                item.clean_body = clean_body
 
                 idx++;
-                this.$data.items.push(record);
+                console.log(item)
+                this.items.push(item)
+                this.updateSnippets()
             }
             //create lunr index
-            console.log('start')
-            const docs = this.$data.items;
+            const docs = this.items;
             const lunrIndex = lunr(function() {
                 this.ref('id')
                 this.field('clean_body')
@@ -138,68 +147,66 @@ export default ({
                     this.add(doc)
                 }, this)
             })
-            console.log(lunrIndex);
-            this.$data.lunrIndex = lunrIndex;
-            this.$data.initializeTable = true;
-            console.log('done')
+            //add to context
+            this.lunrIndex = lunrIndex;
+            this.initializeTable = true;
         },
 
-        // Table logic
-        /*
-        Onclick handler for search button
-        When we call search, we will call the search function on lunr with the parameters from 
-        the input. Lunr is going to return an array containing a score and URL. We are using the 
-        filter function to match that with the items from the response (saved in allposts) so 
-        that we can grab the title as well.
-        I am doing another filter at the end to remove all the null elements. 
-        */
-        search() {
-            //document.getElementById("results").innerHTML = "results go here...";
-            let query = document.getElementById("search-field").value;
-            if (query == '') {
-                while (this.$data.filter.length > 0) {
-                    this.$data.filter.pop()
-                }
-                this.$data.filterString.pop()
-                return []
+        searchQuery() {
+            /* Provide tableFilter of selected rows' id based on `this.query` input
+            ~~_Note_: `search()` must be instatiated in template, so `return ''` is 
+            used.  This is not clean, but computed's cacheing ability still makes
+            it preferable over other methods.~~   =>  previously `computed`
+            :query str - from text input, should match lunrjs patterns
+            :filter [] - selected files' ids
+            */
+            console.log(this.query)
+            if(this.lunrIndex){
+                const queryVal = this.query
+                let results = this.lunrIndex.search(queryVal).map(result => {
+                    return this.items.filter(file => {
+                        return String(file.id) === result.ref; //&& result.score > .4;
+                    })[0];
+                });
+                console.log(results)
+                this.tableFilter.length = 0
+                results.map(p => this.tableFilter.push( String(p.id) ))
+                console.log(this.tableFilter)
+                this.updateSnippets()
+                return true
+            }else{
+                return false
             }
-            let results = this.$data.lunrIndex.search(query).map(result => {
-                return this.$data.items.filter(file => {
-                    return String(file.id) === result.ref; //&& result.score > .4;
-                })[0];
-            });
-            console.log(results)
-            results = results.filter(p => {
-                if (p) {
-                    return true;
-                }
-            });
-            while (this.$data.filter.length > 0) {
-                this.$data.filter.pop()
-            }
-            this.$data.filterString.pop()
-            this.$data.filterString.push(query)
-            results.map(p => this.$data.filter.push(String(p.id)))
-                //displayResults = results.map(p => (` ${p.id})  ${p.body} \n`))
-                //document.getElementById("results").innerHTML = displayResults;
         },
 
         onFiltered(row, filter) {
-            const MARGIN = 250;
-            row.snippet = null;
+            // Applied to each table row to determine if it 
+            //should be displayed
             if (filter.length == 0) {
-                row.snippet = null;
                 return true;
-            } else if (filter.includes(row.id)) {
-                let body = row.clean_body;
-                let idx = body.indexOf(this.$data.filterString)
-                row.snippet = body.slice(idx - MARGIN, idx + MARGIN)
+            } else if (filter.includes(row.id)){
                 return true;
             } else {
-                row.snippet = null
                 return false;
             }
         },
+
+        updateSnippets(){
+            // Update snippets for every item in table
+            const MARGIN = 250;
+            for(const item of this.items){
+                if(this.tableFilter.length == 0){
+                    item.snippet = 'TODO: SUMMARY GOES HERE'
+                }else if(this.tableFilter.includes(item.id)){
+                    const idx = item.clean_body.indexOf(this.query)
+                    item.snippet = item.clean_body.slice(idx - MARGIN, idx + MARGIN)
+                }else{
+                    item.snippet = null
+                }
+            }
+        },
+
+        // buttons and formatting
         expandAll() {
             this.items.map(item => this.$set(item, '_showDetails', true))
         },
@@ -269,65 +276,66 @@ const fields = [{
 
 
 
-       //support functions
-        const getDateFromPythonString = str => {
-            /* Usage:
-            //const dt = getDateFromString(value)
-            //const formattedDate = dt.toLocaleDateString()
-            //return formattedDate;
-            */
-            if (str.length > 10) {
-                const [date, time] = str.split(" ");
-                long_date = `${date}T${time}.000Z`; // reformat string into YYYY-MM-DDTHH:mm:ss.sssZ
-                dt = new Date(long_date)
-            } else {
-                dt = new Date(str)
-            }
-            return dt;
-        };
+// Support functions
 
-        const getDateFromJsNumber = num => {
-            let result = ''
-            if (typeof(num)=='number'){
-                if (String(num).length > 10) {
-                    let dt = new Date(num)
-                    result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
-                }
-            } else if (typeof(num)=='string' && num.length > 10) {
-                const int = parseInt(num) 
-                let dt = new Date(int)
-                result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
-            } 
-            console.log(result)
-            return result;
-        };
+const getDateFromPythonString = str => {
+    /* Usage:
+    const dt = getDateFromString(value)
+    const formattedDate = dt.toLocaleDateString()
+    return formattedDate;
+    */
+    if (str.length > 10) {
+        const [date, time] = str.split(" ");
+        long_date = `${date}T${time}.000Z`; // reformat string into YYYY-MM-DDTHH:mm:ss.sssZ
+        dt = new Date(long_date)
+    } else {
+        dt = new Date(str)
+    }
+    return dt;
+};
 
-        function getFormattedFileSize(numberOfBytes) {
-            // Approximate to the closest prefixed unit
-            const units = [
-                "B",
-                "KiB",
-                "MiB",
-                "GiB",
-                "TiB",
-                "PiB",
-                "EiB",
-                "ZiB",
-                "YiB",
-            ];
-            const exponent = Math.min(
-                Math.floor(Math.log(numberOfBytes) / Math.log(1024)),
-                units.length - 1
-            );
-            const approx = numberOfBytes / 1024 ** exponent;
-            const output =
-                exponent === 0 ?
-                `${numberOfBytes} bytes` :
-                `${approx.toFixed(3)} ${
-                      units[exponent]
-                    } (${numberOfBytes} bytes)`;
-            return output;
+const getDateFromJsNumber = num => {
+    // Integer to string date
+    let result = ''
+    if (typeof(num)=='number'){
+        if (String(num).length > 10) {
+            let dt = new Date(num)
+            result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
         }
+    } else if (typeof(num)=='string' && num.length > 10) {
+        const int = parseInt(num) 
+        let dt = new Date(int)
+        result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
+    } 
+    return result;
+};
+
+function getFormattedFileSize(numberOfBytes) {
+    // TODO: move to utils.js, (also in ImportData)
+    const units = [
+        "B",
+        "KiB",
+        "MiB",
+        "GiB",
+        "TiB",
+        "PiB",
+        "EiB",
+        "ZiB",
+        "YiB",
+    ];
+    const exponent = Math.min(
+        Math.floor(Math.log(numberOfBytes) / Math.log(1024)),
+        units.length - 1
+    );
+    const approx = numberOfBytes / 1024 ** exponent;
+    const output =
+        exponent === 0 ?
+        `${numberOfBytes} bytes` :
+        `${approx.toFixed(3)} ${
+              units[exponent]
+            } (${numberOfBytes} bytes)`;
+    return output;
+}
 </script>
 
 

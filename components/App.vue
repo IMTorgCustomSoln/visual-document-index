@@ -43,10 +43,6 @@ export default {
       this.showImportBtn = false;
       this.showTablePanel = true;
     }
-    /*
-    showModal() {
-      this.$bvModal.msgBoxOk('Modal from @vue/compat');
-    },*/
   },
 };
 </script>

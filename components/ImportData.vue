@@ -1,8 +1,3 @@
-<!--
-TODO: problem with vite: 'Deprecated API usage: No "GlobalWorkerOptions.workerSrc" specified.'
-https://github.com/arkokoley/pdfvuer/issues/78
--->
-
 <template>
     <!--
     <b-button variant="primary" @click="setChildData">Import Files</b-button>
@@ -28,8 +23,6 @@ https://github.com/arkokoley/pdfvuer/issues/78
                 </template>
         </b-modal>
     </div>
-
-
 </template>
 
 <script>
@@ -153,7 +146,6 @@ function getFileRecord(file){
             let typedarray = new Uint8Array(e.target.result); //Step 4:turn array buffer into typed array
             const loadingTask = pdfjsLib.getDocument(typedarray); //Step 5:pdfjs should be able to read this
             loadingTask.promise.then(pdf => {
-                console.log('PDF loaded');
                 //document is loaded
                 let total = pdf.numPages;
                 let length_lines_array = [];
@@ -172,6 +164,7 @@ function getFileRecord(file){
                         });
                     });
                 };
+                console.log(`${file} pdf loaded with body: ${layers}`)
                 resolve({
                     //index: idx,
                     page_nos: total,
