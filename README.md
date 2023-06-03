@@ -28,7 +28,7 @@ npm run dev
 
 * ~~pdfjs-dist~~
 * bootstrap-vue
-  - row file_size - only keep human readable (check column sort)
+  - ~~row file_size - only keep human readable (check column sort)
   - clean_body - improve formatting and determination of sentences
   - search - sort id by highest lunr score
   - snippet - reduce font size

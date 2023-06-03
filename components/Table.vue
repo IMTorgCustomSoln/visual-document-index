@@ -112,21 +112,15 @@ export default ({
             //modify data items (each row) before populating table
             //TODO: move to earlier in ImportData
             let idx = 0;
-            for (const record of this.$props.records) {
-                const item = JSON.parse(JSON.stringify(record));   //remove reactivity
-
-                // row items
-                //item.id = String(idx);
-
+            for (const item of this.$props.records) {
                 let dt = getDateFromJsNumber(item.date_mod);
-                //item.original_date = item.date_mod;
                 item.date = dt;
-                //item.length_lines = length_lines;
 
                 /* body items
                 let bodyArr = JSON.parse(JSON.stringify( Object.values(record.body) ));
                 let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
                 item.clean_body = clean_body*/
+
 
                 idx++;
                 console.log(item)
