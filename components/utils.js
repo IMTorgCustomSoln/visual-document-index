@@ -1,8 +1,142 @@
+
+export class DocumentRecord{
+  constructor(
+    id, reference_number, filepath, filename_original, filename_modified, 
+    file_extension, filetype, page_nos, length_lines, file_size_mb, date,
+    title, author, subject, toc, pp_toc, 
+    body_pages, body, clean_body, readability_score, tag_categories, keywords, summary
+    ){
+      //file indexing
+      this.id = id
+      this.reference_number = reference_number
+      this.filepath = filepath
+      this.filename_original = filename_original
+      this.filename_modified = filename_modified
+
+      //raw
+      this.file_extension = file_extension
+      this.filetype = filetype 
+      this.page_nos = page_nos
+      this.length_lines = length_lines
+      this.file_size_mb = file_size_mb 
+      this.date = date
+
+      //inferred / searchable
+      this.title = title
+      this.author = author 
+      this.subject = subject
+      this.toc = toc
+      this.pp_toc = pp_toc
+
+      this.body_pages = body_pages
+      this.body = body
+      this.clean_body = clean_body
+      this.readability_score = readability_score
+      this.tag_categories = tag_categories
+      this.keywords = keywords
+      this.summary = summary
+    }
+}
+
+
+export function getFileRecord(file){
+  // create a file record from the FileReader() API
+  return new Promise(function(resolve, reject) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+          let typedarray = new Uint8Array(e.target.result)
+          const loadingTask = pdfjsLib.getDocument(typedarray)
+          loadingTask.promise.then(pdf => {
+              const record = new DocumentRecord()
+              //document is loaded
+              record.page_nos = pdf.numPages;
+              record.length_lines_array = []
+              record.body_pages = {}
+              for (let i = 1; i <= record.page_nos; i++) {
+                  pdf.getPage(i).then(function(page) {
+                      let n = page.pageNumber;
+                      let page_text = ""
+                      page.getTextContent().then(function(textContent) {
+                          for (let item of textContent.items) {
+                              page_text += String(item.str)
+                          }
+                          let sentence_count = (page_text.match(/./g) || []).length
+                          record.length_lines_array.push(sentence_count)
+                          record.body_pages [n] = page_text + "\n\n"
+                      });
+                  });
+              };
+              //console.log(`${file} pdf loaded with body: ${record.layers}`)
+              //record.body = record.layers.length > 0 ? record.layers.reduce((partialSum, a) => partialSum += (a || 0)) : '';
+              resolve(record)
+          });
+      }
+      reader.readAsArrayBuffer(file);
+      reader.onerror = reject;
+  })
+}
+
+
+export const getDateFromJsNumber = num => {
+  // Integer to string date
+  let result = ''
+  if (typeof(num)=='number'){
+      if (String(num).length > 10) {
+          let dt = new Date(num)
+          result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
+      }
+  } else if (typeof(num)=='string' && num.length > 10) {
+      const int = parseInt(num) 
+      let dt = new Date(int)
+      result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
+  } 
+  return result;
+};
+
+
+export function getFormattedFileSize(numberOfBytes, longFormat=true) {
+  // Approximate to the closest prefixed unit
+  const units = [
+      "B",
+      "KiB",
+      "MiB",
+      "GiB",
+      "TiB",
+      "PiB",
+      "EiB",
+      "ZiB",
+      "YiB",
+  ];
+  const exponent = Math.min(
+      Math.floor(Math.log(numberOfBytes) / Math.log(1024)),
+      units.length - 1
+  );
+  const approx = numberOfBytes / 1024 ** exponent;
+  let output = ''
+  if(longFormat){
+      output =
+          exponent === 0 ?
+          `${numberOfBytes} bytes` :
+          `${approx.toFixed(3)} ${
+                units[exponent]
+              } (${numberOfBytes} bytes)`;
+  }else{
+      output =
+          exponent === 0 ?
+          `${numberOfBytes} bytes` :
+          `${approx.toFixed(3)} ${
+                units[exponent]}`;
+  }
+  return output;
+}
+
+
+
 /*
 No longer used, but good reference.
 Reference for this solution to register pdfjs-dist:
 https://erindoyle.dev/using-pdfjs-with-vite/
-*/
+
 
 import pdfjs from 'pdfjs-dist/build/pdf';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?worker';
@@ -29,3 +163,4 @@ export default {
     app.config.globalProperties.$pdf = pdfjs;
   }
 };
+*/

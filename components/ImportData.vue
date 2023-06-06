@@ -19,19 +19,24 @@
                 </div>
             </form>
             <template #modal-footer>
-                    <button @click="uploadInput" v-b-modal.modal-close_visit class="btn btn-success btn-sm m-1">Import</button>
+                    <button @click="uploadInput" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !uploadBtn}" :disabled=uploadBtn>Import Files</button>
+                    <button @click="processData" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !processBtn}" :disabled=processBtn>Process Data</button>
                 </template>
         </b-modal>
     </div>
 </template>
 
 <script>
+import { getFileRecord, getDateFromJsNumber, getFormattedFileSize } from './utils';
+
 export default ({
     name:'ImportData',
     emits:['imported-records'],
     data(){return {
-        //newFiles: ['File-1', 'File-2', 'File-3']
-        newFiles: []
+        uploadBtn: true,
+        processBtn: true,
+        importedFiles: [],
+        processedFiles: []
     }},
     methods: {
         previewFiles() {
@@ -42,59 +47,37 @@ export default ({
             }
             const output = getFormattedFileSize(numberOfBytes);
             document.getElementById("fileSize").textContent = output;
+            this.$data.uploadBtn = false
         },
         uploadInput(){
             // Load files into records
-            processFiles(uploadInput.files).then(
+            this.$data.uploadBtn = true
+            uploadFiles(uploadInput.files).then(
                 (recs)=>{
-                    this.$data.newFiles.push(...recs);
-                    this.$bvModal.hide("import-modal");
-                    this.$emit('imported-records', this.newFiles);      
+                    this.$data.importedFiles.push(...recs)
+                    this.$data.processBtn = false         
             })
-    }
+        },
+        processData(){
+            const processedFiles = processFiles(this.importedFiles)
+            this.$data.processedFiles.push(...processedFiles)
+            this.$bvModal.hide("import-modal")
+            this.$emit('imported-records', this.processedFiles); 
+        }
 }
 })
 
 
 
 
-function getFormattedFileSize(numberOfBytes) {
-    // Approximate to the closest prefixed unit
-    const units = [
-        "B",
-        "KiB",
-        "MiB",
-        "GiB",
-        "TiB",
-        "PiB",
-        "EiB",
-        "ZiB",
-        "YiB",
-    ];
-    const exponent = Math.min(
-        Math.floor(Math.log(numberOfBytes) / Math.log(1024)),
-        units.length - 1
-    );
-    const approx = numberOfBytes / 1024 ** exponent;
-    const output =
-        exponent === 0 ?
-        `${numberOfBytes} bytes` :
-        `${approx.toFixed(3)} ${
-              units[exponent]
-            } (${numberOfBytes} bytes)`;
-    return output;
-}
 
 
-async function processFiles(files){
+async function uploadFiles(files){
     // process files selected for upload and return an array of records
     let idx = 0
-    const newFiles = []
+    const importedFiles = []
     for (const file of files) {
-        let data = await getFileRecord(file);
-
-        //DocumentRecord
-        const record = {};
+        let record = await getFileRecord(file);
 
         // file indexing
         record.id = String(idx);
@@ -108,74 +91,61 @@ async function processFiles(files){
         // raw
         record.file_extension = extension;
         record.filetype = file.type;
-        record.page_nos = data.page_nos;
-        record.length_lines_array = data.length_lines_array;
-        record.length_lines = null;
+        //record.page_nos = data.page_nos;
+        //record.length_lines_array = data.length_lines_array;
+        //record.length_lines = null;
         record.file_size_mb = file.size;
         record.date = file.lastModified;
 
-        //inferred / searchable
-        record.title = null;
-        record.author = null;
-        record.subject = null;
-        record.toc = null;
-        record.pp_toc = null;
+        /*inferred / searchable
+        none
 
-        record.body = data.body;
-        record.clean_body = null;
-        record.readability_score = null;
-        record.tag_categories = null;
-        record.keywords = null;
-        record.summary = null;
-
-        //frontend field
+        //frontend field*/
         record.snippet = null;
         record._showDetails = false;
 
-        newFiles.push(record);
+        importedFiles.push(record);
+        idx++
         }
-    return newFiles;
+    return importedFiles;
 }
 
 
-function getFileRecord(file){
-    // create a file record from the FileReader() API
-    return new Promise(function(resolve, reject) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            let typedarray = new Uint8Array(e.target.result); //Step 4:turn array buffer into typed array
-            const loadingTask = pdfjsLib.getDocument(typedarray); //Step 5:pdfjs should be able to read this
-            loadingTask.promise.then(pdf => {
-                //document is loaded
-                let total = pdf.numPages;
-                let length_lines_array = [];
-                let layers = {};
-                for (let i = 1; i <= total; i++) {
-                    pdf.getPage(i).then(function(page) {
-                        let n = page.pageNumber;
-                        let page_text = "";
-                        page.getTextContent().then(function(textContent) {
-                            for (let item of textContent.items) {
-                                page_text += String(item.str);
-                            }
-                            let sentence_count = (page_text.match(/./g) || []).length;
-                            length_lines_array.push(sentence_count);
-                            layers[n] = page_text + "\n\n";
-                        });
-                    });
-                };
-                console.log(`${file} pdf loaded with body: ${layers}`)
-                resolve({
-                    //index: idx,
-                    page_nos: total,
-                    length_lines_array: length_lines_array,
-                    body: layers
-                });
-            });
+
+function processFiles(files){
+    // process files selected for upload and return an array of records
+    const processedFiles = []
+    for (const file of files) {
+        const item = JSON.parse(JSON.stringify( file ))
+
+        // row items
+        let length_lines = 0;
+        if (item.length_lines_array.length > 0){
+            if (item.length_lines_array.length > 1){
+                length_lines = item.length_lines_array.reduce((s, v) => s += (v | 0));
+            }else{
+                length_lines = item.length_lines_array[0];
+            }
+        }else{
+            length_lines = 1;
         }
-        reader.readAsArrayBuffer(file);
-        reader.onerror = reject;
-    })
+        let dt = getDateFromJsNumber(item.date);
+        item.original_date = item.date;
+        item.date = dt;
+        item.length_lines = length_lines;
+
+        // body items
+        let bodyArr = Object.values(item.body_pages)
+        item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
+        let clean_body = item.body
+        item.clean_body = clean_body
+
+        processedFiles.push(item);
+        }
+    return processedFiles;
 }
+
+
+
 
 </script>

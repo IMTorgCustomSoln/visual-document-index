@@ -72,6 +72,8 @@
 
 
 <script>
+import { getDateFromJsNumber, getFormattedFileSize } from './utils';
+
 export default ({
     name: 'Table',
     props:{
@@ -106,38 +108,13 @@ export default ({
     methods: {
         createTable() {
             // Populate the table with the transformed data records
-            //modify data items (each row) before populating table
-            let idx = 0;
             for (const record of this.$props.records) {
-                const item = JSON.parse(JSON.stringify(record));   //remove reactivity
-
-                // row items
-                item.id = String(idx);
-                let length_lines = 0;
-                if (item.length_lines_array.length > 0){
-                    if (item.length_lines_array.length > 1){
-                        length_lines = item.length_lines_array.reduce((s, v) => s += (v | 0));
-                    }else{
-                        length_lines = item.length_lines_array[0];
-                    }
-                }else{
-                    length_lines = 1;
-                }
-                let dt = getDateFromJsNumber(item.date);
-                item.original_date = item.date;
-                item.date = dt;
-                item.length_lines = length_lines;
-
-                // body items
-                let bodyArr = JSON.parse(JSON.stringify( Object.values(record.body) ));
-                let clean_body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
-                item.clean_body = clean_body
-
-                idx++;
-                console.log(item)
-                this.items.push(item)
-                this.updateSnippets()
+                const item = JSON.parse(JSON.stringify( record ))
+                this.items.push( item )
+            //this.updateSnippets()   <<< TODO: this will cause these records to react again, maybe add to processData
             }
+
+            console.log(this.items)
             //create lunr index
             const docs = this.items;
             const lunrIndex = lunr(function() {
@@ -221,7 +198,7 @@ export default ({
             return dt;
         },
         getFormattedFileSize(value) {
-            return getFormattedFileSize(value);
+            return getFormattedFileSize(value, false);
         },
         getFormattedPath(path) {
             return path ? path : './';
@@ -294,48 +271,6 @@ const getDateFromPythonString = str => {
     return dt;
 };
 
-const getDateFromJsNumber = num => {
-    // Integer to string date
-    let result = ''
-    if (typeof(num)=='number'){
-        if (String(num).length > 10) {
-            let dt = new Date(num)
-            result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
-        }
-    } else if (typeof(num)=='string' && num.length > 10) {
-        const int = parseInt(num) 
-        let dt = new Date(int)
-        result = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`;
-    } 
-    return result;
-};
-
-function getFormattedFileSize(numberOfBytes) {
-    // TODO: move to utils.js, (also in ImportData)
-    const units = [
-        "B",
-        "KiB",
-        "MiB",
-        "GiB",
-        "TiB",
-        "PiB",
-        "EiB",
-        "ZiB",
-        "YiB",
-    ];
-    const exponent = Math.min(
-        Math.floor(Math.log(numberOfBytes) / Math.log(1024)),
-        units.length - 1
-    );
-    const approx = numberOfBytes / 1024 ** exponent;
-    const output =
-        exponent === 0 ?
-        `${numberOfBytes} bytes` :
-        `${approx.toFixed(3)} ${
-              units[exponent]
-            } (${numberOfBytes} bytes)`;
-    return output;
-}
 </script>
 
 
