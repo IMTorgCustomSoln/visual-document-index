@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { getFileRecord, getDateFromJsNumber, getFormattedFileSize } from './utils';
+import { getFileRecord, getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './utils';
 
 export default ({
     name:'ImportData',
@@ -85,20 +85,17 @@ async function uploadFiles(files){
 
         // file indexing
         record.id = String(idx);
-        record.reference_number = null;
         
         var re = /(?:\.([^.]+))?$/;
         let extension = re.exec(file.name)[1];
         record.filename_original = file.name.replace('.' + extension, '');
         record.filepath = file.webkitRelativePath ? file.webkitRelativePath + '/' + record.filename_original : './'+record.filename_original;
         record.filename_modified = null;
+        record.reference_number = getFileReferenceNumber(file.name)
 
         // raw
         record.file_extension = extension;
         record.filetype = file.type;
-        //record.page_nos = data.page_nos;
-        //record.length_lines_array = data.length_lines_array;
-        //record.length_lines = null;
         record.file_size_mb = file.size;
         record.date = file.lastModified;
 
@@ -122,9 +119,6 @@ function processFiles(files){
     const processedFiles = []
     for (const file of files) {
         const item = JSON.parse(JSON.stringify( file ))
-
-        // reference number
-        item.reference_number = item.filename_original.slice(0,3)
 
         // row items
         let length_lines = 0;
@@ -156,13 +150,10 @@ function processFiles(files){
 
 
 <style>
-
 input[type="file"] {
     display: none;
 }
 .custom-file-upload {
-    /*fill: #03813d;
-    border: 1px solid #035228;*/
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;

@@ -29,6 +29,8 @@
                   :fields="fields"
                   :filter="tableFilter"
                   :filter-function="onFiltered"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
                   
                   
                   primary-key='id'
@@ -105,6 +107,8 @@ export default ({
             items: [],
             query: '',
             tableFilter: [],
+            sortBy: 'id',
+            sortDesc: false
         }
     },
 
@@ -123,6 +127,7 @@ export default ({
             const lunrIndex = lunr(function() {
                 this.ref('id')
                 this.field('clean_body')
+                this.metadataWhitelist = ['position']
                 docs.forEach(function(doc) {
                     this.add(doc)
                 }, this)
@@ -143,14 +148,19 @@ export default ({
             console.log(this.query)
             if(this.lunrIndex){
                 const queryVal = this.query
-                let results = this.lunrIndex.search(queryVal).map(result => {
-                    return this.items.filter(file => {
-                        return String(file.id) === result.ref; //&& result.score > .4;
-                    })[0];
-                });
+                const searchTerms = this.lunrIndex.pipeline.run(lunr.tokenizer(queryVal))
+                let resultsObj = this.lunrIndex.search(queryVal).map(result => {
+                    //return this.items.filter(file => {
+                        //console.log(result)
+                        //return String(file.id) === result.ref; //&& result.score > .4;
+                        return result
+                    //})
+                })
+                let results = resultsObj[0]
                 console.log(results)
                 this.tableFilter.length = 0
-                results.map(p => this.tableFilter.push( String(p.id) ))
+                //results.map(p => this.tableFilter.push( String(p.id) ))
+                results.map(p => this.tableFilter.push( String(p.ref) ))
                 console.log(this.tableFilter)
                 this.updateSnippets()
                 return true
@@ -220,11 +230,11 @@ const fields = [{
         label: 'Id'
     }, {
         key: 'reference_number',
-        label: 'Ref',
+        label: 'Reference',
         sortable: true,
     }, {
         key: 'filepath',
-        label: 'Name',
+        label: 'Path and Name',
         sortable: true,
         formatter: "getFormattedPath"
     }, {
@@ -240,9 +250,6 @@ const fields = [{
         label: 'Sentences',
         sortable: true
     }, {
-        key: 'filename_original',
-        sortable: true
-    }, {
         key: 'file_size_mb',
         label: 'File Size',
         sortable: true,
@@ -254,29 +261,6 @@ const fields = [{
     }]
 
 
-
-
-
-
-
-
-// Support functions
-
-const getDateFromPythonString = str => {
-    /* Usage:
-    const dt = getDateFromString(value)
-    const formattedDate = dt.toLocaleDateString()
-    return formattedDate;
-    */
-    if (str.length > 10) {
-        const [date, time] = str.split(" ");
-        long_date = `${date}T${time}.000Z`; // reformat string into YYYY-MM-DDTHH:mm:ss.sssZ
-        dt = new Date(long_date)
-    } else {
-        dt = new Date(str)
-    }
-    return dt;
-};
 
 </script>
 

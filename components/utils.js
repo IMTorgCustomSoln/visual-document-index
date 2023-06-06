@@ -62,7 +62,7 @@ export async function getFileRecord(file){     //TODO: async may not be needed
               record.keywords = meta.info.Keywords
               })
 
-              record.toc = pdf.getOutline().then(outline => {    //TODO:FIX
+              record.toc = pdf.getOutline().then(outline => {    //TODO:FIX by moving below `let page.getTextContent()`
                 if (outline){
                     outline.map(item => item.title ? item.title : null)
                 }
@@ -92,6 +92,34 @@ export async function getFileRecord(file){     //TODO: async may not be needed
       reader.readAsArrayBuffer(file);
       reader.onerror = reject;
   })
+}
+
+
+
+export function getFileReferenceNumber(filename, searchTermOrIndexArray=[9,17], regex=false){
+  /* Get a file reference number from file name
+  The `searchTermOrIndexArray` should be one of the following:
+   * Array [start, stop] - index numbers to slice
+   * String (chars) - simple search term to slice(0, first_index)
+   * String (regex) - regex pattern to hit
+  */
+ let reference = ''
+ if (Array.isArray(searchTermOrIndexArray)==true && searchTermOrIndexArray.length==2){
+  let idx1,idx2
+  [idx1, idx2] = searchTermOrIndexArray
+  reference = filename.slice(idx1, idx2)
+ } else if (typeof(searchTermOrIndexArray)=="string"){
+      if (!regex){
+        const idx = filename.indexOf(searchTermOrIndexArray)
+        reference = filename.slice(0, idx)
+      } else if (regex){
+        const idx = filename.search(searchTermOrIndexArray)
+        reference = filename.slice(0, idx)
+      }
+ } else {
+  const reference = ''
+}
+return reference
 }
 
 
@@ -147,6 +175,30 @@ export function getFormattedFileSize(numberOfBytes, longFormat=true) {
   }
   return output;
 }
+
+
+
+
+const getDateFromPythonString = str => {
+  /* Usage:
+  const dt = getDateFromString(value)
+  const formattedDate = dt.toLocaleDateString()
+  return formattedDate;
+  */
+  if (str.length > 10) {
+      const [date, time] = str.split(" ");
+      long_date = `${date}T${time}.000Z`; // reformat string into YYYY-MM-DDTHH:mm:ss.sssZ
+      dt = new Date(long_date)
+  } else {
+      dt = new Date(str)
+  }
+  return dt;
+};
+
+
+
+
+
 
 
 

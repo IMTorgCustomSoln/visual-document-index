@@ -34,8 +34,12 @@ npm run dev
 * bootstrap-vue
   - ~~clean_body - improve formatting and determination of sentences~~
   - ~~upload icon - https://stackoverflow.com/questions/572768/styling-an-input-type-file-button~~
-  - search - sort id by highest lunr score
-  - snippet - reduce font size
+  - search 
+    - sort rows by highest lunr score
+    - total number of results below search, result count in each row_details
+    - use results position array to fill snippets
+    - loop row_details snippets to show top N results
+  - ~~snippet - reduce font size~~
   - snippet - enable multiple search hits within a document `more...`
   - snippet - change between summary and search results
   - tooltips - create tips for search, others
