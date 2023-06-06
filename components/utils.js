@@ -39,7 +39,7 @@ export class DocumentRecord{
 }
 
 
-export function getFileRecord(file){
+export async function getFileRecord(file){     //TODO: async may not be needed
   // create a file record from the FileReader() API
   return new Promise(function(resolve, reject) {
       const reader = new FileReader()
@@ -53,7 +53,7 @@ export function getFileRecord(file){
               record.length_lines_array = []
               record.body_pages = {}
 
-              const meta = pdf.getMetadata().then(meta => {
+              pdf.getMetadata().then(meta => {
               record.title = meta.info.Title
               record.subject = meta.info.Subject
               record.author = meta.info.Author
@@ -62,7 +62,7 @@ export function getFileRecord(file){
               record.keywords = meta.info.Keywords
               })
 
-              record.toc = pdf.getOutline().then(outline => {
+              record.toc = pdf.getOutline().then(outline => {    //TODO:FIX
                 if (outline){
                     outline.map(item => item.title ? item.title : null)
                 }

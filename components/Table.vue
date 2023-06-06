@@ -11,8 +11,8 @@
             <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
         </span>
         <div>
-            <b-button size="sm" v-on:click="expandAll">Expand All</b-button>
-            <b-button size="sm" v-on:click="collapseAll">Collapse All</b-button>
+            <b-button size="sm" v-on:click="expandAll" >Expand All</b-button>
+            <b-button size="sm" v-on:click="collapseAll" >Collapse All</b-button>
         </div>
     </b-col>
 </b-row>
@@ -219,13 +219,17 @@ const fields = [{
         key: 'id',
         label: 'Id'
     }, {
+        key: 'reference_number',
+        label: 'Ref',
+        sortable: true,
+    }, {
         key: 'filepath',
-        label: 'Path',
+        label: 'Name',
         sortable: true,
         formatter: "getFormattedPath"
     }, {
-        key: 'filename_original',
-        label: 'File Name',
+        key: 'title',
+        label: 'Title',
         sortable: true
     }, {
         key: 'page_nos',

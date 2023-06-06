@@ -13,6 +13,9 @@
             <br>
             <form name="uploadForm">
                 <div>
+                    <label for="uploadInput" class="custom-file-upload">
+                        <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
+                    </label>
                     <input id="uploadInput" type="file" @change="previewFiles" multiple /><br>
                     <label for="fileSize">Total size: &nbsp</label>
                     <output id="fileSize">0</output>
@@ -33,6 +36,7 @@ export default ({
     name:'ImportData',
     emits:['imported-records'],
     data(){return {
+        uploadIcon: ["success","secondary"],   //TODO
         uploadBtn: true,
         processBtn: true,
         importedFiles: [],
@@ -82,10 +86,11 @@ async function uploadFiles(files){
         // file indexing
         record.id = String(idx);
         record.reference_number = null;
-        record.filepath = file.webkitRelativePath ? file.webkitRelativePath : null;
+        
         var re = /(?:\.([^.]+))?$/;
         let extension = re.exec(file.name)[1];
         record.filename_original = file.name.replace('.' + extension, '');
+        record.filepath = file.webkitRelativePath ? file.webkitRelativePath + '/' + record.filename_original : './'+record.filename_original;
         record.filename_modified = null;
 
         // raw
@@ -118,6 +123,9 @@ function processFiles(files){
     for (const file of files) {
         const item = JSON.parse(JSON.stringify( file ))
 
+        // reference number
+        item.reference_number = item.filename_original.slice(0,3)
+
         // row items
         let length_lines = 0;
         if (item.length_lines_array.length > 0){
@@ -144,8 +152,19 @@ function processFiles(files){
         }
     return processedFiles;
 }
-
-
-
-
 </script>
+
+
+<style>
+
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    /*fill: #03813d;
+    border: 1px solid #035228;*/
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+</style>

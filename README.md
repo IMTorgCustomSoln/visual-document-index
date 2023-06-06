@@ -27,8 +27,13 @@ npm run dev
 ## ToDo
 
 * ~~pdfjs-dist~~
+* basic
+  - ~~combine path and filename~~
+  - ~~add title~~
+  - ~~add upload icon with highlight, then disable~~
 * bootstrap-vue
   - ~~clean_body - improve formatting and determination of sentences~~
+  - ~~upload icon - https://stackoverflow.com/questions/572768/styling-an-input-type-file-button~~
   - search - sort id by highest lunr score
   - snippet - reduce font size
   - snippet - enable multiple search hits within a document `more...`
@@ -45,3 +50,8 @@ npm run dev
   - allow selecting / highlighting of text within search results
   - open sidebar to reveal topics management
   - save selected text to specific topic
+  - fix TOC
+* import pdf nested loops
+  - promises in loop: https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
+  - extract pdf: [ref-1](https://stackoverflow.com/questions/1554280/how-to-extract-text-from-a-pdf-in-javascript?rq=3), [ref-2](https://stackoverflow.com/questions/40635979/how-to-correctly-extract-text-from-a-pdf-using-pdf-js), [ref-3](https://stackoverflow.com/questions/40482569/troubles-with-pdf-js-promises/40494019#40494019), [ref-4](https://stackoverflow.com/questions/61669405/forcing-a-function-to-wait-until-another-function-is-complete)
+  - 
