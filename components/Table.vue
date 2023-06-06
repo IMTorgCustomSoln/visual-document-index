@@ -56,7 +56,10 @@
                         <b-row >Keywords: {{row.item.keywords}}</b-row>
                         </b-col>
                         <b-col sm="3" class="text-sm-left">Contents: <br><span v-html="row.item.pp_toc"></span> </b-col>
-                        <b-col sm="6" class="text-sm-left">Search results: <br>{{ row.item.snippet }}</b-col>
+                        <b-col sm="6" class="text-sm-left">
+                            Search results: 
+                            <div id="search-results">{{ row.item.snippet }}</div> 
+                        </b-col>
                         
                         </b-row>
                       </b-card>
@@ -275,13 +278,13 @@ const getDateFromPythonString = str => {
 
 
 <style>
-
 #table-panel input {
     margin:5px;
 }
 #table-panel button {
     margin:5px;
 }
-
-
+#search-results{
+    font-size:12px;
+}
 </style>
