@@ -52,6 +52,22 @@ export function getFileRecord(file){
               record.page_nos = pdf.numPages;
               record.length_lines_array = []
               record.body_pages = {}
+
+              const meta = pdf.getMetadata().then(meta => {
+              record.title = meta.info.Title
+              record.subject = meta.info.Subject
+              record.author = meta.info.Author
+              record.date_created = meta.info.CreationDate
+              record.date_mod = meta.info.ModDate
+              record.keywords = meta.info.Keywords
+              })
+
+              record.toc = pdf.getOutline().then(outline => {
+                if (outline){
+                    outline.map(item => item.title ? item.title : null)
+                }
+              })
+
               for (let i = 1; i <= record.page_nos; i++) {
                   pdf.getPage(i).then(function(page) {
                       let n = page.pageNumber;
@@ -59,10 +75,12 @@ export function getFileRecord(file){
                       page.getTextContent().then(function(textContent) {
                           for (let item of textContent.items) {
                               page_text += String(item.str)
+                              if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
                           }
-                          let sentence_count = (page_text.match(/./g) || []).length
+                          let edit1 = page_text.replaceAll('- ','')
+                          record.body_pages[n] = edit1 + "\n\n"
+                          let sentence_count = (edit1.match(/./g) || []).length
                           record.length_lines_array.push(sentence_count)
-                          record.body_pages [n] = page_text + "\n\n"
                       });
                   });
               };

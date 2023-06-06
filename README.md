@@ -28,7 +28,7 @@ npm run dev
 
 * ~~pdfjs-dist~~
 * bootstrap-vue
-  - clean_body - improve formatting and determination of sentences
+  - ~~clean_body - improve formatting and determination of sentences~~
   - search - sort id by highest lunr score
   - snippet - reduce font size
   - snippet - enable multiple search hits within a document `more...`
@@ -40,7 +40,7 @@ npm run dev
   - snippet - extract summary
   - snippet - improve search results
 * file-type: ensure only `.pdf` can be uploaded
-* textract: improve raw data extraction
+* ~~textract: improve raw data extraction~~
 * advanced
   - allow selecting / highlighting of text within search results
   - open sidebar to reveal topics management
