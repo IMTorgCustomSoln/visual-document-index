@@ -9,6 +9,7 @@
         <span>
             <h5 style="display:inline">Search: </h5>
             <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
+            <div>{{ searchResultsCount }}</div>
         </span>
         <div>
             <b-button size="sm" v-on:click="expandAll" >Expand All</b-button>
@@ -53,14 +54,20 @@
                         <b-row class="mb-2">
                         
                         <b-col sm="2" class="text-sm-left">
-                        <b-row >Author: {{row.item.author}}</b-row>
-                        <b-row >Subject: {{row.item.subject}}</b-row>
-                        <b-row >Keywords: {{row.item.keywords}}</b-row>
+                        <b-row ><b>Author:</b> {{row.item.author}}</b-row>
+                        <b-row ><b>Subject:</b> {{row.item.subject}}</b-row>
+                        <b-row ><b>Keywords:</b> {{row.item.keywords}}</b-row>
                         </b-col>
-                        <b-col sm="3" class="text-sm-left">Contents: <br><span v-html="row.item.pp_toc"></span> </b-col>
+                        <b-col sm="3" class="text-sm-left"><b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> </b-col>
                         <b-col sm="6" class="text-sm-left">
-                            Search results: 
-                            <div id="search-results">{{ row.item.snippet }}</div> 
+                            <div v-if="!searchResults.totalDocuments"><b>Document summary:</b> <br/>
+                                {{ row.item.summary }}
+                            </div>
+                            <div v-else><b>Search results in {{ row.item.hit_count }} hits, showing the first {{ searchResults.displayLimit }}:</b></div>
+                            <br/>
+                            <div id="search-results" v-for="snippet in row.item.snippets">
+                                <div><span v-html="snippet"></span></div><br/>
+                            </div> 
                         </b-col>
                         
                         </b-row>
@@ -107,8 +114,20 @@ export default ({
             items: [],
             query: '',
             tableFilter: [],
-            sortBy: 'id',
-            sortDesc: false
+            sortBy: 'sort_key',
+            sortDesc: false,
+            searchResults: {
+                count: 0,
+                totalDocuments: 0,
+                searchTerms: '',
+                displayLimit: 0
+            }
+            
+        }
+    },
+    computed: {
+        searchResultsCount(){
+            return this.query != '' ? `Search returned ${this.searchResults.count} hits, in ${this.searchResults.totalDocuments} documents, using terms: ${this.searchResults.searchTerms}`  : ''
         }
     },
 
@@ -146,32 +165,84 @@ export default ({
             :filter [] - selected files' ids
             */
             console.log(this.query)
-            if(this.lunrIndex){
+            if (this.query.length === 0){
+                this.resetAllItems()
+                return false
+
+            } else if (this.lunrIndex) {
+                //query lunrjs index
                 const queryVal = this.query
                 const searchTerms = this.lunrIndex.pipeline.run(lunr.tokenizer(queryVal))
-                let resultsObj = this.lunrIndex.search(queryVal).map(result => {
-                    //return this.items.filter(file => {
-                        //console.log(result)
-                        //return String(file.id) === result.ref; //&& result.score > .4;
-                        return result
-                    //})
-                })
-                let results = resultsObj[0]
-                console.log(results)
+                this.searchResults = {...this.searchResults, searchTerms: searchTerms}
+                const results = this.lunrIndex.search(queryVal).map(resultFile => { return resultFile })
+                const resultIds = results.map(resultFile => resultFile.ref)
+                console.log(resultIds)
+
+                //get hit counts for individual doc and total docs
+                const resultGroups = []
+                for(let resultFile of results){
+                    let new_key = Object.keys( resultFile.matchData.metadata )[0]
+                    let rec = {}
+                    rec['ref'] = resultFile.ref
+                    rec['score'] = resultFile.score
+                    rec['count'] = resultFile.matchData.metadata[new_key].clean_body.position.length
+                    rec['positions'] = resultFile.matchData.metadata[new_key].clean_body.position
+                    resultGroups.push( rec )
+                    }
+                let totalCount = 0
+                totalCount = resultGroups.reduce(function(pv,cv) {return pv + cv.count}, 0)
+                this.searchResults = {...this.searchResults, count: totalCount}
+                console.log(resultGroups)
+
+                //update table items based on query
                 this.tableFilter.length = 0
-                //results.map(p => this.tableFilter.push( String(p.id) ))
-                results.map(p => this.tableFilter.push( String(p.ref) ))
+
+                if (resultIds.length == 0){
+                    this.resetAllItems()
+                } else {
+                this.items.map(item => {
+                    if (resultIds.includes(item.id)){
+                        //filter and sort table items 
+                        this.tableFilter.push( item.id )
+                        const idx = resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
+                        if (idx <= -1){
+                            this.resetItem(item)
+                        } else {
+                            let resultFile = resultGroups[idx]
+                            item.sort_key = resultFile.score
+                            item.hit_count = resultFile.count
+
+                            //update item row details' snippets
+                            this.searchResults = {...this.searchResults, totalDocuments: resultIds.length}
+                            const MARGIN = 250
+                            const LIMIT_OUTPUT = 3
+                            this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
+                            item.snippets.length = 0
+
+                            const indices = resultFile.positions.map(item => item).slice(0, LIMIT_OUTPUT)
+                            const chars = item.clean_body.length
+                            for (let index of indices){
+                                const start = index[0] - MARGIN > 0 ? index[0] - MARGIN : 0
+                                const end = index[0]+index[1] + MARGIN < chars ? index[0]+index[1] + MARGIN : chars
+                                const hightlight = item.clean_body.slice(index[0], index[0]+index[1])
+                                const snippet = item.clean_body.slice(start, index[0]) + `<b style="background-color: yellow">${hightlight}</b>` + item.clean_body.slice(index[0]+index[1], end)
+                                item.snippets.push( snippet )
+                            }  
+                        }
+                    }
+                })
+                this.sortDesc = true
                 console.log(this.tableFilter)
-                this.updateSnippets()
                 return true
-            }else{
+                }
+            } else {
                 return false
             }
         },
 
         onFiltered(row, filter) {
             // Applied to each table row to determine if it 
-            //should be displayed
+            //should be displayed   //TODO: does this need to be computed?
             if (filter.length == 0) {
                 return true;
             } else if (filter.includes(row.id)){
@@ -181,19 +252,23 @@ export default ({
             }
         },
 
-        updateSnippets(){
-            // Update snippets for every item in table
-            const MARGIN = 250;
-            for(const item of this.items){
-                if(this.tableFilter.length == 0){
-                    item.snippet = 'TODO: SUMMARY GOES HERE'
-                }else if(this.tableFilter.includes(item.id)){
-                    const idx = item.clean_body.indexOf(this.query)
-                    item.snippet = item.clean_body.slice(idx - MARGIN, idx + MARGIN)
-                }else{
-                    item.snippet = null
-                }
-            }
+        resetItem(item){
+            item.sort_key = item.id
+            item.hit_count = 0
+            item.snippets = []
+        },
+
+        resetAllItems(){
+            this.items.map(item => {
+                this.resetItem(item)
+            })
+            this.searchResults = {...this.searchResults, count: 0}
+            this.searchResults = {...this.searchResults, totalDocuments: 0}
+            this.searchResults = {...this.searchResults, searchTerms: ''}
+            this.searchResults = {...this.searchResults, displayLimit: 0}
+
+            this.sortDesc = false
+            this.tableFilter.length = 0
         },
 
         // buttons and formatting
@@ -226,6 +301,10 @@ export default ({
 
 // Table data items
 const fields = [{
+        key: 'sort_key',
+        label: 'Score',
+        sortable: true,
+    }, {
         key: 'id',
         label: 'Id'
     }, {
@@ -234,7 +313,7 @@ const fields = [{
         sortable: true,
     }, {
         key: 'filepath',
-        label: 'Path and Name',
+        label: 'Path',
         sortable: true,
         formatter: "getFormattedPath"
     }, {

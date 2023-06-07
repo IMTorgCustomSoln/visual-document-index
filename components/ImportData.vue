@@ -81,32 +81,35 @@ async function uploadFiles(files){
     let idx = 0
     const importedFiles = []
     for (const file of files) {
-        let record = await getFileRecord(file);
+        let record = await getFileRecord(file)
 
         // file indexing
-        record.id = String(idx);
+        record.id = String(idx)
         
-        var re = /(?:\.([^.]+))?$/;
-        let extension = re.exec(file.name)[1];
-        record.filename_original = file.name.replace('.' + extension, '');
-        record.filepath = file.webkitRelativePath ? file.webkitRelativePath + '/' + record.filename_original : './'+record.filename_original;
-        record.filename_modified = null;
+        var re = /(?:\.([^.]+))?$/
+        let extension = re.exec(file.name)[1]
+        record.filename_original = file.name.replace('.' + extension, '')
+        record.filepath = file.webkitRelativePath ? file.webkitRelativePath + '/' + record.filename_original : './'+record.filename_original
+        record.filename_modified = null
         record.reference_number = getFileReferenceNumber(file.name)
 
         // raw
-        record.file_extension = extension;
-        record.filetype = file.type;
-        record.file_size_mb = file.size;
-        record.date = file.lastModified;
+        record.file_extension = extension
+        record.filetype = file.type
+        record.file_size_mb = file.size
+        record.date = file.lastModified
 
         /*inferred / searchable
         none
 
         //frontend field*/
-        record.snippet = null;
-        record._showDetails = false;
+        record.sort_key = record.id
+        record.hit_count = 0
+        record.summary = 'TODO:summary'
+        record.snippets = []
+        record._showDetails = false
 
-        importedFiles.push(record);
+        importedFiles.push(record)
         idx++
         }
     return importedFiles;
@@ -121,28 +124,28 @@ function processFiles(files){
         const item = JSON.parse(JSON.stringify( file ))
 
         // row items
-        let length_lines = 0;
+        let length_lines = 0
         if (item.length_lines_array.length > 0){
             if (item.length_lines_array.length > 1){
-                length_lines = item.length_lines_array.reduce((s, v) => s += (v | 0));
+                length_lines = item.length_lines_array.reduce((s, v) => s += (v | 0))
             }else{
-                length_lines = item.length_lines_array[0];
+                length_lines = item.length_lines_array[0]
             }
         }else{
             length_lines = 1;
         }
-        let dt = getDateFromJsNumber(item.date);
-        item.original_date = item.date;
+        let dt = getDateFromJsNumber(item.date)
+        item.original_date = item.date
         item.date = dt;
-        item.length_lines = length_lines;
+        item.length_lines = length_lines
 
         // body items
         let bodyArr = Object.values(item.body_pages)
-        item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : '';
+        item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : ''
         let clean_body = item.body
         item.clean_body = clean_body
 
-        processedFiles.push(item);
+        processedFiles.push(item)
         }
     return processedFiles;
 }
