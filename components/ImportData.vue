@@ -17,6 +17,8 @@
                         <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
                     </label>
                     <input id="uploadInput" type="file" @change="previewFiles" multiple /><br>
+                    <label for="fileCount">Files: &nbsp</label>
+                    <output id="fileCount">0</output><br/>
                     <label for="fileSize">Total size: &nbsp</label>
                     <output id="fileSize">0</output>
                 </div>
@@ -49,8 +51,10 @@ export default ({
             for (const file of uploadInput.files) {
                 numberOfBytes += file.size;
             }
-            const output = getFormattedFileSize(numberOfBytes);
-            document.getElementById("fileSize").textContent = output;
+            const fileCount = uploadInput.files.length
+            document.getElementById("fileCount").textContent = fileCount
+            const fileSize = getFormattedFileSize(numberOfBytes);
+            document.getElementById("fileSize").textContent = fileSize
             this.$data.uploadBtn = false
         },
         uploadInput(){

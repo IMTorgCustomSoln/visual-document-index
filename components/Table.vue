@@ -9,7 +9,8 @@
         <span>
             <h5 style="display:inline">Search: </h5>
             <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
-            <div>{{ searchResultsCount }}</div>
+            <div v-if="!searchResults.errorMsg">{{ searchResultsCount }}</div>
+            <div v-else class="errorMsg"> {{ searchResults.errorMsg }}</div>
         </span>
         <div>
             <b-button size="sm" v-on:click="expandAll" >Expand All</b-button>
@@ -120,9 +121,9 @@ export default ({
                 count: 0,
                 totalDocuments: 0,
                 searchTerms: '',
-                displayLimit: 0
+                displayLimit: 0,
+                errorMsg: ''
             }
-            
         }
     },
     computed: {
@@ -165,16 +166,27 @@ export default ({
             :filter [] - selected files' ids
             */
             console.log(this.query)
+            this.searchResults = {...this.searchResults, errorMsg: ''}
+
             if (this.query.length === 0){
                 this.resetAllItems()
                 return false
 
             } else if (this.lunrIndex) {
+                
                 //query lunrjs index
                 const queryVal = this.query
-                const searchTerms = this.lunrIndex.pipeline.run(lunr.tokenizer(queryVal))
-                this.searchResults = {...this.searchResults, searchTerms: searchTerms}
-                const results = this.lunrIndex.search(queryVal).map(resultFile => { return resultFile })
+                var searchTerms = ''
+                var results = ''
+                try {
+                    searchTerms = this.lunrIndex.pipeline.run(lunr.tokenizer(queryVal))
+                    this.searchResults = {...this.searchResults, searchTerms: searchTerms}
+                    results = this.lunrIndex.search(queryVal).map(resultFile => { return resultFile })
+                } catch (error) {
+                    this.searchResults = {...this.searchResults, errorMsg: error}
+                    this.resetAllItems()
+                    return false
+                }
                 const resultIds = results.map(resultFile => resultFile.ref)
                 console.log(resultIds)
 
@@ -351,7 +363,10 @@ const fields = [{
 #table-panel button {
     margin:5px;
 }
-#search-results{
+#search-results {
     font-size:12px;
+}
+.errorMsg {
+    color: red;
 }
 </style>

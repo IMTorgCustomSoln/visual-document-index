@@ -160,8 +160,7 @@ export function getFormattedFileSize(numberOfBytes, longFormat=true) {
   const approx = numberOfBytes / 1024 ** exponent;
   let output = ''
   if(longFormat){
-      output =
-          exponent === 0 ?
+      output = exponent === 0 ?
           `${numberOfBytes} bytes` :
           `${approx.toFixed(3)} ${
                 units[exponent]

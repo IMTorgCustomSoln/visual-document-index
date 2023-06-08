@@ -32,6 +32,23 @@ npm run dev
   - ~~add title~~
   - ~~add upload icon with highlight, then disable~~
 * bootstrap-vue
+  - check whether clean_body has duplicates, such as beginning
+  - results score should be formatted and rounded
+  - get positions for ALL terms from search: https://lunrjs.com/guides/core_concepts.html
+  - add page numbers to result snippets
+  - ~~add error response for incorrect search~~
+  - try search patterns:
+    'foo' all search is on stemmed terms
+    '+foo +bar' for logical AND search, '+foo bar -baz' 
+    '*foo'
+    'title:foo'
+    'foo^10 bar' for weigting of 10times higher than bar 
+    'foo~1' one edit distance of foo in fuzzy matching 
+  - add other fields to search: keywords, summary
+  - determine strongest N positions to display - WAIT, how to determine N ??? options
+    N as a proportion of document length
+    show all and scroll down (will this effect performance)
+  - 
   - ~~clean_body - improve formatting and determination of sentences~~
   - ~~upload icon - https://stackoverflow.com/questions/572768/styling-an-input-type-file-button~~
   - search 
