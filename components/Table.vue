@@ -64,7 +64,7 @@
                             <div v-if="!searchResults.totalDocuments"><b>Document summary:</b> <br/>
                                 {{ row.item.summary }}
                             </div>
-                            <div v-else><b>Search results in {{ row.item.hit_count }} hits, showing the first {{ searchResults.displayLimit }}:</b></div>
+                            <div v-else><b>Search results in {{ row.item.hit_count }} hits:</b></div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
                             <br/>
                             <div id="search-results" v-for="snippet in row.item.snippets">
                                 <div><span v-html="snippet"></span></div><br/>
@@ -193,12 +193,18 @@ export default ({
                 //get hit counts for individual doc and total docs
                 const resultGroups = []
                 for(let resultFile of results){
-                    let new_key = Object.keys( resultFile.matchData.metadata )[0]
+                    let new_keys = Object.keys( resultFile.matchData.metadata )
+                    let counts = []
+                    let positions = []
                     let rec = {}
                     rec['ref'] = resultFile.ref
-                    rec['score'] = resultFile.score
-                    rec['count'] = resultFile.matchData.metadata[new_key].clean_body.position.length
-                    rec['positions'] = resultFile.matchData.metadata[new_key].clean_body.position
+                    rec['score'] = resultFile.score.toFixed(3)
+                    for (let key of new_keys){
+                        counts.push( resultFile.matchData.metadata[key].clean_body.position.length )
+                        positions.push( ...resultFile.matchData.metadata[key].clean_body.position )
+                    }
+                    rec['count'] = counts.reduce((pv,cv)=>{return pv+cv}, 0)
+                    rec['positions'] = positions
                     resultGroups.push( rec )
                     }
                 let totalCount = 0
@@ -228,10 +234,10 @@ export default ({
                             this.searchResults = {...this.searchResults, totalDocuments: resultIds.length}
                             const MARGIN = 250
                             const LIMIT_OUTPUT = 3
-                            this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
+                            //this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
                             item.snippets.length = 0
 
-                            const indices = resultFile.positions.map(item => item).slice(0, LIMIT_OUTPUT)
+                            const indices = resultFile.positions.map(item => item)//.slice(0, LIMIT_OUTPUT)
                             const chars = item.clean_body.length
                             for (let index of indices){
                                 const start = index[0] - MARGIN > 0 ? index[0] - MARGIN : 0
@@ -310,12 +316,11 @@ export default ({
 
 
 
-
 // Table data items
 const fields = [{
         key: 'sort_key',
         label: 'Score',
-        sortable: true,
+        sortable: true
     }, {
         key: 'id',
         label: 'Id'
