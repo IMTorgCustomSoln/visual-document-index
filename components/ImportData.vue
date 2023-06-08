@@ -149,6 +149,9 @@ function processFiles(files){
         let clean_body = item.body
         item.clean_body = clean_body
 
+        // prepare page numbers for search snippets
+        item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
+
         processedFiles.push(item)
         }
     return processedFiles;

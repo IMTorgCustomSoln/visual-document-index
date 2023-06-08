@@ -35,6 +35,18 @@ export class DocumentRecord{
       this.tag_categories = tag_categories
       this.keywords = keywords
       this.summary = summary
+
+      //added by frontend
+      this.length_lines_array = null
+      this.date_created = null
+      this.date_mod = null
+      this.length_lines_array
+
+      this.sort_key = null
+      this.hit_count = null
+      this.snippets = null
+      this._showDetails = null
+      this.accumPageLines = null
     }
 }
 

@@ -204,7 +204,7 @@ export default ({
                         positions.push( ...resultFile.matchData.metadata[key].clean_body.position )
                     }
                     rec['count'] = counts.reduce((pv,cv)=>{return pv+cv}, 0)
-                    rec['positions'] = positions
+                    rec['positions'] = positions.sort(compareByFirstItem)
                     resultGroups.push( rec )
                     }
                 let totalCount = 0
@@ -243,7 +243,8 @@ export default ({
                                 const start = index[0] - MARGIN > 0 ? index[0] - MARGIN : 0
                                 const end = index[0]+index[1] + MARGIN < chars ? index[0]+index[1] + MARGIN : chars
                                 const hightlight = item.clean_body.slice(index[0], index[0]+index[1])
-                                const snippet = item.clean_body.slice(start, index[0]) + `<b style="background-color: yellow">${hightlight}</b>` + item.clean_body.slice(index[0]+index[1], end)
+                                const pageNum = item.accumPageLines.map(val => {return start < val }).indexOf(true)
+                                const snippet = `<b>pg.${pageNum.toString()}|char.${start}</b>)  ${item.clean_body.slice(start, index[0])} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(index[0]+index[1], end)}`
                                 item.snippets.push( snippet )
                             }  
                         }
@@ -313,6 +314,15 @@ export default ({
 })
 
 
+function compareByFirstItem( a, b ) {
+  if ( a[0] < b[0] ){
+    return -1;
+  }
+  if ( a[0] > b[0] ){
+    return 1;
+  }
+  return 0;
+}
 
 
 

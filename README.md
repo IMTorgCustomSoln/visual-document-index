@@ -43,11 +43,12 @@ npm run dev
     'title:foo'
     'foo^10 bar' for weigting of 10times higher than bar 
     'foo~1' one edit distance of foo in fuzzy matching 
-  - add page numbers to result snippets
-  - determine strongest N positions to display - WAIT, how to determine N ??? options
-    N as a proportion of document length
-    show all and scroll down (will this effect performance)
+  - ~~add page numbers to result snippets~~
+  - ~~determine strongest N positions to display - WAIT, how to determine N ??? options~~
+    ~~N as a proportion of document length~~
+    ~~show all and scroll down (will this effect performance)~~
   - add other fields to search: keywords, summary
+  - add summary by taking first N of each clean_body
   - 
   - ~~clean_body - improve formatting and determination of sentences~~
   - ~~upload icon - https://stackoverflow.com/questions/572768/styling-an-input-type-file-button~~
