@@ -239,23 +239,26 @@ export default ({
 
                             const positions = resultFile.positions.map(item => item)//.slice(0, LIMIT_OUTPUT)
                             const positionGroups = []
-                            let index = 0
                             let incr = 0
-                            for (let index = 0; (index + incr + 1) < positions.length; index++){
+                            for (let index = 0; (index + incr) < positions.length; index++){
                                 let indexCorrected = index + incr
                                 const pos = positions[indexCorrected]
                                 const subgroup = []
                                 subgroup.push(pos)
-                                for(let nextIndex = indexCorrected + 1; nextIndex < positions.length; nextIndex++){
-                                    const nextPos = positions[nextIndex]
-                                    const diff = nextPos[0] - pos[0]
-                                    if (diff < MARGIN * 2){
-                                        subgroup.push(nextPos)
-                                        incr++
-                                    } else {
-                                        positionGroups.push(subgroup)
-                                        index++
-                                        break
+                                if (indexCorrected + 1 == positions.length){
+                                    positionGroups.push(subgroup)
+                                    break
+                                } else {
+                                    for(let nextIndex = indexCorrected + 1; nextIndex < positions.length; nextIndex++){
+                                        const nextPos = positions[nextIndex]
+                                        const diff = nextPos[0] - pos[0]
+                                        if (diff < MARGIN * 2){
+                                            subgroup.push(nextPos)
+                                            incr++
+                                        } else {
+                                            positionGroups.push(subgroup)
+                                            break
+                                        }
                                     }
                                 }
                             }
@@ -266,20 +269,20 @@ export default ({
                                         const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
                                         const pageNum = item.accumPageLines.map(val => {return start < val }).indexOf(true)
                                         const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const startText = `<b>pg.${pageNum.toString()}|char.${start}</b>)  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
-                                        const endText = grp.length == 1  ?  pos[0]+pos[1] + MARGIN  :  ''
+                                        const startText = `<b>pg.${pageNum.toString()}| char.${start})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
+                                        const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
                                         const text = startText + endText
                                         snippet.push(text)
                                     } else if (index == grp.length - 1){
-                                        const middleStart = item.clean_body.slice(grp[index-1][0], pos[0])
+                                        const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
                                         const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
                                         const end = pos[0]+pos[1] + MARGIN < item.clean_body.length ? pos[0]+pos[1] + MARGIN : item.clean_body.length
                                         const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(pos[0]+pos[1], end)}`
                                         snippet.push(text)
                                     } else {
-                                        const middleStart = item.clean_body.slice(grp[index-1][0], pos[0])
+                                        const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
                                         const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const text = `${item.clean_body.slice(middleStart, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
+                                        const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b>`
                                         snippet.push(text)
                                     }
                                 }
