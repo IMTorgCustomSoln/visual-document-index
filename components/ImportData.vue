@@ -148,6 +148,7 @@ function processFiles(files){
         item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : ''
         let clean_body = item.body
         item.clean_body = clean_body
+        item.summary = clean_body.slice(0,500)   //TODO:set constant
 
         // prepare page numbers for search snippets
         item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
