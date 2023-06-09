@@ -255,6 +255,9 @@ export default ({
                                         if (diff < MARGIN * 2){
                                             subgroup.push(nextPos)
                                             incr++
+                                            if (index + incr + 1 == positions.length){
+                                                positionGroups.push(subgroup)
+                                            }
                                         } else {
                                             positionGroups.push(subgroup)
                                             break
@@ -262,6 +265,7 @@ export default ({
                                     }
                                 }
                             }
+                            console.log(positionGroups)
                             for (let grp of positionGroups){
                                 const snippet = []
                                 for (let [index, pos] of grp.entries()){
