@@ -66,8 +66,12 @@
                             </div>
                             <div v-else><b>Search results in {{ row.item.hit_count }} hits:</b></div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
                             <br/>
-                            <div id="search-results" v-for="snippet in row.item.snippets">
-                                <div><span v-html="snippet"></span></div><br/>
+                            <div class="left_contentlist">
+                                <div class="itemconfiguration">
+                                    <div id="search-results" v-for="(snippet, index) in row.item.snippets">
+                                        <div class="snippet"><span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span><b-button size="sm" v-on:click="postNote($event)">Note</b-button></div><br/>
+                                    </div>
+                                </div>
                             </div> 
                         </b-col>
                         
@@ -133,6 +137,12 @@ export default ({
     },
 
     methods: {
+        postNote(event){
+            console.log(event.target.parentElement.children[0].id)
+            console.log(event.target.parentElement.children[0].innerHTML)
+            console.log(event.target.parentElement.children[0].innerText)
+        },
+
         createTable() {
             // Populate the table with the transformed data records
             for (const record of this.$props.records) {
@@ -441,5 +451,27 @@ const fields = [{
 }
 .errorMsg {
     color: red;
+}
+.snippet > .btn-sm {
+    font-size:8px;
+    padding:2px;
+}
+
+/*ref: http://jsfiddle.net/7w8TC/1/ */
+.itemconfiguration {
+    height:350px;
+	width:550px;		
+    overflow-y:auto;
+	float:left;
+	position:relative;
+	margin-left:-5px;
+}
+.left_contentlist {
+    width:550px;
+    float:left;
+    padding:0 0 0 5px;
+    position:relative;
+    float:left;
+    border-right: 1px #f8f7f3 solid;
 }
 </style>

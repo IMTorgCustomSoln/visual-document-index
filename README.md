@@ -61,6 +61,9 @@ npm run dev
   - snippet - enable multiple search hits within a document `more...`
   - ~~snippet - change between summary and search results~~
   - tooltips - create tips for search, others
+  - useTextSelection: https://vueuse.org/core/useTextSelection/
+  - sidebar - https://bootstrap-vue.org/docs/components/sidebar
+  - testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
 * wink
   - subject
   - keywords
