@@ -110,6 +110,7 @@ export default ({
             deep: false
         }
     },
+    emits:['send-note'],
     data(){
         this.fields = fields
         this.lunrIndex = null
@@ -138,9 +139,17 @@ export default ({
 
     methods: {
         postNote(event){
-            console.log(event.target.parentElement.children[0].id)
-            console.log(event.target.parentElement.children[0].innerHTML)
-            console.log(event.target.parentElement.children[0].innerText)
+            const element = event.target.parentElement.children[0]
+            //TODO: no the code below should use `new NoteRecord()`, but from within Draggable - not here
+            const noteItem = {
+                id: element.id.toString(),
+                list: 'stagingNotes',
+                type: 'auto',
+                innerHTML: element.innerHTML.toString(),
+                innerText: element.innerText.toString()
+            }
+            console.log(noteItem)
+            this.$emit('send-note', noteItem);
         },
 
         createTable() {

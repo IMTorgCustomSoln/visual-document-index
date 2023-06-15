@@ -1,4 +1,27 @@
 
+import {ref} from 'vue'
+
+class NoteRecord{
+  constructor(id, list, type, innerHTML, innerText){
+    this.id = id
+    this.list = list
+    this.type = type
+    this.innerHTML = innerHTML
+    this.innerText = innerText
+  }
+}
+const shared_data = []
+for (let idx=1; idx<=4; idx++){
+  let text = 'Item '+idx
+  let note = new NoteRecord(idx.toString(), 'stagingNotes', 'hand', '', text)
+  shared_data.push(note)
+}
+const shared_array = ref(shared_data)
+export default shared_array
+
+
+
+
 export class DocumentRecord{
   constructor(
     id, reference_number, filepath, filename_original, filename_modified, 

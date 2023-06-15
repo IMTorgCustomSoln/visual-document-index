@@ -12,4 +12,5 @@ Vue.component('b-icon', BIcon)
 export const app = createApp(App);
 app.config.globalProperties.$pdf = pdfjsLib;
 app.config.globalProperties.$pdf.GlobalWorkerOptions.workerSrc = pdfjsWorker; 
+
 app.mount('#app');
