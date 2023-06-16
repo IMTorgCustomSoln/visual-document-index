@@ -311,19 +311,6 @@ export default ({
                                 }
                                 item.snippets.push( snippet )
                             }
-
-
-                            /*
-                            const indices = resultFile.positions.map(item => item)//.slice(0, LIMIT_OUTPUT)
-                            const chars = item.clean_body.length
-                            for (let index of indices){
-                                const start = index[0] - MARGIN > 0 ? index[0] - MARGIN : 0
-                                const end = index[0]+index[1] + MARGIN < chars ? index[0]+index[1] + MARGIN : chars
-                                const hightlight = item.clean_body.slice(index[0], index[0]+index[1])
-                                const pageNum = item.accumPageLines.map(val => {return start < val }).indexOf(true)
-                                const snippet = `<b>pg.${pageNum.toString()}|char.${start}</b>)  ${item.clean_body.slice(start, index[0])} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(index[0]+index[1], end)}`
-                                item.snippets.push( snippet )
-                            }*/
                         }
                     }
                 })

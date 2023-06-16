@@ -1,6 +1,14 @@
 
 import {ref} from 'vue'
 
+class TopicRecord{
+  constructor(id, title, dropZoneName){
+    this.id = id
+    this.title = title
+    this.dropZoneName = dropZoneName
+  }
+}
+
 class NoteRecord{
   constructor(id, list, type, innerHTML, innerText){
     this.id = id
@@ -18,6 +26,8 @@ for (let idx=1; idx<=4; idx++){
 }
 const shared_array = ref(shared_data)
 export default shared_array
+
+
 
 
 

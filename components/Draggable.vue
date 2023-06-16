@@ -18,7 +18,7 @@ ref:[Adding Drag and Drop to Your Vue3 Project](www.youtube.com/watch?v=-kZLD40d
       <div>
         <div v-if="item.innerHTML" v-html="item.innerHTML"></div>
         <div v-else>{{ item.innerText }}</div>
-        <b-icon-x-square class="h5 mb-1 destroy" font-scale="0.8"  @click="removeNote(item)"/>
+        <b-icon-chevron-double-right class="h5 mb-1 destroy" font-scale="0.8"  @click="removeNote(item)"/>
       </div>
     </div>
   </div>
@@ -58,6 +58,7 @@ export default ({
   })
 </script>
 
+
 <style>
 .drop-zone{
   width: 90%;
@@ -70,5 +71,4 @@ export default ({
 .drag-el{
   padding-bottom: 10px;
 }
-
 </style>

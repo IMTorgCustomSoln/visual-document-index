@@ -65,7 +65,7 @@
 
 
 <script>
-import NoteRecord from './utils'
+import {NoteRecord, TopicRecord} from './utils'
 import shared_array from './utils.js'
 import Draggable from './Draggable.vue'
 
@@ -100,14 +100,7 @@ export default ({
             }
         }
     },
-    /*
-    computed: {
-        draggingInfo() {
-        return this.dragging ? "under drag" : "";
-        }
-    },*/
     methods:{
-
         // Topics
         addTopic(e){
             const value = e.target.value.trim()
@@ -147,7 +140,7 @@ export default ({
         removeNote(note){
             this.stagingNotes.splice(this.stagingNotes.indexOf(note), 1)
         },
-        /*
+        /*TODO: editNote
         editNote(topic) {
             this.beforeEditCache = topic.title
             this.editedTopic = topic
@@ -160,6 +153,7 @@ export default ({
         }
     }
 })
+
 
 // Support Functions
 
