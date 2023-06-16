@@ -12,15 +12,16 @@
         shadow
     >
         <div class="px-3 py-2">
-            <div class="section"><h3>Notes Staging Area</h3>
+            <div class="section"><h3>Staging Notes</h3>
+                <div class="description"><p>Create manual notes or add selections directly from the document search results.</p></div>
                 <div>
-                    <label for="noteName">Create new personal note:</label>
+                    <label for="noteName">New note:</label>
                     <input type="text" 
                     name="noteName" 
                     ref="noteName"
                     style="margin-left:8px"
                     autofocus 
-                    placeholder="add note..."
+                    placeholder="add manual note..."
                     @keyup.enter="addNote"
                     >
                 </div>
@@ -29,9 +30,11 @@
                 
 
             </div>
+            <hr style="border: 1px solid black"/>
             <div class="section"><h3>Topics</h3>
+                <div class="description"><p>Create topics of interest then organize your notes by dragging them underneath desired topic.</p></div>
                 <div>
-                    <label for="topicName">Create new topic:</label>
+                    <label for="topicName">New topic:</label>
                     <input type="text" 
                     name="topicName" 
                     ref="topicName"
@@ -45,7 +48,11 @@
                     <div v-for="topic in topics" 
                         :key="topic.id"
                         >
-                        <div>{{ topic.title }} <button class="destroy" @click="removeTopic(topic)">x</button> </div>
+                        <hr/>
+                        <div>
+                            <h4>{{ topic.title }}<b-icon-x-square class="h5 mb-1 destroy" font-scale="0.5" @click="removeTopic(topic)" />
+                            </h4>
+                        </div>
                         <Draggable :listName="topic.dropZoneName"/>
                     </div>
                 </div>
@@ -107,7 +114,7 @@ export default ({
             if (!value) {
               return
             }
-            const dzName = camelize(value)
+            const dzName = camelize(value) + Date.now()
             this.dropZoneName = {...this.dropZoneName, createDropList: dzName}
             const topicRecord = {
                 id: Date.now(),
@@ -189,6 +196,14 @@ async function addNoteFromTable(newNote){
 }
 .note {
     font-size: 12px;
+}
+.description{
+    font-size: .75rem;
+}
+.destroy{
+    position: absolute;
+    right: 0px;
+    margin-right: 35px;
 }
 .section h3 {
     padding-top: 20px;

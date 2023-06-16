@@ -15,7 +15,11 @@ ref:[Adding Drag and Drop to Your Vue3 Project](www.youtube.com/watch?v=-kZLD40d
       draggable="true"
       @dragstart="startDrag($event, item)"
       >
-      {{ item.innerHTML ? item.innerHTML : item.innerText }}
+      <div>
+        <div v-if="item.innerHTML" v-html="item.innerHTML"></div>
+        <div v-else>{{ item.innerText }}</div>
+        <b-icon-x-square class="h5 mb-1 destroy" font-scale="0.8"  @click="removeNote(item)"/>
+      </div>
     </div>
   </div>
 </template>
@@ -34,19 +38,22 @@ export default ({
    },
    methods: {
     getList(list){
-       return this.items.filter(item=>item.list == list)
-     },
-     startDrag(event, item){
-       console.log(item)
-       event.dataTransfer.dropEffect = 'move'      //visual effect
-       event.dataTransfer.effectAllowed = 'move'   //move instead of copy
-       event.dataTransfer.setData('itemID',item.id)
-     },
-     onDrop(event, list){
-       const itemId = event.dataTransfer.getData('itemID')
-       const item = this.items.find(item => item.id==itemId)    //find selected item
-       item.list = list                                    //change items list
-     }
+      return this.items.filter(item=>item.list == list)
+    },
+    removeNote(item){
+      this.items.splice(this.items.indexOf(item), 1)
+    },
+    startDrag(event, item){
+      console.log(item)
+      event.dataTransfer.dropEffect = 'move'      //visual effect
+      event.dataTransfer.effectAllowed = 'move'   //move instead of copy
+      event.dataTransfer.setData('itemID',item.id)
+    },
+    onDrop(event, list){
+      const itemId = event.dataTransfer.getData('itemID')
+      const item = this.items.find(item => item.id==itemId)    //find selected item
+      item.list = list                                    //change items list
+    }
    }
   })
 </script>
@@ -54,8 +61,8 @@ export default ({
 <style>
 .drop-zone{
   width: 90%;
-  margin: 50px auto;
-  background-color: rgb(204, 228, 249);
+  margin: 10px auto;
+  background-color: rgb(248, 249, 250);
   padding: 10px;
   min-height: 10px;
   font-size: 8px;
