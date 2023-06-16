@@ -48,7 +48,6 @@ export default {
     },
     updateNotes(newNote){
       Object.assign(this.note, newNote)
-      console.log(this.note)
     }
   },
 };

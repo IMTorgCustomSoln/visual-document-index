@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <b-button id='btnSidebar' ref='btnSidebar' v-b-toggle.sidebar>Manage Notes</b-button>
 
@@ -13,7 +12,7 @@
         shadow
     >
         <div class="px-3 py-2">
-            <div class="section"><b>Staging for selected notes:</b>
+            <div class="section"><h3>Notes Staging Area</h3>
                 <div>
                     <label for="noteName">Create new personal note:</label>
                     <input type="text" 
@@ -25,18 +24,12 @@
                     @keyup.enter="addNote"
                     >
                 </div>
-                <Draggable listName="stagingNotes"/>
-                <br/>
-                <Draggable listName="2"/>
-                <!--
-                <div v-for="note in stagingNotes">
-                    {{ note.innerText }}
-                </div>-->
+                <Draggable :listName="stagingNotesList"/>
                 
                 
 
             </div>
-            <div class="section"><h3>Topics:</h3>
+            <div class="section"><h3>Topics</h3>
                 <div>
                     <label for="topicName">Create new topic:</label>
                     <input type="text" 
@@ -49,20 +42,23 @@
                     >
                 </div>
                 <div>
-                    <div v-for="topic in topics">
-                        <div>{{ topic.title }} <button class="destroy" @click="removeTopic(topic)">x</button> </div> 
+                    <div v-for="topic in topics" 
+                        :key="topic.id"
+                        >
+                        <div>{{ topic.title }} <button class="destroy" @click="removeTopic(topic)">x</button> </div>
+                        <Draggable :listName="topic.dropZoneName"/>
                     </div>
                 </div>
             </div>
           </div>
     </b-sidebar>
   </div>
-
 </template>
+
+
 
 <script>
 import NoteRecord from './utils'
-
 import shared_array from './utils.js'
 import Draggable from './Draggable.vue'
 
@@ -89,24 +85,34 @@ export default ({
     data(){
         return {
             stagingNotes: shared_array,
-            topics: []
+            topics: [],
+
+            stagingNotesList: stagingNotesList,
+            dropZoneName: {
+                createDropList: ''
+            }
         }
     },
+    /*
     computed: {
         draggingInfo() {
         return this.dragging ? "under drag" : "";
         }
-    },
+    },*/
     methods:{
+
+        // Topics
         addTopic(e){
             const value = e.target.value.trim()
             if (!value) {
               return
             }
+            const dzName = camelize(value)
+            this.dropZoneName = {...this.dropZoneName, createDropList: dzName}
             const topicRecord = {
                 id: Date.now(),
                 title: value,
-                notes: []
+                dropZoneName: dzName
             }
             this.topics.push(topicRecord)
             e.target.value = ''
@@ -114,6 +120,8 @@ export default ({
         removeTopic(topic){
             this.topics.splice(this.topics.indexOf(topic), 1)
         },
+
+        // Notes
         addNote(e){
             const value = e.target.value.trim()
             if (!value) {
@@ -121,9 +129,10 @@ export default ({
             }
             const noteRecord = {
                 id: Date.now(),
+                list: stagingNotesList,
                 type: 'hand',
+                innerHTML: '',
                 innerText: value,
-                list: stagingNotesList
             }
             this.stagingNotes.push(noteRecord)
             e.target.value = ''
@@ -131,22 +140,31 @@ export default ({
         removeNote(note){
             this.stagingNotes.splice(this.stagingNotes.indexOf(note), 1)
         },
+        /*
+        editNote(topic) {
+            this.beforeEditCache = topic.title
+            this.editedTopic = topic
+        },*/
         checkMove: function(e) {
             window.console.log("Future index: " + e.draggedContext.futureIndex);
         },
         log: function(e) {
             window.console.log(e);
         }
-        /*
-        editTodo(topic) {
-            this.beforeEditCache = topic.title
-            this.editedTopic = topic
-        },*/
     }
 })
 
+// Support Functions
 
+function camelize(str) {
+    //Turn any string into camelCase
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+        return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    }).replace(/\s+/g, '');
+}
 
+/*
+TODO: is this promise needed to create a NoteRecord object?
 async function addNoteFromTable(newNote){
     return new Promise(function(resolve, reject){
         const noteRec = new NoteRecord(
@@ -158,10 +176,12 @@ async function addNoteFromTable(newNote){
                 )
         resolve(noteRec)
     })
-}
+}*/
 
 
 </script>
+
+
 
 <style scoped>
 #btnSidebar {
