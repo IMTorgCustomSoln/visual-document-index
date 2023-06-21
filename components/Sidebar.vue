@@ -36,7 +36,7 @@
                                             Save your notes to a file and share them with your team.
                                         </p>
                 </div>
-                <ExportNotes/>
+                <NotesIO/>
                 <div>
                     <label for="topicName">New topic:</label>
                     <input type="text" 
@@ -70,9 +70,9 @@
 
 <script>
 //import {NoteRecord, TopicRecord} from './support/utils.js'
-import shared_array from './support/utils.js'
+import {ManagedNotesData} from './support/utils.js'
 import Draggable from './support/Draggable.vue'
-import ExportNotes from './support/ExportNotes.vue'
+import NotesIO from './support/NotesIO.vue'
 
 const stagingNotesList = 'stagingNotes'
 
@@ -85,7 +85,7 @@ export default ({
             handler: function(newNote, oldNote) {
                 console.log('Prop changed: ', newNote, ' | was: ', oldNote)
                 const noteItem = JSON.parse(JSON.stringify( newNote ))
-                this.stagingNotes.push(noteItem)
+                this.notes.push(noteItem)
                 this.$refs.btnSidebar.click()
                 },
                 deep: true
@@ -93,12 +93,12 @@ export default ({
     },
     components: {
         Draggable,
-        ExportNotes
+        NotesIO: NotesIO
     },
     data(){
         return {
-            stagingNotes: shared_array,
-            topics: [],
+            topics: ManagedNotesData.value.topics,
+            notes: ManagedNotesData.value.notes,
 
             stagingNotesList: stagingNotesList,
             dropZoneName: {
@@ -140,11 +140,11 @@ export default ({
                 innerHTML: '',
                 innerText: value,
             }
-            this.stagingNotes.push(noteRecord)
+            this.notes.push(noteRecord)
             e.target.value = ''
         },
         removeNote(note){
-            this.stagingNotes.splice(this.stagingNotes.indexOf(note), 1)
+            this.notes.splice(this.notes.indexOf(note), 1)
         },
         /*TODO: editNote
         editNote(topic) {

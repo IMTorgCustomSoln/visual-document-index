@@ -1,6 +1,11 @@
 
 import {ref} from 'vue'
 
+
+
+// Managed Notes
+export const ExportFileName = 'VDI_ManagedNotes.json'
+
 export class TopicRecord{
   constructor(id, title, dropZoneName){
     this.id = id
@@ -18,14 +23,16 @@ export class NoteRecord{
     this.innerText = innerText
   }
 }
-const shared_data = []
+const notes_records = []
 for (let idx=1; idx<=2; idx++){     //change for testing
   let text = 'Item '+idx
   let note = new NoteRecord(idx.toString(), 'stagingNotes', 'hand', '', text)
-  shared_data.push(note)
+  notes_records.push(note)
 }
-const shared_array = ref(shared_data)
-export default shared_array
+export const ManagedNotesData = ref({
+  topics: [],
+  notes: notes_records
+})
 
 
 

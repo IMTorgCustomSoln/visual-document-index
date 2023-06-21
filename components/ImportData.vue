@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { getFileRecord, getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './utils';
+import { getFileRecord, getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
 
 export default ({
     name:'ImportData',

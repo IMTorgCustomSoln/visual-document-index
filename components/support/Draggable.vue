@@ -26,14 +26,14 @@ ref:[Adding Drag and Drop to Your Vue3 Project](www.youtube.com/watch?v=-kZLD40d
 
 
 <script>
-import shared_array from './utils.js'
+import {ManagedNotesData} from './utils.js'
 
 export default ({
   name: "Draggable",
   props: {listName: String},
   data(){
     return{
-      items: shared_array
+      items: ManagedNotesData.value.notes
     }
    },
    methods: {

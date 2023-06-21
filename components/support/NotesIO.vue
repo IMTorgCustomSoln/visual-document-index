@@ -9,20 +9,28 @@
 
 <script>
 import { isProxy, toRaw } from 'vue'
-import shared_array from './utils.js'
+import {ExportFileName, ManagedNotesData} from './utils.js'
 
 
 export default{
-    name: 'ExportNotes',
-    props: ['notes', 'topics'],
+    name: 'NotesIO',
+    data(){
+        return {
+            ManagedNotes: ManagedNotesData.value
+        }
+    },
     methods:{
         exportToFile(e){
             const create = e.target
-            //if (!isProxy(shared_array)){}
-            const textbox = JSON.stringify( toRaw(shared_array)._rawValue )
+            if (!isProxy(this.ManagedNotes)){
+            //if (Object.isObject(this.ManagedNotes)){
+                console.log(`Error: `)
+                return -1
+            }
+            const textbox = JSON.stringify( toRaw(this.ManagedNotes) )
             const a = document.createElement('a')
             var link = create.appendChild(a)
-            link.setAttribute('download', 'notes.json')
+            link.setAttribute('download', ExportFileName)
             link.href = makeTextFile(textbox)
             document.body.appendChild(link)
 

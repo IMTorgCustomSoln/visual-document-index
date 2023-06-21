@@ -89,7 +89,7 @@
 
 
 <script>
-import { getDateFromJsNumber, getFormattedFileSize } from './utils';
+import { getDateFromJsNumber, getFormattedFileSize } from './support/utils.js'
 
 export default ({
     name: 'Table',
