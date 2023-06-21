@@ -70,7 +70,7 @@ export default ({
             const processedFiles = processFiles(this.importedFiles)
             this.$data.processedFiles.push(...processedFiles)
             this.$bvModal.hide("import-modal")
-            this.$emit('imported-records', this.processedFiles); 
+            this.$emit('imported-records', this.processedFiles)
         }
 }
 })

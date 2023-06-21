@@ -3,8 +3,33 @@
 -->
 
 <template>
+    <div id="sidebar-btns">
     <b-button id="create" size="sm" @click="exportToFile">Export</b-button>
-    <b-button size="sm" @click="importFromFile">Import</b-button>
+
+    <b-button v-b-modal.import-notes-modal size="sm">Import</b-button>
+        <b-modal id="import-notes-modal">
+            <template #modal-title>
+                Select 'ManagedNotes' file
+            </template>
+            <form name="uploadForm">
+                <label for="uploadInput" class="custom-file-upload">
+                    <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
+                </label><br/>
+                <input id="uploadInput" 
+                       type="file" 
+                       @change="previewFile"
+                       accept=".json"
+                />
+                <label for="fileName">File: &nbsp</label>
+                <output id="fileName">{{ file }}</output>
+            </form><br/>
+                Select whether to append to existing notes or replace them:
+                <template #modal-footer>
+                    <button @click="appendNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Append</button>
+                    <button @click="replaceNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Replace</button>
+                </template>
+        </b-modal>
+    </div>
 </template>
 
 <script>
@@ -16,14 +41,15 @@ export default{
     name: 'NotesIO',
     data(){
         return {
-            ManagedNotes: ManagedNotesData.value
+            topics: ManagedNotesData.value.topics,
+            notes: ManagedNotesData.value.notes,
+            file: ''
         }
     },
     methods:{
         exportToFile(e){
             const create = e.target
             if (!isProxy(this.ManagedNotes)){
-            //if (Object.isObject(this.ManagedNotes)){
                 console.log(`Error: `)
                 return -1
             }
@@ -40,7 +66,26 @@ export default{
                 link.dispatchEvent(event)
                 document.body.removeChild(link)
             })
-
+        },
+        previewFile() {
+            const file = uploadInput.files[0]
+            this.file = file.name
+        },
+        async appendNotes(){
+            const file = uploadInput.files[0]
+            const object = await parseJsonFile(file)
+            this.topics.push(...object.topics)
+            this.notes.push(...object.notes)
+            this.$bvModal.hide("import-notes-modal")
+        },
+        async replaceNotes(){
+            const file = uploadInput.files[0]
+            const object = await parseJsonFile(file)
+            this.topics.length = 0
+            this.notes.length = 0
+            Object.assign(this.topics, object.topics)
+            Object.assign(this.notes, object.notes)
+            this.$bvModal.hide("import-notes-modal")
         }
     }
 }
@@ -56,13 +101,29 @@ function makeTextFile(text) {
     }         
     textFile = window.URL.createObjectURL(data)          
     return textFile
-    }
+}
 
+async function parseJsonFile(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader()
+    fileReader.onload = event => resolve(JSON.parse(event.target.result))
+    fileReader.onerror = error => reject(error)
+    fileReader.readAsText(file)
+  })
+}
 
 </script>
 
 
 <style>
+/*TODO: align right
+#sidebar-btns{
+    margin-left: auto; 
+    margin-right: 0;
+    display: block;
+    display: inline-block;
+    float: right;
+}#si */
 
 .btn-sm {
     font-size:12px;
