@@ -32,7 +32,11 @@
             </div>
             <hr style="border: 1px solid black"/>
             <div class="section"><h3>Topics</h3>
-                <div class="description"><p>Create topics of interest then organize your notes by dragging them underneath desired topic.</p></div>
+                <div class="description"><p>Create topics of interest then organize your notes by dragging them underneath desired topic.
+                                            Save your notes to a file and share them with your team.
+                                        </p>
+                </div>
+                <ExportNotes/>
                 <div>
                     <label for="topicName">New topic:</label>
                     <input type="text" 
@@ -65,9 +69,10 @@
 
 
 <script>
-import {NoteRecord, TopicRecord} from './utils'
-import shared_array from './utils.js'
-import Draggable from './Draggable.vue'
+//import {NoteRecord, TopicRecord} from './support/utils.js'
+import shared_array from './support/utils.js'
+import Draggable from './support/Draggable.vue'
+import ExportNotes from './support/ExportNotes.vue'
 
 const stagingNotesList = 'stagingNotes'
 
@@ -87,7 +92,8 @@ export default ({
         }
     },
     components: {
-        Draggable
+        Draggable,
+        ExportNotes
     },
     data(){
         return {

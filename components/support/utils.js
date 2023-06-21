@@ -1,7 +1,7 @@
 
 import {ref} from 'vue'
 
-class TopicRecord{
+export class TopicRecord{
   constructor(id, title, dropZoneName){
     this.id = id
     this.title = title
@@ -9,7 +9,7 @@ class TopicRecord{
   }
 }
 
-class NoteRecord{
+export class NoteRecord{
   constructor(id, list, type, innerHTML, innerText){
     this.id = id
     this.list = list
@@ -19,7 +19,7 @@ class NoteRecord{
   }
 }
 const shared_data = []
-for (let idx=1; idx<=4; idx++){
+for (let idx=1; idx<=2; idx++){     //change for testing
   let text = 'Item '+idx
   let note = new NoteRecord(idx.toString(), 'stagingNotes', 'hand', '', text)
   shared_data.push(note)
