@@ -12,6 +12,7 @@
     "@vitejs/plugin-vue": "^3.1.2",
     "@vue/compat": "^3.2.41",
     "bootstrap-vue": "npm:@ankurk91/bootstrap-vue@^3.0.2",
+    "dotenv": "^16.3.1",
     "vue": "^3.2.41"
   },
   "devDependencies": {

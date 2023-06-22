@@ -4,7 +4,7 @@ import {ref} from 'vue'
 
 
 // Managed Notes
-export const ExportFileName = 'VDI_ManagedNotes.json'
+export const ExportFileName = `${__EXPORT_FILE_NAME__}_v${__VERSION__}.json` 
 
 export class TopicRecord{
   constructor(id, title, dropZoneName){

@@ -1,18 +1,38 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig, loadEnv} from 'vite'
+import vue from '@vitejs/plugin-vue'
 import { viteSingleFile } from "vite-plugin-singlefile"
 
-export default defineConfig({
-  resolve: {
-    alias: {
-      vue: '@vue/compat',
-      //'@': fileURLToPath(new URL('./src', import.meta.url))
+import dotenv from 'dotenv'
+dotenv.config()
+
+
+export default ({mode}) => {
+  process.env = {...process.env, ...loadEnv(mode, process.cwd())}
+
+  return defineConfig({
+    define: {
+      __VERSION__: `"${process.env.VITE_APP_VERSION}"`,
+      __EXPORT_FILE_NAME__: `"${process.env.EXPORT_FILE_NAME}"`
     },
-  },
-  plugins: [
-    vue(),
-    viteSingleFile()
-  ],
-});
+    resolve: {
+      alias: {
+        vue: '@vue/compat',
+        //'@': fileURLToPath(new URL('./src', import.meta.url))
+      },
+    },
+    plugins: [
+      vue(),
+      viteSingleFile()
+    ],
+    /* TODO: append version to output file
+    build: {
+      rollupOptions: {
+        output: {
+          file: `dist/VDI_v${process.env.VITE_APP_VERSION}.html`,
+        }
+      }
+    }*/
+  })
+}

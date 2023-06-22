@@ -49,15 +49,15 @@ export default{
     methods:{
         exportToFile(e){
             const create = e.target
-            if (!isProxy(this.ManagedNotes)){
-                console.log(`Error: `)
-                return -1
+            const object = {
+                topics: this.topics,
+                notes: this.notes
             }
-            const textbox = JSON.stringify( toRaw(this.ManagedNotes) )
+            const jsonObj = JSON.stringify( toRaw(object) )
             const a = document.createElement('a')
             var link = create.appendChild(a)
             link.setAttribute('download', ExportFileName)
-            link.href = makeTextFile(textbox)
+            link.href = makeTextFile(jsonObj)
             document.body.appendChild(link)
 
             // wait for the link to be added to the document
