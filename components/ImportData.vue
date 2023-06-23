@@ -152,6 +152,8 @@ function processFiles(files){
 
         // prepare page numbers for search snippets
         item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
+        // prepare images
+        item.canvas_array = item.canvas_array.sort((a,b)=> a.idx - b.idx)
 
         processedFiles.push(item)
         }

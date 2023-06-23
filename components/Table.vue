@@ -21,11 +21,7 @@
     </b-row>
 
 
-    <!-- Tabs -->
-    <b-tabs
-        active-nav-item-class="font-weight-bold" 
-        content-class="mt-3">
-        <b-tab title="Table Summary" active>
+
 
         <div>
                 <div v-if="initializeTable">
@@ -61,13 +57,28 @@
                     <template #row-details="row">
                           <b-card>
                             <b-row class="mb-2">
+                                <b-col sm="6" class="text-sm-left">
+                                    <b-tabs
+                                        active-nav-item-class="font-weight-bold" 
+                                        content-class="mt-3">
+                                        <b-tab title="Summary" active>
+                                            <b-row>
+                                                <b-col sm="2" class="text-sm-left">
+                                                    <b-row ><b>Author:</b> {{row.item.author}}</b-row>
+                                                    <b-row ><b>Subject:</b> {{row.item.subject}}</b-row>
+                                                    <b-row ><b>Keywords:</b> {{row.item.keywords}}</b-row>
+                                                </b-col>
+                                                <b-col sm="3" class="text-sm-left">
+                                                    <b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> 
+                                                </b-col>
+                                            </b-row>
+                                        </b-tab>
+                                        <b-tab title="FlipBook" >
+                                            <FlipBook :imageArray="row.item.canvas_array"/>
+                                        </b-tab>
+                                    </b-tabs>
+                                </b-col>
                             
-                            <b-col sm="2" class="text-sm-left">
-                            <b-row ><b>Author:</b> {{row.item.author}}</b-row>
-                            <b-row ><b>Subject:</b> {{row.item.subject}}</b-row>
-                            <b-row ><b>Keywords:</b> {{row.item.keywords}}</b-row>
-                            </b-col>
-                            <b-col sm="3" class="text-sm-left"><b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> </b-col>
                             <b-col sm="6" class="text-sm-left">
                                 <div v-if="!searchResults.totalDocuments"><b>Document summary:</b> <br/>
                                     {{ row.item.summary }}
@@ -82,25 +93,13 @@
                                     </div>
                                 </div> 
                             </b-col>
-
                             </b-row>
                           </b-card>
                         </template>
 
-
                     </b-table>
                 </div>
             </div>
-
-        </b-tab>
-        <b-tab title="Flip Book" >
-            <div v-if="items.length > 0">
-            <p>I'm the second tab</p>
-            <FlipBook :items="items"/>
-            </div>
-        </b-tab>
-    </b-tabs>
-
 </div>
 </template>
 
@@ -476,7 +475,7 @@ const fields = [{
 
 /*ref: http://jsfiddle.net/7w8TC/1/ */
 .itemconfiguration {
-    height:350px;
+    height:700px;
 	width:550px;		
     overflow-y:auto;
 	float:left;

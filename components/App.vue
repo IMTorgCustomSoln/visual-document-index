@@ -1,13 +1,10 @@
 <template>
-  <div class="container">
+  <b-container fluid>
     <b-jumbotron id="jumbotron"
       header="Visual Document Index"
       lead="Bring your files to life"
     >
-      <!--<b-button variant="primary" @click="showModal"> Click me! </b-button>-->
     </b-jumbotron>
-  </div>
-  <b-container>
     <b-row>
       <b-col cols="5"></b-col>
       <b-col cols="7">

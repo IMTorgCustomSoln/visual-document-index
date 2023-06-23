@@ -125,7 +125,8 @@ export async function getFileRecord(file){     //TODO: async may not be needed
                   pdf.getPage(i).then(function(page) {
                       let n = page.pageNumber;
                       let page_text = ""
-                      record.canvas_array.push( createCanvasImage(page, i, record) )
+                      //record.canvas_array.push( createCanvasImage(page, n, record) )
+                      createCanvasImage(page, n, record)
                       page.getTextContent().then(function(textContent) {
                           for (let item of textContent.items) {
                               page_text += String(item.str)
@@ -160,17 +161,38 @@ function createCanvasImage(page, idx, record){
 
   // Render PDF page into canvas context
   var renderContext = { canvasContext: context, viewport: viewport }
+  const renderTask = page.render(renderContext)
+  renderTask.promise.then(function() {
+    let image = canvas.toDataURL('image/png')
+    record.canvas_array.push( {idx:idx, img:image} )
+  })
+}
+
+/*
+function createCanvasImage(page, idx, record){
+  //ref: https://stackoverflow.com/questions/62744470/turn-pdf-into-array-of-pngs-using-javascript-with-pdf-js
+  var scale = 1.5;
+  var viewport = page.getViewport({ scale: scale })
+  var canvas = document.createElement('canvas')
+
+  // Prepare canvas using PDF page dimensions
+  var context = canvas.getContext('2d')
+  canvas.height = viewport.height
+  canvas.width = viewport.width
+
+  // Render PDF page into canvas context
+  var renderContext = { canvasContext: context, viewport: viewport }
 
   var renderTask = page.render(renderContext)
   renderTask.promise.then(function() {
     let image = canvas.toDataURL('image/png').replace("image/png", "image/octet-stream")
-    record.canvas_array.push(
-      {idx:idx, 
-        img:image
-      })
-    console.log(record.canvas_array.length + ' page(s) loaded in record')
+    //image.style.left = null
+    if (image){
+      record.canvas_array.push( {idx:idx, img:image} )
+      console.log(record.canvas_array.length + ' page(s) loaded in record')
+    }
   })
-}
+}*/
 
 
 
