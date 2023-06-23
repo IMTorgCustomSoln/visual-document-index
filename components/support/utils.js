@@ -4,6 +4,7 @@ import {ref} from 'vue'
 
 
 // Managed Notes
+
 export const ExportFileName = `${__EXPORT_FILE_NAME__}_v${__VERSION__}.json` 
 
 export class TopicRecord{
@@ -37,7 +38,7 @@ export const ManagedNotesData = ref({
 
 
 
-
+// Import Data
 
 export class DocumentRecord{
   constructor(
@@ -80,7 +81,7 @@ export class DocumentRecord{
       this.length_lines_array = null
       this.date_created = null
       this.date_mod = null
-      this.length_lines_array
+      this.canvas_array = []
 
       this.sort_key = null
       this.hit_count = null
@@ -124,6 +125,7 @@ export async function getFileRecord(file){     //TODO: async may not be needed
                   pdf.getPage(i).then(function(page) {
                       let n = page.pageNumber;
                       let page_text = ""
+                      record.canvas_array.push( createCanvasImage(page, i, record) )
                       page.getTextContent().then(function(textContent) {
                           for (let item of textContent.items) {
                               page_text += String(item.str)
@@ -143,6 +145,30 @@ export async function getFileRecord(file){     //TODO: async may not be needed
       }
       reader.readAsArrayBuffer(file);
       reader.onerror = reject;
+  })
+}
+
+function createCanvasImage(page, idx, record){
+  var scale = 1.5;
+  var viewport = page.getViewport({ scale: scale })
+  var canvas = document.createElement('canvas')
+
+  // Prepare canvas using PDF page dimensions
+  var context = canvas.getContext('2d')
+  canvas.height = viewport.height
+  canvas.width = viewport.width
+
+  // Render PDF page into canvas context
+  var renderContext = { canvasContext: context, viewport: viewport }
+
+  var renderTask = page.render(renderContext)
+  renderTask.promise.then(function() {
+    let image = canvas.toDataURL('image/png').replace("image/png", "image/octet-stream")
+    record.canvas_array.push(
+      {idx:idx, 
+        img:image
+      })
+    console.log(record.canvas_array.length + ' page(s) loaded in record')
   })
 }
 

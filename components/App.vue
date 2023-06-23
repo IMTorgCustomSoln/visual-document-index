@@ -9,13 +9,13 @@
   </div>
   <b-container>
     <b-row>
-      <b-col cols="5"></b-col><!--Image Placeholder -->
+      <b-col cols="5"></b-col>
       <b-col cols="7">
         <ImportData v-on:imported-records="updateParent" v-if="showImportBtn"/>
         <Sidebar :note="note" />
       </b-col>
     </b-row>
-        <Table :records="files" v-show="showTablePanel" v-on:send-note="updateNotes">{{ createTable }}</Table>
+    <Table v-show="showTablePanel" :records="files" v-on:send-note="updateNotes">{{ createTable }}</Table>
   </b-container>
 </template>
 

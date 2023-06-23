@@ -1,95 +1,114 @@
 <template>
-
 <div>
+
+    <!-- Search -->
     <b-row id="table-panel">
         <!--
         <b-col cols="5"></b-col>
         <b-col cols="7">-->
         <b-col>
-        <span>
-            <h5 style="display:inline">Search: </h5>
-            <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
-            <div v-if="!searchResults.errorMsg">{{ searchResultsCount }}</div>
-            <div v-else class="errorMsg"> {{ searchResults.errorMsg }}</div>
-        </span>
-        <div>
-            <b-button size="sm" v-on:click="expandAll" >Expand All</b-button>
-            <b-button size="sm" v-on:click="collapseAll" >Collapse All</b-button>
-        </div>
-    </b-col>
-</b-row>
-
-    <div>
-            <div v-if="initializeTable">
-                <!--refs
-                    * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
-                    * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
-                    * max recursion error can occur if filtering or other props are not correct
-                -->
-                <b-table hover 
-                  :items="items" 
-                  :fields="fields"
-                  :filter="tableFilter"
-                  :filter-function="onFiltered"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  
-                  
-                  primary-key='id'
-                  striped small
-                  responsive="sm" sticky-header="1000px"
-                  bordered
-                  thead-class="tableHead bg-dark text-white"
-                  @row-clicked="expandAdditionalInfo"                     
-                  >
-
-                  <template #cell(show_details)="row">
-                      <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-                      <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
-                        -
-                      </b-form-checkbox>
-                    </template>
-
-                <template #row-details="row">
-                      <b-card>
-                        <b-row class="mb-2">
-                        
-                        <b-col sm="2" class="text-sm-left">
-                        <b-row ><b>Author:</b> {{row.item.author}}</b-row>
-                        <b-row ><b>Subject:</b> {{row.item.subject}}</b-row>
-                        <b-row ><b>Keywords:</b> {{row.item.keywords}}</b-row>
-                        </b-col>
-                        <b-col sm="3" class="text-sm-left"><b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> </b-col>
-                        <b-col sm="6" class="text-sm-left">
-                            <div v-if="!searchResults.totalDocuments"><b>Document summary:</b> <br/>
-                                {{ row.item.summary }}
-                            </div>
-                            <div v-else><b>Search results in {{ row.item.hit_count }} hits:</b></div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
-                            <br/>
-                            <div class="left_contentlist">
-                                <div class="itemconfiguration">
-                                    <div id="search-results" v-for="(snippet, index) in row.item.snippets">
-                                        <div class="snippet"><span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span><b-button size="sm" v-on:click="postNote($event)">Note</b-button></div><br/>
-                                    </div>
-                                </div>
-                            </div> 
-                        </b-col>
-                        
-                        </b-row>
-                      </b-card>
-                    </template>
-
-
-                </b-table>
+            <span>
+                <h5 style="display:inline">Search: </h5>
+                <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
+                <div v-if="!searchResults.errorMsg">{{ searchResultsCount }}</div>
+                <div v-else class="errorMsg"> {{ searchResults.errorMsg }}</div>
+            </span>
+            <div>
+                <b-button size="sm" v-on:click="expandAll" >Expand All</b-button>
+                <b-button size="sm" v-on:click="collapseAll" >Collapse All</b-button>
             </div>
-        </div>
-</div>
+        </b-col>
+    </b-row>
 
+
+    <!-- Tabs -->
+    <b-tabs
+        active-nav-item-class="font-weight-bold" 
+        content-class="mt-3">
+        <b-tab title="Table Summary" active>
+
+        <div>
+                <div v-if="initializeTable">
+                    <!--refs
+                        * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
+                        * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
+                        * max recursion error can occur if filtering or other props are not correct
+                    -->
+                    <b-table hover 
+                      :items="items" 
+                      :fields="fields"
+                      :filter="tableFilter"
+                      :filter-function="onFiltered"
+                      :sort-by.sync="sortBy"
+                      :sort-desc.sync="sortDesc"
+
+
+                      primary-key='id'
+                      striped small
+                      responsive="sm" sticky-header="1000px"
+                      bordered
+                      thead-class="tableHead bg-dark text-white"
+                      @row-clicked="expandAdditionalInfo"                     
+                      >
+
+                      <template #cell(show_details)="row">
+                          <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+                          <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
+                            -
+                          </b-form-checkbox>
+                        </template>
+
+                    <template #row-details="row">
+                          <b-card>
+                            <b-row class="mb-2">
+                            
+                            <b-col sm="2" class="text-sm-left">
+                            <b-row ><b>Author:</b> {{row.item.author}}</b-row>
+                            <b-row ><b>Subject:</b> {{row.item.subject}}</b-row>
+                            <b-row ><b>Keywords:</b> {{row.item.keywords}}</b-row>
+                            </b-col>
+                            <b-col sm="3" class="text-sm-left"><b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> </b-col>
+                            <b-col sm="6" class="text-sm-left">
+                                <div v-if="!searchResults.totalDocuments"><b>Document summary:</b> <br/>
+                                    {{ row.item.summary }}
+                                </div>
+                                <div v-else><b>Search results in {{ row.item.hit_count }} hits:</b></div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
+                                <br/>
+                                <div class="left_contentlist">
+                                    <div class="itemconfiguration">
+                                        <div id="search-results" v-for="(snippet, index) in row.item.snippets">
+                                            <div class="snippet"><span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span><b-button size="sm" v-on:click="postNote($event)">Note</b-button></div><br/>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </b-col>
+
+                            </b-row>
+                          </b-card>
+                        </template>
+
+
+                    </b-table>
+                </div>
+            </div>
+
+        </b-tab>
+        <b-tab title="Flip Book" >
+            <div v-if="items.length > 0">
+            <p>I'm the second tab</p>
+            <FlipBook :items="items"/>
+            </div>
+        </b-tab>
+    </b-tabs>
+
+</div>
 </template>
 
 
 <script>
 import { getDateFromJsNumber, getFormattedFileSize } from './support/utils.js'
+import FlipBook from './FlipBook.vue';
+
 
 export default ({
     name: 'Table',
@@ -111,6 +130,9 @@ export default ({
         }
     },
     emits:['send-note'],
+    components: {
+        FlipBook
+    },
     data(){
         this.fields = fields
         this.lunrIndex = null
@@ -157,10 +179,9 @@ export default ({
             for (const record of this.$props.records) {
                 const item = JSON.parse(JSON.stringify( record ))
                 this.items.push( item )
-            //this.updateSnippets()   <<< TODO: this will cause these records to react again, maybe add to processData
             }
-
             console.log(this.items)
+
             //create lunr index
             const docs = this.items;
             const lunrIndex = lunr(function() {
