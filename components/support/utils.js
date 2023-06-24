@@ -93,13 +93,13 @@ export class DocumentRecord{
 }
 
 
-export async function getFileRecord(file){     //TODO: async may not be needed
+export async function getFileRecord(file, progressCallback){     //TODO: async may not be needed
   // create a file record from the FileReader() API
   return new Promise(function(resolve, reject) {
       const reader = new FileReader()
       reader.onload = (e) => {
           let typedarray = new Uint8Array(e.target.result)
-          const loadingTask = pdfjsLib.getDocument(typedarray)
+          const loadingTask = pdfjsLib.getDocument(typedarray, null, null, progressCallback)        //pdfDataRangeTransport, passwordCallback, loadingProgress
           loadingTask.promise.then(pdf => {
               const record = new DocumentRecord()
               //document is loaded
@@ -126,7 +126,6 @@ export async function getFileRecord(file){     //TODO: async may not be needed
                   pdf.getPage(i).then(function(page) {
                       let n = page.pageNumber;
                       let page_text = ""
-                      //record.canvas_array.push( createCanvasImage(page, n, record) )
                       createCanvasImage(page, n, record)
                       page.getTextContent().then(function(textContent) {
                           for (let item of textContent.items) {
@@ -138,6 +137,7 @@ export async function getFileRecord(file){     //TODO: async may not be needed
                           let sentence_count = (edit1.match(/./g) || []).length
                           record.length_lines_array.push(sentence_count)
                       });
+                      console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
                   });
               };
               //console.log(`${file} pdf loaded with body: ${record.layers}`)
@@ -148,6 +148,12 @@ export async function getFileRecord(file){     //TODO: async may not be needed
       reader.readAsArrayBuffer(file);
       reader.onerror = reject;
   })
+}
+
+export function progressCallback(progress) {
+  // progress object contains "total" and "loaded" properties
+  let percentLoaded = progress.loaded / progress.total
+  console.log(percentLoaded)
 }
 
 function createCanvasImage(page, idx, record){

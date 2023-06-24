@@ -20,6 +20,15 @@
                     <output id="fileSize">0</output>
                 </div>
             </form>
+            
+            <div v-if="!uploadBtn">
+                <b-progress class="progress" :max="max" height="1rem">
+                    <b-progress-bar :value="progressBar.value" :variant="progressBar.variant">
+                        <span>Progress: <strong>{{ progressBar.value.toFixed(2) }} / {{ progressBar.max }}</strong></span>
+                    </b-progress-bar>
+                </b-progress>
+            </div>
+
             <template #modal-footer>
                     <button @click="uploadInput" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !uploadBtn}" :disabled=uploadBtn>Import Files</button>
                     <button @click="processData" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !processBtn}" :disabled=processBtn>Process Data</button>
@@ -29,18 +38,27 @@
 </template>
 
 <script>
-import { getFileRecord, getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
+import { progressCallback, getFileRecord, 
+        getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
 
 export default ({
     name:'ImportData',
     emits:['imported-records'],
-    data(){return {
-        uploadIcon: ["success","secondary"],   //TODO
-        uploadBtn: true,
-        processBtn: true,
-        importedFiles: [],
-        processedFiles: []
-    }},
+    data(){
+        return {
+            uploadIcon: ["success","secondary"],   //TODO
+            uploadBtn: true,
+            processBtn: true,
+            importedFiles: [],
+            processedFiles: [],
+
+            progressBar:{
+                variant: "success",
+                value: 0,
+                max: 0
+            }
+        }
+    },
     methods: {
         previewFiles() {
             // Calculate total size
@@ -57,7 +75,7 @@ export default ({
         uploadInput(){
             // Load files into records
             this.$data.uploadBtn = true
-            uploadFiles(uploadInput.files).then(
+            uploadFiles(uploadInput.files, this).then(
                 (recs)=>{
                     this.$data.importedFiles.push(...recs)
                     this.$data.processBtn = false         
@@ -77,12 +95,16 @@ export default ({
 
 
 
-async function uploadFiles(files){
+async function uploadFiles(files, ctx){
     // process files selected for upload and return an array of records
     let idx = 0
     const importedFiles = []
+    const progress = {
+        loaded: 0,
+        total: 0
+    }
     for (const file of files) {
-        let record = await getFileRecord(file)
+        let record = await getFileRecord(file, progressCallback(progress))
 
         // file indexing
         record.id = String(idx)
@@ -168,5 +190,8 @@ input[type="file"] {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
+}
+.progress{
+    margin-top:30px;
 }
 </style>
