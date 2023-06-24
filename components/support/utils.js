@@ -86,6 +86,7 @@ export class DocumentRecord{
       this.sort_key = null
       this.hit_count = null
       this.snippets = null
+      this.selected_snippet_page = null
       this._showDetails = null
       this.accumPageLines = null
     }

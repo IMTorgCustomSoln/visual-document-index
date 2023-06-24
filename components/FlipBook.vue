@@ -1,4 +1,6 @@
-
+<!--
+    TODO: the img style must be removed everytime - fails 
+-->
 <template>
     <flipbook 
         class="flipbook" 
@@ -15,17 +17,17 @@
         ref="flipbook"
         >
         <div class="action-bar">
-            <b-icon-chevron-bar-left class="h5 mb-1" font-scale="1" @click="selectDisplayedPage(1)"/>
-            <b-icon-chevron-compact-left class="h5 mb-1" font-scale="1" @click="flipbook.flipLeft"/>
+            <b-icon-chevron-bar-left class="h5 mb-1 border" font-scale="1" @click="selectDisplayedPage(1)"/>
+            <b-icon-chevron-compact-left class="h5 mb-1 " font-scale="1" @click="flipbook.flipLeft"/>
             <input size="1" v-model="pageNum"/>
-            <b-icon-chevron-compact-right class="h5 mb-1" font-scale="1" @click="flipbook.flipRight"/>
-            <b-icon-chevron-bar-right class="h5 mb-1" font-scale="1" @click="selectDisplayedPage(-1)"/>
+            <b-icon-chevron-compact-right class="h5 mb-1 " font-scale="1" @click="flipbook.flipRight"/>
+            <b-icon-chevron-bar-right class="h5 mb-1 border" font-scale="1" @click="selectDisplayedPage(-1)"/>
         </div>
     </flipbook>
 </template>
 
 <script>
-import Flipbook from 'flipbook-vue'
+import Flipbook from 'flipbook-vue/vue2'
 
 export default {
     name: 'FlipBook',
@@ -36,7 +38,8 @@ export default {
     watch: {
         selectedPage:{
             handler(newSelectedPage){
-                this.pageNum = newSelectedPage
+                const pg = newSelectedPage.split('pg.')[1].split('|')[0]
+                this.pageNum = parseInt(pg)
             }
         },
         imageArray: {
@@ -88,20 +91,50 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+/* allow flipbook to float up and over image*/
+  z-index: 10;
+  position: absolute;
 }
-.flipbook-container img {
-    position: absolute !important;
-    left: 0 !important;
-    width: 100% !important;
+.action-bar input{
+    text-align: center;
+    border-color: #e1e1e1;
 }
+
+.flipbook .viewport {
+    width: 500px;
+}
+/*
 .flipbook .viewport {
     position: absolute !important;
     left: 0 !important;
     width: 100% !important;
+}*/
+
+.flipbook-container img{
+    position: absolute !important;
+    left: 0 !important;
+    width: 100% !important;
 }
+
+/*
+
+.page .fixed {
+    all: unset;
+}
+
+
+/*
+.bounding-box{
+    box-shadow: 0 0 20px #0000003b;
+}*/
+
+
+
+
 /*
 img {
-    width: 500px;
+    display: block;
 }
 .page .fixed {
     width: 500px;

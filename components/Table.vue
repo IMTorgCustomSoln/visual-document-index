@@ -59,6 +59,7 @@
                             <b-row class="mb-2">
                                 <b-col sm="6" class="text-sm-left">
                                     <b-tabs
+                                        v-model="activeTab"
                                         active-nav-item-class="font-weight-bold" 
                                         content-class="mt-3">
                                         <b-tab title="Summary" active>
@@ -74,7 +75,14 @@
                                             </b-row>
                                         </b-tab>
                                         <b-tab title="FlipBook" >
-                                            <FlipBook :imageArray="row.item.canvas_array"/>
+                                            <b-row>
+                                                <b-col sm="9">
+                                                    <FlipBook 
+                                                        :selectedPage="searchResults.mouseOverSnippet" 
+                                                        :imageArray="row.item.canvas_array"
+                                                        />
+                                                </b-col>
+                                            </b-row>
                                         </b-tab>
                                     </b-tabs>
                                 </b-col>
@@ -88,7 +96,12 @@
                                 <div class="left_contentlist">
                                     <div class="itemconfiguration">
                                         <div id="search-results" v-for="(snippet, index) in row.item.snippets">
-                                            <div class="snippet"><span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span><b-button size="sm" v-on:click="postNote($event)">Note</b-button></div><br/>
+                                            <div class="snippet" v-on:mouseover="selectSnippetPage(row.item.id, snippet)">
+                                                <span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span>
+                                                <b-button size="sm" v-on:click="postNote($event)">Note
+                                                </b-button>
+                                            </div>
+                                            <br/>
                                         </div>
                                     </div>
                                 </div> 
@@ -143,22 +156,36 @@ export default ({
             tableFilter: [],
             sortBy: 'sort_key',
             sortDesc: false,
+            activeTab: 0,
             searchResults: {
                 count: 0,
                 totalDocuments: 0,
                 searchTerms: '',
                 displayLimit: 0,
-                errorMsg: ''
+                errorMsg: '',
+                mouseOverSnippet: ''
             }
         }
     },
     computed: {
         searchResultsCount(){
             return this.query != '' ? `Search returned ${this.searchResults.count} hits, in ${this.searchResults.totalDocuments} documents, using terms: ${this.searchResults.searchTerms}`  : ''
+        },
+        renderFlipbookImg(){
+            //TODO: the img style must be removed - fails 
+            if (this.activeTab == 1){
+                let imgs = document.querySelectorAll('.flipbook img')
+                for (let img of imgs){
+                    img.style = null
+                }
+            }
         }
     },
-
     methods: {
+        selectSnippetPage(id, snippet){
+            const mouseOverSnippet = `${id}-${snippet}`
+            this.searchResults = {...this.searchResults, mouseOverSnippet: mouseOverSnippet}
+        },
         postNote(event){
             const element = event.target.parentElement.children[0]
             //TODO: no the code below should use `new NoteRecord()`, but from within Draggable - not here
@@ -310,7 +337,8 @@ export default ({
                                 for (let [index, pos] of grp.entries()){
                                     if (index==0){
                                         const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
-                                        const pageNum = item.accumPageLines.map(val => {return start < val }).indexOf(true)
+                                        const pageIdx = item.accumPageLines.map(val => {return start < val }).indexOf(true)
+                                        const pageNum = parseInt(pageIdx) + 1
                                         const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
                                         const startText = `<b>pg.${pageNum.toString()}| char.${start})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
                                         const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
@@ -336,6 +364,7 @@ export default ({
                 })
                 this.sortDesc = true
                 console.log(this.tableFilter)
+                this.activeTab = 1
                 return true
                 }
             } else {
@@ -489,5 +518,15 @@ const fields = [{
     position:relative;
     float:left;
     border-right: 1px #f8f7f3 solid;
+}
+/*
+div .snippet{
+    border-color: white;
+    border-width: 0px;
+    /* HOVER OFF 
+   -webkit-transition: padding 2s;
+}*/
+.snippet:hover{
+    background: #ffeecf;
 }
 </style>
