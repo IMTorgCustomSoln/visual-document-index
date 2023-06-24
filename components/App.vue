@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container class="px-5" fluid>
     <b-jumbotron id="jumbotron"
       header="Visual Document Index"
       lead="Bring your files to life"

@@ -1,33 +1,25 @@
-<!--
-    TODO: the handler works, but then flush returns it to original state 
--->
+
 <template>
-    <flipbook 
-        class="flipbook" 
-        :pages="pages"
-        :startPage="pageNum"
-        :zooms="[1,2]"
-        :flipDuration="500"
-        :zoomDuration="300"
-        :singlePage="true"
-        :dragToFlip="false"
-        @flip-left-end="onFlipLeftEnd"
-        @flip-right-end="onFlipRightEnd"
-        v-slot="flipbook"
-        ref="flipbook"
+    <div class="action-bar">
+        <b-icon-chevron-bar-left class="h5 mb-1 border" font-scale="1" @click="selectDisplayedPage(1)"/>
+        <b-icon-chevron-compact-left class="h5 mb-1 " font-scale="1" @click="prev()"/>
+        <input size="1" v-model="pageNum"/>
+        <b-icon-chevron-compact-right class="h5 mb-1 " font-scale="1" @click="next()"/>
+        <b-icon-chevron-bar-right class="h5 mb-1 border" font-scale="1" @click="selectDisplayedPage(-1)"/>
+    </div>
+    <b-carousel 
+        ref="myCarousel"
+        v-model="pageIdx"
+        controls
+        indicators
+        :interval="0"
         >
-        <div class="action-bar">
-            <b-icon-chevron-bar-left class="h5 mb-1 border" font-scale="1" @click="selectDisplayedPage(1)"/>
-            <b-icon-chevron-compact-left class="h5 mb-1 " font-scale="1" @click="flipbook.flipLeft"/>
-            <input size="1" v-model="pageNum"/>
-            <b-icon-chevron-compact-right class="h5 mb-1 " font-scale="1" @click="flipbook.flipRight"/>
-            <b-icon-chevron-bar-right class="h5 mb-1 border" font-scale="1" @click="selectDisplayedPage(-1)"/>
-        </div>
-    </flipbook>
+        <!-- slides go here -->
+        <b-carousel-slide v-for="(page, index) in pages" :img-src="page"></b-carousel-slide>
+    </b-carousel>
 </template>
 
 <script>
-import Flipbook from 'flipbook-vue/vue2'
 
 export default {
     name: 'FlipBook',
@@ -38,7 +30,7 @@ export default {
     watch: {
         pageNum:{
             handler(newVal){
-                this.renderFlipbookImg()
+                this.pageIdx = newVal - 1
             }
         },
         selectedPage:{
@@ -57,39 +49,14 @@ export default {
     mounted(){
         this.setupPages()
     },
-    components:{Flipbook},
     data(){
         return{
+            pageIdx: 0,
             pageNum: 1,
             pages: []
         }
     },
-    computed:{
-        /*
-        renderFlipbookImg(){
-            if (this.pageNum){
-                let imgs = document.querySelectorAll('.flipbook img')
-                for (let img of imgs){
-                    img.style = null
-                }
-            } else if (this.$props.selectedPage){
-                let imgs = document.querySelectorAll('.flipbook img')
-                for (let img of imgs){
-                    img.style = null
-                }
-            }
-        }*/
-    },
     methods:{
-        renderFlipbookImg(){
-            /*
-            let imgs = document.querySelectorAll('.flipbook img')
-            for (let img of imgs){
-                img.style = null
-            }*/
-            let img = document.querySelector('.flipbook img')
-            img.style = null
-        },
         setupPages(){
             let images = this.$props.imageArray.map(img => img.img)
             this.pages.push(...images)
@@ -97,18 +64,25 @@ export default {
         selectDisplayedPage(num){
             const n = parseInt(num)
             console.log(n)
-            if (n==-1){
-                this.pageNum = this.imageArray.length
+            if (n == -1){
+                const idx = this.imageArray.length
+                this.pageNum = idx
+                this.pageIdx = idx - 1
+                this.$refs.myCarousel.setSlide(this.pageIdx)
             } else {
             this.pageNum = n
+            this.pageIdx = n - 1
+            this.$refs.myCarousel.setSlide(this.pageIdx)
             }
         },
-        onFlipLeftEnd(page) {
-            this.pageNum = page
+        prev(){
+            this.$refs.myCarousel.prev()
+            this.pageNum = this.$refs.myCarousel.index + 1
         },
-        onFlipRightEnd(page) {
-            this.pageNum = page
-        },
+        next(){
+            this.$refs.myCarousel.next()
+            this.pageNum = this.$refs.myCarousel.index + 1
+        }
 }
 }
 </script>
@@ -122,80 +96,13 @@ export default {
   justify-content: center;
   align-items: center;
 
-/* allow flipbook to float up and over image*/
+/* allow page images to float up and over image*/
   z-index: 10;
   position: absolute;
 }
 .action-bar input{
     text-align: center;
     border-color: #e1e1e1;
+    font-size: 12px;
 }
-
-
-.flipbook .viewport {
-    width: 500px;
-}
-
-.flipbook .viewport {
-    position: absolute !important;
-    left: 0 !important;
-    width: 100% !important;
-}
-
-.flipbook-container img{
-    position: absolute !important;
-    left: 0 !important;
-    width: 100% !important;
-}
-
-/*
-
-.page .fixed {
-    all: unset;
-}
-
-
-/*
-.bounding-box{
-    box-shadow: 0 0 20px #0000003b;
-}*/
-
-
-
-
-/*
-img {
-    display: block;
-}
-.page .fixed {
-    width: 500px;
-}
-/*
-.flipbook{
-    width: 100px;
-    height: 100px;
-}
-.flipbook .bounding-box {
-  box-shadow: 0 0 20px #000;
-}*/
-
-/*
-.flipbook {
-  width: 90vw;
-  height: 90vh;
-}
-.flipbook .viewport {
-  width: 90vw !important;
-  height: calc(100vh - 50px - 40px) !important;
-}
-
-img {
-    width: 500px !important;
-    height: 600px !important;
-}*/
-/*
-.bounding-box {
-    width: 490px !important;
-    height: 700px !important;
-}*/
 </style>

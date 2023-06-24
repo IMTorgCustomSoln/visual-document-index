@@ -3,9 +3,6 @@
 
     <!-- Search -->
     <b-row id="table-panel">
-        <!--
-        <b-col cols="5"></b-col>
-        <b-col cols="7">-->
         <b-col>
             <span>
                 <h5 style="display:inline">Search: </h5>
@@ -19,9 +16,6 @@
             </div>
         </b-col>
     </b-row>
-
-
-
 
         <div>
                 <div v-if="initializeTable">
@@ -37,7 +31,6 @@
                       :filter-function="onFiltered"
                       :sort-by.sync="sortBy"
                       :sort-desc.sync="sortDesc"
-
 
                       primary-key='id'
                       striped small
@@ -63,18 +56,21 @@
                                         active-nav-item-class="font-weight-bold" 
                                         content-class="mt-3">
                                         <b-tab title="Summary" active>
+                                            <b-card>
                                             <b-row>
-                                                <b-col sm="2" class="text-sm-left">
-                                                    <b-row ><b>Author:</b> {{row.item.author}}</b-row>
-                                                    <b-row ><b>Subject:</b> {{row.item.subject}}</b-row>
-                                                    <b-row ><b>Keywords:</b> {{row.item.keywords}}</b-row>
+                                                <b-col sm="5" class="text-sm-left">
+                                                    <b-row ><b>Author: &nbsp</b> {{row.item.author}}</b-row>
+                                                    <b-row ><b>Subject: &nbsp</b> {{row.item.subject}}</b-row>
+                                                    <b-row ><b>Keywords: &nbsp</b> {{row.item.keywords}}</b-row>
                                                 </b-col>
-                                                <b-col sm="3" class="text-sm-left">
+                                                <b-col sm="7" class="text-sm-left">
                                                     <b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> 
                                                 </b-col>
                                             </b-row>
+                                        </b-card>
                                         </b-tab>
-                                        <b-tab title="FlipBook" >
+                                        <b-tab title="FlipBook" lazy>
+                                            <b-card>
                                             <b-row>
                                                 <b-col sm="9">
                                                     <FlipBook 
@@ -83,6 +79,7 @@
                                                         />
                                                 </b-col>
                                             </b-row>
+                                            </b-card>
                                         </b-tab>
                                     </b-tabs>
                                 </b-col>
@@ -170,16 +167,7 @@ export default ({
     computed: {
         searchResultsCount(){
             return this.query != '' ? `Search returned ${this.searchResults.count} hits, in ${this.searchResults.totalDocuments} documents, using terms: ${this.searchResults.searchTerms}`  : ''
-        },/*
-        renderFlipbookImg(){
-            //TODO: the img style must be removed - fails 
-            if (this.activeTab == 1){
-                let imgs = document.querySelectorAll('.flipbook img')
-                for (let img of imgs){
-                    img.style = null
-                }
-            }
-        }*/
+        }
     },
     methods: {
         selectSnippetPage(id, snippet){
@@ -519,13 +507,6 @@ const fields = [{
     float:left;
     border-right: 1px #f8f7f3 solid;
 }
-/*
-div .snippet{
-    border-color: white;
-    border-width: 0px;
-    /* HOVER OFF 
-   -webkit-transition: padding 2s;
-}*/
 .snippet:hover{
     background: #ffeecf;
 }

@@ -1,7 +1,4 @@
 <template>
-    <!--
-    <b-button variant="primary" @click="setChildData">Import Files</b-button>
-    -->
     <p>Click to import files and populate a table:</p>
     <b-button size="sm" v-b-modal="'import-modal'" class="btn btn-success btn-sm m-1">Import Files</b-button>
     <div>
