@@ -1,5 +1,5 @@
 <!--
-    TODO: the img style must be removed everytime - fails 
+    TODO: the handler works, but then flush returns it to original state 
 -->
 <template>
     <flipbook 
@@ -36,6 +36,11 @@ export default {
         imageArray: Array
     },
     watch: {
+        pageNum:{
+            handler(newVal){
+                this.renderFlipbookImg()
+            }
+        },
         selectedPage:{
             handler(newSelectedPage){
                 const pg = newSelectedPage.split('pg.')[1].split('|')[0]
@@ -59,7 +64,32 @@ export default {
             pages: []
         }
     },
+    computed:{
+        /*
+        renderFlipbookImg(){
+            if (this.pageNum){
+                let imgs = document.querySelectorAll('.flipbook img')
+                for (let img of imgs){
+                    img.style = null
+                }
+            } else if (this.$props.selectedPage){
+                let imgs = document.querySelectorAll('.flipbook img')
+                for (let img of imgs){
+                    img.style = null
+                }
+            }
+        }*/
+    },
     methods:{
+        renderFlipbookImg(){
+            /*
+            let imgs = document.querySelectorAll('.flipbook img')
+            for (let img of imgs){
+                img.style = null
+            }*/
+            let img = document.querySelector('.flipbook img')
+            img.style = null
+        },
         setupPages(){
             let images = this.$props.imageArray.map(img => img.img)
             this.pages.push(...images)
@@ -101,15 +131,16 @@ export default {
     border-color: #e1e1e1;
 }
 
+
 .flipbook .viewport {
     width: 500px;
 }
-/*
+
 .flipbook .viewport {
     position: absolute !important;
     left: 0 !important;
     width: 100% !important;
-}*/
+}
 
 .flipbook-container img{
     position: absolute !important;

@@ -170,7 +170,7 @@ export default ({
     computed: {
         searchResultsCount(){
             return this.query != '' ? `Search returned ${this.searchResults.count} hits, in ${this.searchResults.totalDocuments} documents, using terms: ${this.searchResults.searchTerms}`  : ''
-        },
+        },/*
         renderFlipbookImg(){
             //TODO: the img style must be removed - fails 
             if (this.activeTab == 1){
@@ -179,7 +179,7 @@ export default ({
                     img.style = null
                 }
             }
-        }
+        }*/
     },
     methods: {
         selectSnippetPage(id, snippet){
