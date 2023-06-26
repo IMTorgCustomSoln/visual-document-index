@@ -13,18 +13,37 @@
                     <label for="uploadInput" class="custom-file-upload">
                         <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
                     </label>
-                    <input id="uploadInput" type="file" @change="previewFiles" multiple /><br>
+                    <input id="uploadInput" 
+                        type="file"
+                        accept=".pdf" 
+                        @change="previewFiles" 
+                        multiple 
+                        /> 
+                    <br/>
                     <label for="fileCount">Files: &nbsp</label>
                     <output id="fileCount">0</output><br/>
                     <label for="fileSize">Total size: &nbsp</label>
                     <output id="fileSize">0</output>
+                    <br/><div style="text-align: right;">(note that only PDF files can be used at this time)</div>
                 </div>
             </form>
-            
-            <div v-if="!uploadBtn">
-                <b-progress class="progress" :max="max" height="1rem">
-                    <b-progress-bar :value="progressBar.value" :variant="progressBar.variant">
-                        <span>Progress: <strong>{{ progressBar.value.toFixed(2) }} / {{ progressBar.max }}</strong></span>
+            <!--
+            <b-progress :value="progressBar.value" :max="progressBar.max" height="1rem" show-progress animated></b-progress>
+            <div v-if="!uploadBtn">-->
+                
+            <div>
+                <b-progress 
+                    class="progress" 
+                    :max="progressBar.max" 
+                    height="1rem"
+                    show-progress
+                    animated
+                    >
+                    <b-progress-bar 
+                        :value="progressBar.value" 
+                        :variant="progressBar.variant"
+                        >
+                        <span>Progress: <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
                     </b-progress-bar>
                 </b-progress>
             </div>
@@ -38,10 +57,11 @@
 </template>
 
 <script>
-import { progressCallback, getFileRecord, 
-        getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
+import { getFileRecord } from './support/utils.js'
+import { getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
 
-export default ({
+
+export default({
     name:'ImportData',
     emits:['imported-records'],
     data(){
@@ -63,27 +83,28 @@ export default ({
         previewFiles() {
             // Calculate total size
             let numberOfBytes = 0;
+            const fileCount = uploadInput.files.length
+            this.progressBar = {...this.progressBar, max: fileCount}
             for (const file of uploadInput.files) {
                 numberOfBytes += file.size;
             }
-            const fileCount = uploadInput.files.length
             document.getElementById("fileCount").textContent = fileCount
             const fileSize = getFormattedFileSize(numberOfBytes);
             document.getElementById("fileSize").textContent = fileSize
-            this.$data.uploadBtn = false
+            this.uploadBtn = false
         },
         uploadInput(){
             // Load files into records
-            this.$data.uploadBtn = true
-            uploadFiles(uploadInput.files, this).then(
+            this.uploadBtn = true
+            uploadFiles.bind(this)(uploadInput.files).then(
                 (recs)=>{
-                    this.$data.importedFiles.push(...recs)
-                    this.$data.processBtn = false         
+                    this.importedFiles.push(...recs)
+                    this.processBtn = false         
             })
         },
         processData(){
             const processedFiles = processFiles(this.importedFiles)
-            this.$data.processedFiles.push(...processedFiles)
+            this.processedFiles.push(...processedFiles)
             this.$bvModal.hide("import-modal")
             this.$emit('imported-records', this.processedFiles)
         }
@@ -95,7 +116,7 @@ export default ({
 
 
 
-async function uploadFiles(files, ctx){
+async function uploadFiles(files){
     // process files selected for upload and return an array of records
     let idx = 0
     const importedFiles = []
@@ -104,7 +125,7 @@ async function uploadFiles(files, ctx){
         total: 0
     }
     for (const file of files) {
-        let record = await getFileRecord(file, progressCallback(progress))
+        let record = await getFileRecord(file)     //TOOD:, progressCallback(progress))
 
         // file indexing
         record.id = String(idx)
@@ -134,6 +155,7 @@ async function uploadFiles(files, ctx){
 
         importedFiles.push(record)
         idx++
+        this.progressBar = {...this.progressBar, value: idx}
         }
     return importedFiles;
 }
@@ -168,6 +190,7 @@ function processFiles(files){
         let clean_body = item.body
         item.clean_body = clean_body
         item.summary = clean_body.slice(0,500)   //TODO:set constant
+        item.pp_toc = item.toc.map(section => `${section.title} (pg.${section.pageNumber})`)
 
         // prepare page numbers for search snippets
         item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable

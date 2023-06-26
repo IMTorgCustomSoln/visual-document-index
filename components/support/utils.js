@@ -1,97 +1,6 @@
+import { DocumentRecord } from "./data"
 
-import {ref} from 'vue'
-
-
-
-// Managed Notes
-
-export const ExportFileName = `${__EXPORT_FILE_NAME__}_v${__VERSION__}.json` 
-
-export class TopicRecord{
-  constructor(id, title, dropZoneName){
-    this.id = id
-    this.title = title
-    this.dropZoneName = dropZoneName
-  }
-}
-
-export class NoteRecord{
-  constructor(id, list, type, innerHTML, innerText){
-    this.id = id
-    this.list = list
-    this.type = type
-    this.innerHTML = innerHTML
-    this.innerText = innerText
-  }
-}
-const notes_records = []
-for (let idx=1; idx<=2; idx++){     //change for testing
-  let text = 'Item '+idx
-  let note = new NoteRecord(idx.toString(), 'stagingNotes', 'hand', '', text)
-  notes_records.push(note)
-}
-export const ManagedNotesData = ref({
-  topics: [],
-  notes: notes_records
-})
-
-
-
-
-// Import Data
-
-export class DocumentRecord{
-  constructor(
-    id, reference_number, filepath, filename_original, filename_modified, 
-    file_extension, filetype, page_nos, length_lines, file_size_mb, date,
-    title, author, subject, toc, pp_toc, 
-    body_pages, body, clean_body, readability_score, tag_categories, keywords, summary
-    ){
-      //file indexing
-      this.id = id
-      this.reference_number = reference_number
-      this.filepath = filepath
-      this.filename_original = filename_original
-      this.filename_modified = filename_modified
-
-      //raw
-      this.file_extension = file_extension
-      this.filetype = filetype 
-      this.page_nos = page_nos
-      this.length_lines = length_lines
-      this.file_size_mb = file_size_mb 
-      this.date = date
-
-      //inferred / searchable
-      this.title = title
-      this.author = author 
-      this.subject = subject
-      this.toc = toc
-      this.pp_toc = pp_toc
-
-      this.body_pages = body_pages
-      this.body = body
-      this.clean_body = clean_body
-      this.readability_score = readability_score
-      this.tag_categories = tag_categories
-      this.keywords = keywords
-      this.summary = summary
-
-      //added by frontend
-      this.length_lines_array = null
-      this.date_created = null
-      this.date_mod = null
-      this.canvas_array = []
-
-      this.sort_key = null
-      this.hit_count = null
-      this.snippets = null
-      this.selected_snippet_page = null
-      this._showDetails = null
-      this.accumPageLines = null
-    }
-}
-
+// Upload Input
 
 export async function getFileRecord(file, progressCallback){     //TODO: async may not be needed
   // create a file record from the FileReader() API
@@ -107,21 +16,9 @@ export async function getFileRecord(file, progressCallback){     //TODO: async m
               record.length_lines_array = []
               record.body_pages = {}
 
-              pdf.getMetadata().then(meta => {
-              record.title = meta.info.Title
-              record.subject = meta.info.Subject
-              record.author = meta.info.Author
-              record.date_created = meta.info.CreationDate
-              record.date_mod = meta.info.ModDate
-              record.keywords = meta.info.Keywords
-              })
-
-              record.toc = pdf.getOutline().then(outline => {    //TODO:FIX by moving below `let page.getTextContent()`
-                if (outline){
-                    outline.map(item => item.title ? item.title : null)
-                }
-              })
-
+              createMetadata(pdf, record)
+              createOutline(pdf, record)
+              
               for (let i = 1; i <= record.page_nos; i++) {
                   pdf.getPage(i).then(function(page) {
                       let n = page.pageNumber;
@@ -137,13 +34,15 @@ export async function getFileRecord(file, progressCallback){     //TODO: async m
                           let sentence_count = (edit1.match(/./g) || []).length
                           record.length_lines_array.push(sentence_count)
                       });
-                      console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
+                      //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
                   });
               };
               //console.log(`${file} pdf loaded with body: ${record.layers}`)
               //record.body = record.layers.length > 0 ? record.layers.reduce((partialSum, a) => partialSum += (a || 0)) : '';
               resolve(record)
-          });
+          }).catch((error)=>{
+            console.log(error)
+          })
       }
       reader.readAsArrayBuffer(file);
       reader.onerror = reject;
@@ -156,7 +55,38 @@ export function progressCallback(progress) {
   console.log(percentLoaded)
 }
 
+function createMetadata(pdf, record){
+  pdf.getMetadata().then(meta => {
+    record.title = meta.info.Title
+    record.subject = meta.info.Subject
+    record.author = meta.info.Author
+    record.date_created = meta.info.CreationDate
+    record.date_mod = meta.info.ModDate
+    record.keywords = meta.info.Keywords
+    })
+}
+
+function createOutline(pdf, record){
+  //ref: https://medium.com/@csofiamsousa/creating-a-table-of-contents-with-pdf-js-4a4316472fff
+  pdf.getOutline().then(async outline => {    
+    if (outline){
+      for (let i =0; i< outline.length; i++){
+        const title = outline[i].title
+        const dest = outline[i].dest
+        pdf.getDestination(dest).then(function(dest){
+          const ref = dest[0]
+          pdf.getPageIndex(ref).then(function(id){
+            record.toc.push({title: title, pageNumber: parseInt(id)+1})
+          })
+        })
+      }
+    }
+  })
+}
+
+
 function createCanvasImage(page, idx, record){
+  //ref: https://stackoverflow.com/questions/62744470/turn-pdf-into-array-of-pngs-using-javascript-with-pdf-js
   var scale = 1.5;
   var viewport = page.getViewport({ scale: scale })
   var canvas = document.createElement('canvas')
@@ -175,33 +105,13 @@ function createCanvasImage(page, idx, record){
   })
 }
 
-/*
-function createCanvasImage(page, idx, record){
-  //ref: https://stackoverflow.com/questions/62744470/turn-pdf-into-array-of-pngs-using-javascript-with-pdf-js
-  var scale = 1.5;
-  var viewport = page.getViewport({ scale: scale })
-  var canvas = document.createElement('canvas')
-
-  // Prepare canvas using PDF page dimensions
-  var context = canvas.getContext('2d')
-  canvas.height = viewport.height
-  canvas.width = viewport.width
-
-  // Render PDF page into canvas context
-  var renderContext = { canvasContext: context, viewport: viewport }
-
-  var renderTask = page.render(renderContext)
-  renderTask.promise.then(function() {
-    let image = canvas.toDataURL('image/png').replace("image/png", "image/octet-stream")
-    //image.style.left = null
-    if (image){
-      record.canvas_array.push( {idx:idx, img:image} )
-      console.log(record.canvas_array.length + ' page(s) loaded in record')
-    }
-  })
-}*/
 
 
+
+
+
+
+// ProcessData
 
 export function getFileReferenceNumber(filename, searchTermOrIndexArray=[9,17], regex=false){
   /* Get a file reference number from file name

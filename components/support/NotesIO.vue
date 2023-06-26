@@ -34,7 +34,7 @@
 
 <script>
 import { isProxy, toRaw } from 'vue'
-import {ExportFileName, ManagedNotesData} from './utils.js'
+import {ExportFileName, ManagedNotesData} from './data.js'
 
 
 export default{

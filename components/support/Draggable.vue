@@ -26,7 +26,7 @@ ref:[Adding Drag and Drop to Your Vue3 Project](www.youtube.com/watch?v=-kZLD40d
 
 
 <script>
-import {ManagedNotesData} from './utils.js'
+import {ManagedNotesData} from './data.js'
 
 export default ({
   name: "Draggable",

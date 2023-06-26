@@ -64,7 +64,7 @@
                                                     <b-row ><b>Keywords: &nbsp</b> {{row.item.keywords}}</b-row>
                                                 </b-col>
                                                 <b-col sm="7" class="text-sm-left">
-                                                    <b>Contents:</b> <br><span v-html="row.item.pp_toc"></span> 
+                                                    <b>Contents:</b> <br><span v-html="row.item.pp_toc.join('<br>')"></span> 
                                                 </b-col>
                                             </b-row>
                                         </b-card>

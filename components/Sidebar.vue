@@ -69,8 +69,8 @@
 
 
 <script>
-//import {NoteRecord, TopicRecord} from './support/utils.js'
-import {ManagedNotesData} from './support/utils.js'
+//import {NoteRecord, TopicRecord} from './support/data.js'
+import {ManagedNotesData} from './support/data.js'
 import Draggable from './support/Draggable.vue'
 import NotesIO from './support/NotesIO.vue'
 
