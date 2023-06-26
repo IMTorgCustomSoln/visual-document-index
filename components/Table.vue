@@ -6,6 +6,7 @@
         <b-col>
             <span>
                 <h5 style="display:inline">Search: </h5>
+                <Guide v-bind="guides.search"/>
                 <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
                 <div v-if="!searchResults.errorMsg">{{ searchResultsCount }}</div>
                 <div v-else class="errorMsg"> {{ searchResults.errorMsg }}</div>
@@ -116,7 +117,9 @@
 
 <script>
 import { getDateFromJsNumber, getFormattedFileSize } from './support/utils.js'
-import FlipBook from './FlipBook.vue';
+import FlipBook from './FlipBook.vue'
+import Guide from './support/Guide.vue'
+
 
 
 export default ({
@@ -140,7 +143,8 @@ export default ({
     },
     emits:['send-note'],
     components: {
-        FlipBook
+        FlipBook,
+        Guide
     },
     data(){
         this.fields = fields
@@ -161,6 +165,25 @@ export default ({
                 displayLimit: 0,
                 errorMsg: '',
                 mouseOverSnippet: ''
+            },
+            guides: {
+                search:{
+                    id:'search',
+                    title:'Search Patterns',
+                    markdown:`The following are patterns used in search terms:
+* \`foo\` - all search is on stemmed terms so dno't worry about case or word ending
+* \`+foo +bar\` - for logical AND search; otherwise, all search use OR with terms
+* \`+foo bar -baz\` - search without 'baz'
+* \`*foo\` - search terms with characters before foo
+* \`title: foo\` - only search document titles for term foo
+* \`foo^10 bar\` - weight term foo 10-times the importance of bar
+* \`foo~1\` - one edit distance of foo (fuzzy matching)
+`
+                },
+                snippet:{
+                    title:'',
+                    markdown:''
+                }
             }
         }
     },

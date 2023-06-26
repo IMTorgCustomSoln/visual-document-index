@@ -27,9 +27,6 @@
                     <br/><div style="text-align: right;">(note that only PDF files can be used at this time)</div>
                 </div>
             </form>
-            <!--
-            <b-progress :value="progressBar.value" :max="progressBar.max" height="1rem" show-progress animated></b-progress>
-            <div v-if="!uploadBtn">-->
                 
             <div>
                 <b-progress 
@@ -43,7 +40,7 @@
                         :value="progressBar.value" 
                         :variant="progressBar.variant"
                         >
-                        <span>Progress: <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
+                        <span>Processed <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
                     </b-progress-bar>
                 </b-progress>
             </div>
