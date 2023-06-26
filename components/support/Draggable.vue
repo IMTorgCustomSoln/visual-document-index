@@ -44,7 +44,7 @@ export default ({
       this.items.splice(this.items.indexOf(item), 1)
     },
     startDrag(event, item){
-      console.log(item)
+      //console.log(item)
       event.dataTransfer.dropEffect = 'move'      //visual effect
       event.dataTransfer.effectAllowed = 'move'   //move instead of copy
       event.dataTransfer.setData('itemID',item.id)

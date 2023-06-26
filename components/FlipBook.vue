@@ -63,7 +63,6 @@ export default {
         },
         selectDisplayedPage(num){
             const n = parseInt(num)
-            console.log(n)
             if (n == -1){
                 const idx = this.imageArray.length
                 this.pageNum = idx

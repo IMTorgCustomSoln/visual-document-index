@@ -83,7 +83,7 @@ export default ({
     watch: { 
         note: {
             handler: function(newNote, oldNote) {
-                console.log('Prop changed: ', newNote, ' | was: ', oldNote)
+                //console.log('Prop changed: ', newNote, ' | was: ', oldNote)
                 const noteItem = JSON.parse(JSON.stringify( newNote ))
                 this.notes.push(noteItem)
                 this.$refs.btnSidebar.click()
@@ -152,10 +152,10 @@ export default ({
             this.editedTopic = topic
         },*/
         checkMove: function(e) {
-            window.console.log("Future index: " + e.draggedContext.futureIndex);
+            //window.console.log("Future index: " + e.draggedContext.futureIndex);
         },
         log: function(e) {
-            window.console.log(e);
+            //window.console.log(e);
         }
     }
 })

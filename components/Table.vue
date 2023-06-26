@@ -130,7 +130,7 @@ export default ({
     watch: { 
         records: {
             handler: function(newVal, oldVal) {
-                console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+                //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
                 if (this.$data.initializeTable==false && 
                     Array.isArray(this.$props.records) && 
                     this.$props.records.length > 0
@@ -207,7 +207,7 @@ export default ({
                 innerHTML: element.innerHTML.toString(),
                 innerText: element.innerText.toString()
             }
-            console.log(noteItem)
+            //console.log(noteItem)
             this.$emit('send-note', noteItem);
         },
 
@@ -217,7 +217,7 @@ export default ({
                 const item = JSON.parse(JSON.stringify( record ))
                 this.items.push( item )
             }
-            console.log(this.items)
+            //console.log(this.items)
 
             //create lunr index
             const docs = this.items;

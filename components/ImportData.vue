@@ -24,7 +24,7 @@
                     <output id="fileCount">0</output><br/>
                     <label for="fileSize">Total size: &nbsp</label>
                     <output id="fileSize">0</output>
-                    <br/><div style="text-align: right;">(note that only PDF files can be used at this time)</div>
+                    <br/><div style="text-align: right;"><em>(note that only PDF files can be used at this time)</em></div>
                 </div>
             </form>
                 
