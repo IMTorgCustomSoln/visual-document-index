@@ -34,6 +34,11 @@ npm run dev
 
   - ~~fix TOC~~
   - create new Search parent component to Table
+  - tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)
+  - ~~download notes to readable format~~
+  - backticks to support alternative search format
+  - zoom on bootstrap-vue image carousel
+  - row details small, (more) btn click to lengthen down
   - file loading
     + check file sizes
     + checl file load takes too long

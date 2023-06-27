@@ -4,31 +4,47 @@
 
 <template>
     <div id="sidebar-btns">
-    <b-button id="create" size="sm" @click="exportToFile">Export</b-button>
+    <b-button v-b-modal.export-notes-modal size="sm">Export</b-button>
+    <b-modal id="export-notes-modal">
+        <template #modal-title>
+            Determine type of export
+        </template>
+        <p>
+            <ul><b>Human-readable format:</b> write notes to text file for reporting purposes.</ul>
+            <ul><b>Data storage format:</b> save your work to a .json file so you can Import the file,
+                and return to your current state, later, or share your work with teammates.  
+                <i>Note:</i> this is the only method to save your work.</ul>
+        </p>
+        <br/>
+            <template #modal-footer>
+                <button @click="exportToText" v-b-modal.modal-close_visit class="btn-sm m-1">Human-Readable</button>
+                <button @click="exportToJson" v-b-modal.modal-close_visit class="btn-sm m-1">Data Storage</button>
+            </template>
+    </b-modal>
 
     <b-button v-b-modal.import-notes-modal size="sm">Import</b-button>
-        <b-modal id="import-notes-modal">
-            <template #modal-title>
-                Select 'ManagedNotes' file
+    <b-modal id="import-notes-modal">
+        <template #modal-title>
+            Select Notes Manager file
+        </template>
+        <form name="uploadForm">
+            <label for="uploadInput" class="custom-file-upload">
+                <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
+            </label><br/>
+            <input id="uploadInput" 
+                   type="file" 
+                   @change="previewFile"
+                   accept=".json"
+            />
+            <label for="fileName">File: &nbsp</label>
+            <output id="fileName">{{ file }}</output>
+        </form><br/>
+            Select whether to append to existing notes or replace them:
+            <template #modal-footer>
+                <button @click="appendNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Append</button>
+                <button @click="replaceNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Replace</button>
             </template>
-            <form name="uploadForm">
-                <label for="uploadInput" class="custom-file-upload">
-                    <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
-                </label><br/>
-                <input id="uploadInput" 
-                       type="file" 
-                       @change="previewFile"
-                       accept=".json"
-                />
-                <label for="fileName">File: &nbsp</label>
-                <output id="fileName">{{ file }}</output>
-            </form><br/>
-                Select whether to append to existing notes or replace them:
-                <template #modal-footer>
-                    <button @click="appendNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Append</button>
-                    <button @click="replaceNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Replace</button>
-                </template>
-        </b-modal>
+    </b-modal>
     </div>
 </template>
 
@@ -47,7 +63,46 @@ export default{
         }
     },
     methods:{
-        exportToFile(e){
+        exportToText(e){
+            const create = e.target
+            let output = []
+            let initial = `# Notes\n\n`
+            output.push(initial)
+            let allTopics = [...this.topics]
+            allTopics.push({title:'Staging Notes', dropZoneName:'stagingNotes'})
+            for (let topic of allTopics){
+                let hdr = `\n\n\n## ${topic.title}\n\n`
+                output.push(hdr)
+                for (let note of this.notes){
+                    if (note.list == topic.dropZoneName){
+                        if (note.type == "hand"){
+                            let ul = `* ${note.innerText}\n`
+                            output.push(ul)
+                        } else if (note.type == "auto"){
+                            let ul = `* ${note.id}\n${note.innerText}\n`
+                            output.push(ul)
+                        } else {
+                            continue
+                        }
+                    }
+                }
+            }
+            const ExportTextName = 'Notes.txt'
+            const strOutput = output.join(' ')
+            const a = document.createElement('a')
+            var link = create.appendChild(a)
+            link.setAttribute('download', ExportTextName)
+            link.href = makeTextFile(strOutput)
+            document.body.appendChild(link)
+
+            // wait for the link to be added to the document
+            window.requestAnimationFrame(function () {
+                var event = new MouseEvent('click')
+                link.dispatchEvent(event)
+                document.body.removeChild(link)
+            })
+        },
+        exportToJson(e){
             const create = e.target
             const object = {
                 topics: this.topics,
@@ -111,6 +166,12 @@ async function parseJsonFile(file) {
     fileReader.readAsText(file)
   })
 }
+
+
+
+
+
+
 
 </script>
 

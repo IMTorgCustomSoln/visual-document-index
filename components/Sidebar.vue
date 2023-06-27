@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <hr />
+            <hr style="border: 1px solid black"/>
             <div class="section"><h3>Staging Notes</h3>
                 <div class="description"><p>Create manual notes or add selections directly from the document search results.</p></div>
                 <div>
@@ -60,8 +60,8 @@
                         >
                         <hr/>
                         <div>
-                            <h4>{{ topic.title }}<b-icon-x-square class="h5 mb-1 destroy" font-scale="0.5" @click="removeTopic(topic)" />
-                            </h4>
+                            <h5>{{ topic.title }}<b-icon-x-square class="h5 mb-1 destroy" font-scale="0.5" @click="removeTopic(topic)" />
+                            </h5>
                         </div>
                         <Draggable :listName="topic.dropZoneName"/>
                     </div>
