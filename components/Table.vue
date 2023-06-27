@@ -86,10 +86,10 @@
                                 </b-col>
                             
                             <b-col sm="6" class="text-sm-left">
-                                <div v-if="!searchResults.totalDocuments"><b>Document summary:</b> <br/>
+                                <div v-if="!searchResults.totalDocuments"><b>Document summary: </b> <br/>
                                     {{ row.item.summary }}
                                 </div>
-                                <div v-else><b>Search results in {{ row.item.hit_count }} hits:</b></div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
+                                <div v-else><b>Search results in {{ row.item.hit_count }} hits: </b> <Guide v-bind="guides.snippet" /> </div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
                                 <br/>
                                 <div class="left_contentlist">
                                     <div class="itemconfiguration">
@@ -181,8 +181,20 @@ export default ({
 `
                 },
                 snippet:{
-                    title:'',
-                    markdown:''
+                    id:'snippet',
+                    title:'Search Results',
+                    markdown:`The search results display as snippets of text 
+containing the highlighted search terms.  The begining of the text includes
+the page number, and the location of text in characters from the begining, such as 
+\`pg.3 | char.5340)\`.  
+
+When the cursor passes over an individual result snippet, an orange background will
+note its selection, and the document images (to the left) will display the page of 
+the text.
+
+At the end of the snippet of text is a \`Note\` button.  When clicked, the Managed
+Notes sidebar displays and the text snippet appears in the Staging Area.  It is 
+ready to be organized with the note Topics.`
                 }
             }
         }

@@ -1,17 +1,28 @@
 <template>
   <div>
-    <b-button id='btnSidebar' ref='btnSidebar' v-b-toggle.sidebar>Manage Notes</b-button>
+    <b-button id='btnSidebar' ref='btnSidebar' v-b-toggle.sidebar>Notes Manager</b-button>
 
     <b-sidebar 
         id="sidebar" 
-        title="Manage Notes"
+        title="Notes Manager"
         width="500px" 
         right
         :backdrop-variant="variant"
         backdrop 
         shadow
-    >
+        >
         <div class="px-3 py-2">
+            <div class="section">
+                <div class="description">
+                    <p>Create notes and organize them by topics.  Save your notes to a file for use in future sessions, 
+                    and share them with your team.
+                    <Guide v-bind="guides.managedNotes"/>
+                    <NotesIO/>
+                    </p>
+                </div>
+            </div>
+
+            <hr />
             <div class="section"><h3>Staging Notes</h3>
                 <div class="description"><p>Create manual notes or add selections directly from the document search results.</p></div>
                 <div>
@@ -26,17 +37,12 @@
                     >
                 </div>
                 <Draggable :listName="stagingNotesList"/>
-                
-                
-
             </div>
-            <hr style="border: 1px solid black"/>
+
+            <hr />
             <div class="section"><h3>Topics</h3>
-                <div class="description"><p>Create topics of interest then organize your notes by dragging them underneath desired topic.
-                                            Save your notes to a file and share them with your team.
-                                        </p>
+                <div class="description"><p>Create topics of interest then organize your notes by dragging them underneath desired topic.</p>
                 </div>
-                <NotesIO/>
                 <div>
                     <label for="topicName">New topic:</label>
                     <input type="text" 
@@ -73,6 +79,7 @@
 import {ManagedNotesData} from './support/data.js'
 import Draggable from './support/Draggable.vue'
 import NotesIO from './support/NotesIO.vue'
+import Guide from './support/Guide.vue'
 
 const stagingNotesList = 'stagingNotes'
 
@@ -93,7 +100,8 @@ export default ({
     },
     components: {
         Draggable,
-        NotesIO: NotesIO
+        NotesIO: NotesIO,
+        Guide
     },
     data(){
         return {
@@ -103,6 +111,26 @@ export default ({
             stagingNotesList: stagingNotesList,
             dropZoneName: {
                 createDropList: ''
+            },
+            guides: {
+                managedNotes: {
+                    id:'managedNotes',
+                    title:'Notes Manager',
+                    markdown:`This sidebar allows the user to create Notes
+and organize them by Topics.  These can be \`Exported\` to a file, saved for 
+continued work or shared with other users, then \`Imported\` in to a new 
+session.
+
+The \`Staging Notes\` section allows the user to automatically add notes 
+from document search results, or manually add user-created notes, before
+assigning (by dragging) them to a Topic.  Notes can be deleted by clicking 
+the chevron button \`>>\` beneath them.
+
+The \`Topics\` section allows the user to create (or delete) Topics.  Notes 
+from the Staging area, or other Topics, can be dragged beneath any Topic.  
+By clicking the boxed \`X\` to the right of the Topic, the Topic and all 
+associated Notes are deleted.`
+                }
             }
         }
     },
@@ -191,6 +219,9 @@ async function addNoteFromTable(newNote){
 
 
 <style scoped>
+hr {
+    border: ".75px solid black";
+}
 #btnSidebar {
   float:right;
 }
