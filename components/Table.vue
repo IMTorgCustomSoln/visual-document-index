@@ -185,8 +185,8 @@ export default ({
                     title:'Search Results',
                     markdown:`The search results display as snippets of text 
 containing the highlighted search terms.  The begining of the text includes
-the page number, and the location of text in characters from the begining, such as 
-\`pg.3 | char.5340)\`.  
+the page number, and the location of text in characters from the begining of the
+page, such as \`pg.3 | char.5340)\`.  
 
 When the cursor passes over an individual result snippet, an orange background will
 note its selection, and the document images (to the left) will display the page of 
@@ -362,8 +362,9 @@ ready to be organized with the note Topics.`
                                         const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
                                         const pageIdx = item.accumPageLines.map(val => {return start < val }).indexOf(true)
                                         const pageNum = parseInt(pageIdx) + 1
+                                        const startFromPage = pageIdx == 0 ? start : start - item.accumPageLines[pageIdx-1]
                                         const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const startText = `<b>pg.${pageNum.toString()}| char.${start})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
+                                        const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
                                         const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
                                         const text = startText + endText
                                         snippet.push(text)
