@@ -38,7 +38,7 @@ npm run dev
   - search snippet
     - page for snippet is sometimes incorrect
     - highlight snippet in page image
-  - tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)
+  - ~~tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)~~ => no - too much interaction
   - ~~download notes to readable format~~
   - backticks to support alternative search format
   - zoom on bootstrap-vue image carousel
