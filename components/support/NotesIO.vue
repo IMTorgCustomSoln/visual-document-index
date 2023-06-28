@@ -50,7 +50,7 @@
 
 <script>
 import { isProxy, toRaw } from 'vue'
-import {ExportFileName, ManagedNotesData} from './data.js'
+import {ExportFileName, ExportTextName, ManagedNotesData} from './data.js'
 
 
 export default{
@@ -65,11 +65,14 @@ export default{
     methods:{
         exportToText(e){
             const create = e.target
-            let output = []
-            let initial = `# Notes\n\n`
+            const output = []
+            const initial = `# Notes`
             output.push(initial)
             let allTopics = [...this.topics]
-            allTopics.push({title:'Staging Notes', dropZoneName:'stagingNotes'})
+            const staging = {title:'Staging Notes', 
+                            dropZoneName:'stagingNotes'
+                        }
+            allTopics.push(staging)
             for (let topic of allTopics){
                 let hdr = `\n\n\n## ${topic.title}\n\n`
                 output.push(hdr)
@@ -87,7 +90,6 @@ export default{
                     }
                 }
             }
-            const ExportTextName = 'Notes.txt'
             const strOutput = output.join(' ')
             const a = document.createElement('a')
             var link = create.appendChild(a)
@@ -101,6 +103,7 @@ export default{
                 link.dispatchEvent(event)
                 document.body.removeChild(link)
             })
+            this.$bvModal.hide("export-notes-modal")
         },
         exportToJson(e){
             const create = e.target
@@ -121,6 +124,7 @@ export default{
                 link.dispatchEvent(event)
                 document.body.removeChild(link)
             })
+            this.$bvModal.hide("export-notes-modal")
         },
         previewFile() {
             const file = uploadInput.files[0]

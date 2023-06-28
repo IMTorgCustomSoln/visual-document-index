@@ -68,6 +68,9 @@ export default ({
   min-height: 10px;
   font-size: 8px;
 }
+.drop-zone:hover{
+    background: #ffeecf;
+}
 .drag-el{
   padding-bottom: 10px;
 }
