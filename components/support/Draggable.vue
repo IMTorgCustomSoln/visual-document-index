@@ -1,13 +1,16 @@
 <!--
 ref:[Adding Drag and Drop to Your Vue3 Project](www.youtube.com/watch?v=-kZLD40d-tl)
 * uses the Drag and Drop Web API
+
+@dragover.prevent
 -->
 
 <template>
   <div class="drop-zone"
     @drop="onDrop($event, listName)"
     @dragenter.prevent    
-    @dragover.prevent
+    @dragover="onDragOver($event)"
+    @dragleave="onDragLeave($event)"
     >
     <div v-for="item in getList(listName)"
       :key="item.id" 
@@ -49,7 +52,15 @@ export default ({
       event.dataTransfer.effectAllowed = 'move'   //move instead of copy
       event.dataTransfer.setData('itemID',item.id)
     },
+    onDragOver(event){
+      event.preventDefault()
+      event.target.style.background = "#ffeecf"
+    },
+    onDragLeave(event){
+      event.target.style.background = ""
+    },
     onDrop(event, list){
+      event.target.style.background = ""
       const itemId = event.dataTransfer.getData('itemID')
       const item = this.items.find(item => item.id==itemId)    //find selected item
       item.list = list                                    //change items list
@@ -67,9 +78,6 @@ export default ({
   padding: 10px;
   min-height: 10px;
   font-size: 8px;
-}
-.drop-zone:hover{
-    background: #ffeecf;
 }
 .drag-el{
   padding-bottom: 10px;

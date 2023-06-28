@@ -33,6 +33,7 @@ npm run dev
 ## ToDo
 
   - ~~fix TOC~~
+  - ~~highlight dropzone background on dragover~~
   - create new Search parent component to Table
   - tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)
   - ~~download notes to readable format~~
