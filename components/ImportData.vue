@@ -184,7 +184,7 @@ function processFiles(files){
         // body items
         let bodyArr = Object.values(item.body_pages)
         item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : ''
-        let clean_body = item.body
+        let clean_body = item.body//.replace('\n','<br><br>')
         item.clean_body = clean_body
         item.summary = clean_body.slice(0,500)   //TODO:set constant
         item.pp_toc = item.toc.map(section => `${section.title} (pg.${section.pageNumber})`)

@@ -29,6 +29,19 @@ npm run dev
 * alternative module [pdfjs](https://github.com/rkusa/pdfjs)
 * using `draggable` component would enable sorting within dropzone
 
+* alternative approach: convert to .svg
+  * create .svg (which is mutable) instead of base64 img
+    - https://github.com/pramodhkp/pdf2svg
+    - https://dvisvgm.de/
+    - https://github.com/mozilla/pdf.js/issues/10050
+    - https://github.com/mozilla/pdf.js/blob/master/examples/text-only/pdf2svg.js
+  * separate words
+    - https://stackoverflow.com/questions/8870261/how-to-split-text-without-spaces-into-list-of-words
+    - https://github.com/parsakafi/wordsninja
+  * get text color: https://stackoverflow.com/questions/27713660/pdf-js-get-the-text-colour
+
+
+
 
 ## ToDo
 

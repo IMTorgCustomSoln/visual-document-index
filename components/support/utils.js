@@ -1,6 +1,10 @@
 import { DocumentRecord } from "./data"
 
-// Upload Input
+
+
+
+
+// TRY NEW
 
 export async function getFileRecord(file, progressCallback){     //TODO: async may not be needed
   // create a file record from the FileReader() API
@@ -8,7 +12,101 @@ export async function getFileRecord(file, progressCallback){     //TODO: async m
       const reader = new FileReader()
       reader.onload = (e) => {
           let typedarray = new Uint8Array(e.target.result)
-          const loadingTask = pdfjsLib.getDocument(typedarray, null, null, progressCallback)        //pdfDataRangeTransport, passwordCallback, loadingProgress
+          PDFJS.getDocument(typedarray).then(pdf => {
+              const record = new DocumentRecord()
+              //document is loaded
+              record.page_nos = pdf.numPages;/*
+              record.length_lines_array = []
+              record.body_pages = {}
+
+              createMetadata(pdf, record)
+              createOutline(pdf, record)
+              */
+              for (let i = 1; i <= record.page_nos; i++) {
+                  pdf.getPage(i).then(function(page) {
+                      let n = page.pageNumber
+                      //createCanvasImage(page, n, record)
+                      var viewport = page.getViewport(1.0 /* scale */);
+                      console.log();
+                      
+                      page.getOperatorList().then(function (opList) {
+                        var svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs)
+                        svgGfx.embedFonts = true
+                        svgGfx.getSVG(opList, viewport).then(function (svg) {
+                          var svgDump = svg
+                          record.svg_pages.push ({pg:n, svg:svgDump})
+                        })
+                      })
+                      //createSvg(PDFJS, page, n, record)
+                      /*
+                      page.getTextContent().then(function(textContent) {
+                        var page_text = ""
+                        var line = 0
+                        for (let [index, item] of textContent.items.entries()) {
+                          if (line != item.transform[5]){
+                            if (line != 0){
+                              page_text +='\r\n'
+                            }
+                            line = item.transform[5]
+                          }
+                          page_text += item.str
+                          //if (item.hasEOL==true){ page_text += '\n'} 
+                        }
+                        record.body_pages[n] = page_text    //edit1 + "\n\n"
+                        let sentence_count = (page_text.match(/./g) || []).length
+                        record.length_lines_array.push(sentence_count)
+                              /*
+                              if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
+                          }
+                          let edit1 = page_text.replaceAll('- ','')
+                          record.body_pages[n] = edit1 + "\n\n"
+                          let sentence_count = (edit1.match(/./g) || []).length
+                          record.length_lines_array.push(sentence_count)*/
+                      //})
+                      //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
+                  });
+              };
+              //console.log(`${file} pdf loaded with body: ${record.layers}`)
+              //record.body = record.layers.length > 0 ? record.layers.reduce((partialSum, a) => partialSum += (a || 0)) : '';
+              resolve(record)
+          }).catch((error)=>{
+            console.log(error)
+          })
+      }
+      reader.readAsArrayBuffer(file);
+      reader.onerror = reject;
+  })
+}
+
+function createSvg(pdfjsLib, page, n, record){
+  var viewport = page.getViewport(1.0)
+  return page.getOperatorList().then(function (opList) {
+    var svgGfx = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs);
+    svgGfx.embedFonts = true
+    return svgGfx.getSVG(opList, viewport).then(function (svg) {
+      var svgDump = svg.toString()
+      record.svg_pages.push ({pg:n, svg:svgDump})
+      return 1
+    })
+  })
+}
+
+
+
+
+
+
+
+
+// Upload Input
+
+export async function ORIGINALgetFileRecord(file, progressCallback){     //TODO: async may not be needed
+  // create a file record from the FileReader() API
+  return new Promise(function(resolve, reject) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+          let typedarray = new Uint8Array(e.target.result)
+          const loadingTask = pdfjsLib.getDocument(typedarray, null, null, progressCallback)        //pdfjsLib: pdfDataRangeTransport, passwordCallback, loadingProgress
           loadingTask.promise.then(pdf => {
               const record = new DocumentRecord()
               //document is loaded
@@ -21,18 +119,32 @@ export async function getFileRecord(file, progressCallback){     //TODO: async m
               
               for (let i = 1; i <= record.page_nos; i++) {
                   pdf.getPage(i).then(function(page) {
-                      let n = page.pageNumber;
-                      let page_text = ""
+                      let n = page.pageNumber
                       createCanvasImage(page, n, record)
+                      //createSvg(pdfjsLib, page, n, record)
                       page.getTextContent().then(function(textContent) {
-                          for (let item of textContent.items) {
-                              page_text += String(item.str)
+                        var page_text = ""
+                        var line = 0
+                        for (let [index, item] of textContent.items.entries()) {
+                          if (line != item.transform[5]){
+                            if (line != 0){
+                              page_text +='\r\n'
+                            }
+                            line = item.transform[5]
+                          }
+                          page_text += item.str
+                          //if (item.hasEOL==true){ page_text += '\n'} 
+                        }
+                        record.body_pages[n] = page_text    //edit1 + "\n\n"
+                        let sentence_count = (page_text.match(/./g) || []).length
+                        record.length_lines_array.push(sentence_count)
+                              /*
                               if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
                           }
                           let edit1 = page_text.replaceAll('- ','')
                           record.body_pages[n] = edit1 + "\n\n"
                           let sentence_count = (edit1.match(/./g) || []).length
-                          record.length_lines_array.push(sentence_count)
+                          record.length_lines_array.push(sentence_count)*/
                       });
                       //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
                   });

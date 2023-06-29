@@ -72,6 +72,8 @@ export class DocumentRecord{
       this.body_pages = body_pages
       this.body = body
       this.clean_body = clean_body
+      this.svg_pages = []
+      
       this.readability_score = readability_score
       this.tag_categories = tag_categories
       this.keywords = keywords
