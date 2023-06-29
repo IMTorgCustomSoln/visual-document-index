@@ -102,8 +102,11 @@ export default({
         processData(){
             const processedFiles = processFiles(this.importedFiles)
             this.processedFiles.push(...processedFiles)
-            this.$bvModal.hide("import-modal")
             this.$emit('imported-records', this.processedFiles)
+
+            this.$bvModal.hide("import-modal")
+            this.progressBar = {...this.progressBar, max: 0}
+            this.progressBar = {...this.progressBar, value: 0}
         }
 }
 })
@@ -163,9 +166,9 @@ function processFiles(files){
     // process files selected for upload and return an array of records
     const processedFiles = []
     for (const file of files) {
-        const item = JSON.parse(JSON.stringify( file ))
+        const item = JSON.parse(JSON.stringify( file ))     //file.svg_pages[0].innerHTML, .outerHTML, .textContent
 
-        // row items
+        /* row items
         let length_lines = 0
         if (item.length_lines_array.length > 0){
             if (item.length_lines_array.length > 1){
@@ -175,22 +178,23 @@ function processFiles(files){
             }
         }else{
             length_lines = 1;
-        }
+        }*/
         let dt = getDateFromJsNumber(item.date)
         item.original_date = item.date
         item.date = dt;
-        item.length_lines = length_lines
+        //item.length_lines = length_lines
 
         // body items
         let bodyArr = Object.values(item.body_pages)
         item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : ''
         let clean_body = item.body//.replace('\n','<br><br>')
         item.clean_body = clean_body
-        item.summary = clean_body.slice(0,500)   //TODO:set constant
+        item.summary = clean_body.slice(0,500)   //TODO:set constant*/
+        item.summary = item.svg_pages[0].textContent
         item.pp_toc = item.toc.map(section => `${section.title} (pg.${section.pageNumber})`)
 
         // prepare page numbers for search snippets
-        item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
+        //item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
         // prepare images
         item.canvas_array = item.canvas_array.sort((a,b)=> a.idx - b.idx)
         item.selected_snippet_page = 1

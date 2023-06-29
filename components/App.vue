@@ -8,18 +8,22 @@
     <b-row>
       <b-col cols="5"></b-col>
       <b-col cols="7">
-        <ImportData v-on:imported-records="updateParent" v-if="showImportBtn"/>
-        <Sidebar :note="note" />
+        <ImportData v-on:imported-records="updateParent"/> <!-- v-if="showImportBtn"/>-->
+        <!--<Sidebar :note="note" />-->
       </b-col>
     </b-row>
+    <!--
     <Table v-show="showTablePanel" :records="files" v-on:send-note="updateNotes">{{ createTable }}</Table>
+    -->
   </b-container>
 </template>
 
 <script>
-import ImportData from './ImportData.vue';
-import Table from './Table.vue';
-import Sidebar from './Sidebar.vue'
+import ImportData from './ImportData.vue'
+//import Table from './Table.vue'
+//import Sidebar from './Sidebar.vue'
+
+import { DocumentRecordsData } from './support/data'
 
 
 
@@ -27,13 +31,13 @@ export default {
   name: 'app',
   components: {
     ImportData,
-    Table,
-    Sidebar
+    //Table,
+    //Sidebar
   },
   data(){return {
     showImportBtn: true,
     showTablePanel: false,
-    files: [],
+    files: DocumentRecordsData.documents,
     note: {}
     }
   },

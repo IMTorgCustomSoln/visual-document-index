@@ -1,71 +1,154 @@
 import { DocumentRecord } from "./data"
+//import { assert } from 'vitest'
+
+
+export class WordSplitter{
+  constructor(filepath){
+    this.filepath = filepath
+  }
+  async setup(){
+    this.wordsByFreq = await parseJsonFile(this.filepath)
+    this.wordsCost = wordCost(this.wordsByFreq)
+    this.longestWordLength = getLongestString(this.wordsByFreq)
+    this.inferSpaces = inferSpaces.bind(this)
+    return 1
+  }
+}
+
+const filepath = './xtra/swords_by_freq.json'
+export const WordSplit = new WordSplitter(filepath)
+
+
+function inferSpaces(str){
+  //ref: https://stackoverflow.com/questions/8870261/how-to-split-text-without-spaces-into-list-of-words
+  //TODO: enable to maintain case of string
+
+  //build cost array
+  const cost = [0]
+  const rng = [...Array(str.length+1).keys()]
+  rng.shift()
+  for (let i of rng){
+    const [c, k] = getBestMatch.bind(this)(i)
+    cost.push(c)
+  }
+
+  //recover minimal cost string
+  const out = []
+  let i = str.length
+  while (i > 0){
+    let [c, k] = getBestMatch.bind(this)(i)
+    //assert( c == cost[i] )
+    out.push( str.slice(i-k, i) )
+    i -= k
+  }
+
+  const result = out.toReversed().join(" ")
+  return result
+
+
+  function getBestMatch(i){
+    const mx = Math.max(0, i-this.longestWordLength)
+    const candidates = cost.slice(mx, i).reverse()
+    const selectionCost = []
+    for (let [idx, c] of candidates.entries()){
+      const selection = str.slice(i-idx-1, i)
+      const costVal = this.wordsCost[selection] ?? 9e999
+      selectionCost.push( [c + costVal, idx+1])
+    }
+    const min = selectionCost.reduce((min, item) => {return item[0] < min[0] ? item : min})
+    return min
+  }
+
+}
+
+function reverse(s){
+  return s.split("").reverse().join("")
+}
+
+function getLongestString(words){
+  const longestWord = words.reduce((a,b) => a.length < b.length ? b : a, "")
+  return longestWord.length
+}
+
+function wordCost(words){
+  const result = {}
+  try{
+    for (let [idx, word] of words.entries()){
+      result[word] = Math.log((idx+1) * Math.log(words.length))
+    }
+    return result
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+const isBrowser = new Function("try {return this === window;}catch(e){return false;}")
+
+export async function parseJsonFile(file) {
+  return new Promise((resolve, reject) => {
+    if (isBrowser()){
+      const fileReader = new FileReader()
+      fileReader.onload = event => resolve(JSON.parse(event.target.result)['words'])
+      fileReader.onerror = error => reject(error)
+      fileReader.readAsText(file)
+    } else {
+      const fs = require('fs')
+      fs.readFile(file, (err, json)=>{
+        const data = JSON.parse(json)
+        resolve(data['words'])
+      })
+    }
+  })
+}
 
 
 
+// Upload Input
 
-
-// TRY NEW
-
-export async function getFileRecord(file, progressCallback){     //TODO: async may not be needed
+export async function getFileRecord(file){
   // create a file record from the FileReader() API
   return new Promise(function(resolve, reject) {
       const reader = new FileReader()
       reader.onload = (e) => {
           let typedarray = new Uint8Array(e.target.result)
-          PDFJS.getDocument(typedarray).then(pdf => {
+          PDFJS.getDocument(typedarray).then(async pdf => {
               const record = new DocumentRecord()
+
               //document is loaded
-              record.page_nos = pdf.numPages;/*
+              record.page_nos = pdf.numPages
               record.length_lines_array = []
               record.body_pages = {}
 
               createMetadata(pdf, record)
               createOutline(pdf, record)
-              */
+
               for (let i = 1; i <= record.page_nos; i++) {
+                //ref: https://github.com/pramodhkp/pdf2svg/blob/master/pdf2svg.js
+                const page = await pdf.getPage(i)
+                const n = page.pageNumber
+                const viewport = page.getViewport(1.0)
+                const opList = await page.getOperatorList()
+                let svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs)
+                svgGfx.embedFonts = true
+                const svg = await svgGfx.getSVG(opList, viewport)
+                record.svg_pages.push({"pg":n, "svg":svg})
+              }
+                /*
                   pdf.getPage(i).then(function(page) {
                       let n = page.pageNumber
-                      //createCanvasImage(page, n, record)
-                      var viewport = page.getViewport(1.0 /* scale */);
-                      console.log();
+                      var viewport = page.getViewport(1.0 /* scale )
                       
                       page.getOperatorList().then(function (opList) {
+                        //ref: https://github.com/pramodhkp/pdf2svg/blob/master/pdf2svg.js
                         var svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs)
                         svgGfx.embedFonts = true
                         svgGfx.getSVG(opList, viewport).then(function (svg) {
-                          var svgDump = svg
-                          record.svg_pages.push ({pg:n, svg:svgDump})
+                          record.svg_pages.push({"pg":n, "svg":svg})
                         })
                       })
-                      //createSvg(PDFJS, page, n, record)
-                      /*
-                      page.getTextContent().then(function(textContent) {
-                        var page_text = ""
-                        var line = 0
-                        for (let [index, item] of textContent.items.entries()) {
-                          if (line != item.transform[5]){
-                            if (line != 0){
-                              page_text +='\r\n'
-                            }
-                            line = item.transform[5]
-                          }
-                          page_text += item.str
-                          //if (item.hasEOL==true){ page_text += '\n'} 
-                        }
-                        record.body_pages[n] = page_text    //edit1 + "\n\n"
-                        let sentence_count = (page_text.match(/./g) || []).length
-                        record.length_lines_array.push(sentence_count)
-                              /*
-                              if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
-                          }
-                          let edit1 = page_text.replaceAll('- ','')
-                          record.body_pages[n] = edit1 + "\n\n"
-                          let sentence_count = (edit1.match(/./g) || []).length
-                          record.length_lines_array.push(sentence_count)*/
-                      //})
                       //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
-                  });
-              };
+                  })
+              }*/
               //console.log(`${file} pdf loaded with body: ${record.layers}`)
               //record.body = record.layers.length > 0 ? record.layers.reduce((partialSum, a) => partialSum += (a || 0)) : '';
               resolve(record)
@@ -73,32 +156,11 @@ export async function getFileRecord(file, progressCallback){     //TODO: async m
             console.log(error)
           })
       }
-      reader.readAsArrayBuffer(file);
-      reader.onerror = reject;
+      reader.readAsArrayBuffer(file)
+      reader.onerror = reject
   })
 }
 
-function createSvg(pdfjsLib, page, n, record){
-  var viewport = page.getViewport(1.0)
-  return page.getOperatorList().then(function (opList) {
-    var svgGfx = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs);
-    svgGfx.embedFonts = true
-    return svgGfx.getSVG(opList, viewport).then(function (svg) {
-      var svgDump = svg.toString()
-      record.svg_pages.push ({pg:n, svg:svgDump})
-      return 1
-    })
-  })
-}
-
-
-
-
-
-
-
-
-// Upload Input
 
 export async function ORIGINALgetFileRecord(file, progressCallback){     //TODO: async may not be needed
   // create a file record from the FileReader() API
@@ -178,23 +240,21 @@ function createMetadata(pdf, record){
     })
 }
 
-function createOutline(pdf, record){
+async function createOutline(pdf, record){
   //ref: https://medium.com/@csofiamsousa/creating-a-table-of-contents-with-pdf-js-4a4316472fff
-  pdf.getOutline().then(async outline => {    
-    if (outline){
-      for (let i =0; i< outline.length; i++){
-        const title = outline[i].title
-        const dest = outline[i].dest
-        pdf.getDestination(dest).then(function(dest){
-          const ref = dest[0]
-          pdf.getPageIndex(ref).then(function(id){
-            record.toc.push({title: title, pageNumber: parseInt(id)+1})
-          })
-        })
-      }
+  const outline = await pdf.getOutline()  
+  if (outline){
+    const dests = await pdf.getDestinations()
+    for (let i =0; i< outline.length; i++){
+      const title = outline[i].title
+      const dest = outline[i].dest
+      const ref = dests[dest][0]
+      const id = await pdf.getPageIndex(ref)
+      record.toc.push({title: title, pageNumber: parseInt(id)+1})
     }
-  })
+  }
 }
+
 
 
 function createCanvasImage(page, idx, record){

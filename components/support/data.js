@@ -1,6 +1,6 @@
 import {ref} from 'vue'
 
-
+//TODO:should these be placed on the global? >>> app.config.globalProperties.$pdf
 
 // Managed Notes
 
@@ -69,7 +69,7 @@ export class DocumentRecord{
       this.toc = []
       this.pp_toc = pp_toc
 
-      this.body_pages = body_pages
+      this.body_pages = []
       this.body = body
       this.clean_body = clean_body
       this.svg_pages = []
@@ -83,7 +83,7 @@ export class DocumentRecord{
       this.length_lines_array = null
       this.date_created = null
       this.date_mod = null
-      this.canvas_array = []
+      //this.canvas_array = []
 
       this.sort_key = null
       this.hit_count = null
@@ -93,3 +93,10 @@ export class DocumentRecord{
       this.accumPageLines = null
     }
 }
+
+export const DocumentRecordsData = ref({
+  documents: [],
+  lunrIndex: {
+    index: ''
+  }
+})

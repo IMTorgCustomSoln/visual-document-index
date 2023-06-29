@@ -17,6 +17,11 @@ export default ({mode}) => {
       __EXPORT_FILE_NAME__: `"${process.env.EXPORT_FILE_NAME}"`,
       __EXPORT_TEXT_NAME__: `"${process.env.EXPORT_TEXT_NAME}"`
     },
+    test: {
+      name: 'node',
+      environment: 'node',
+      root: './'
+    },
     resolve: {
       alias: {
         vue: '@vue/compat',
