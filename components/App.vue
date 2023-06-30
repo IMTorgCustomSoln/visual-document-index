@@ -37,7 +37,8 @@ export default {
   data(){return {
     showImportBtn: true,
     showTablePanel: false,
-    files: DocumentRecordsData.documents,
+    //files: DocumentRecordsData.documents,
+    files: [],
     note: {}
     }
   },

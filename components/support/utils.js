@@ -103,8 +103,10 @@ export async function parseJsonFile(file) {
 
 
 
-// Upload Input
+/* Upload Input
 
+
+// v1 await only (fails b/c of for loops)
 export async function getFileRecord(file){
   // create a file record from the FileReader() API
   return new Promise(function(resolve, reject) {
@@ -133,24 +135,6 @@ export async function getFileRecord(file){
                 const svg = await svgGfx.getSVG(opList, viewport)
                 record.svg_pages.push({"pg":n, "svg":svg})
               }
-                /*
-                  pdf.getPage(i).then(function(page) {
-                      let n = page.pageNumber
-                      var viewport = page.getViewport(1.0 /* scale )
-                      
-                      page.getOperatorList().then(function (opList) {
-                        //ref: https://github.com/pramodhkp/pdf2svg/blob/master/pdf2svg.js
-                        var svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs)
-                        svgGfx.embedFonts = true
-                        svgGfx.getSVG(opList, viewport).then(function (svg) {
-                          record.svg_pages.push({"pg":n, "svg":svg})
-                        })
-                      })
-                      //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
-                  })
-              }*/
-              //console.log(`${file} pdf loaded with body: ${record.layers}`)
-              //record.body = record.layers.length > 0 ? record.layers.reduce((partialSum, a) => partialSum += (a || 0)) : '';
               resolve(record)
           }).catch((error)=>{
             console.log(error)
@@ -159,18 +143,19 @@ export async function getFileRecord(file){
       reader.readAsArrayBuffer(file)
       reader.onerror = reject
   })
-}
+}*/
 
 
-export async function ORIGINALgetFileRecord(file, progressCallback){     //TODO: async may not be needed
+// v2 some other problem
+export async function getFileRecord(file){     //TODO: async may not be needed
   // create a file record from the FileReader() API
   return new Promise(function(resolve, reject) {
       const reader = new FileReader()
       reader.onload = (e) => {
           let typedarray = new Uint8Array(e.target.result)
-          const loadingTask = pdfjsLib.getDocument(typedarray, null, null, progressCallback)        //pdfjsLib: pdfDataRangeTransport, passwordCallback, loadingProgress
+          const loadingTask = PDFJS.getDocument(typedarray) 
           loadingTask.promise.then(pdf => {
-              const record = new DocumentRecord()
+              let record = new DocumentRecord()
               //document is loaded
               record.page_nos = pdf.numPages;
               record.length_lines_array = []
@@ -180,39 +165,27 @@ export async function ORIGINALgetFileRecord(file, progressCallback){     //TODO:
               createOutline(pdf, record)
               
               for (let i = 1; i <= record.page_nos; i++) {
-                  pdf.getPage(i).then(function(page) {
-                      let n = page.pageNumber
-                      createCanvasImage(page, n, record)
-                      //createSvg(pdfjsLib, page, n, record)
-                      page.getTextContent().then(function(textContent) {
-                        var page_text = ""
-                        var line = 0
-                        for (let [index, item] of textContent.items.entries()) {
-                          if (line != item.transform[5]){
-                            if (line != 0){
-                              page_text +='\r\n'
-                            }
-                            line = item.transform[5]
-                          }
-                          page_text += item.str
-                          //if (item.hasEOL==true){ page_text += '\n'} 
+                pdf.getPage(i).then(function(page) {
+                    let n = page.pageNumber
+                    var viewport = page.getViewport({ scale: 3 })
+                    var svg = page.getOperatorList().then(function (opList) {
+                      var svgGfx = new PDFJS.SVGGraphics(page.commonObjs, page.objs)
+                      svgGfx.embedFonts = true
+                      return svgGfx.getSVG(opList, viewport).then(function (svg) {
+                        var s = new XMLSerializer()
+                        let item = {
+                          page: n,
+                          innerHTML: svg.innerHTML,
+                          outerHTML: svg.outerHTML,
+                          textContent: svg.textContent,
+                          serialized: s.serializeToString(svg)
                         }
-                        record.body_pages[n] = page_text    //edit1 + "\n\n"
-                        let sentence_count = (page_text.match(/./g) || []).length
-                        record.length_lines_array.push(sentence_count)
-                              /*
-                              if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
-                          }
-                          let edit1 = page_text.replaceAll('- ','')
-                          record.body_pages[n] = edit1 + "\n\n"
-                          let sentence_count = (edit1.match(/./g) || []).length
-                          record.length_lines_array.push(sentence_count)*/
-                      });
-                      //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)
-                  });
-              };
-              //console.log(`${file} pdf loaded with body: ${record.layers}`)
-              //record.body = record.layers.length > 0 ? record.layers.reduce((partialSum, a) => partialSum += (a || 0)) : '';
+                        record.svg_pages.push(item)
+                        return svg
+                      })
+                    })
+                })
+              }
               resolve(record)
           }).catch((error)=>{
             console.log(error)
@@ -222,6 +195,29 @@ export async function ORIGINALgetFileRecord(file, progressCallback){     //TODO:
       reader.onerror = reject;
   })
 }
+
+
+async function createSvg(pdf, record){
+  return new Promise(function(resolve, reject){
+    for (let i = 1; i <= record.page_nos; i++) {
+      pdf.getPage(i).then(function(page) {
+        let n = page.pageNumber
+        let viewport = page.getViewport(1.0)
+        page.getOperatorList().then(function(opList) {
+          let svgGfx = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs)
+          svgGfx.embedFonts = true
+          svgGfx.getSVG(opList, viewport).then(function (svg) {
+            record.svg_pages.push({'pg':n, 'svg':svg})
+            //record.svg_pages[n] = svg.toString()
+          })
+        })
+      })
+    }
+    resolve(record)
+  })
+}
+
+
 
 export function progressCallback(progress) {
   // progress object contains "total" and "loaded" properties
@@ -242,17 +238,20 @@ function createMetadata(pdf, record){
 
 async function createOutline(pdf, record){
   //ref: https://medium.com/@csofiamsousa/creating-a-table-of-contents-with-pdf-js-4a4316472fff
-  const outline = await pdf.getOutline()  
-  if (outline){
-    const dests = await pdf.getDestinations()
-    for (let i =0; i< outline.length; i++){
-      const title = outline[i].title
-      const dest = outline[i].dest
-      const ref = dests[dest][0]
-      const id = await pdf.getPageIndex(ref)
-      record.toc.push({title: title, pageNumber: parseInt(id)+1})
+  pdf.getOutline().then(outline => {    
+    if (outline){
+      for (let i =0; i< outline.length; i++){
+        const title = outline[i].title
+        const dest = outline[i].dest
+        pdf.getDestinations(dest).then(function(dests){
+          const ref = dests[dest][0]
+          pdf.getPageIndex(ref).then(function(id){
+            record.toc.push({title: title, pageNumber: parseInt(id)+1})
+          })
+        })
+      }
     }
-  }
+  })
 }
 
 

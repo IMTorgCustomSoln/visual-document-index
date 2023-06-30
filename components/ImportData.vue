@@ -94,9 +94,9 @@ export default({
             // Load files into records
             this.uploadBtn = true
             uploadFiles.bind(this)(uploadInput.files).then(
-                (recs)=>{
-                    this.importedFiles.push(...recs)
-                    this.processBtn = false         
+            (recs)=>{
+                this.importedFiles.push(...recs)
+                this.processBtn = false         
             })
         },
         processData(){
@@ -190,13 +190,13 @@ function processFiles(files){
         let clean_body = item.body//.replace('\n','<br><br>')
         item.clean_body = clean_body
         item.summary = clean_body.slice(0,500)   //TODO:set constant*/
-        item.summary = item.svg_pages[0].textContent
+        //item.summary = item.svg_pages[0].textContent
         item.pp_toc = item.toc.map(section => `${section.title} (pg.${section.pageNumber})`)
 
         // prepare page numbers for search snippets
         //item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
         // prepare images
-        item.canvas_array = item.canvas_array.sort((a,b)=> a.idx - b.idx)
+        //item.canvas_array = item.canvas_array.sort((a,b)=> a.idx - b.idx)
         item.selected_snippet_page = 1
 
         processedFiles.push(item)
