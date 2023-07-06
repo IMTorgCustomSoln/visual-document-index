@@ -1,117 +1,95 @@
 <template>
-<div>
+    <div v-if="initializeTable">
+        <!--refs
+            * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
+            * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
+            * max recursion error can occur if filtering or other props are not correct
+        -->
+        <b-table hover 
+          :items="items" 
+          :fields="fields"
+          :filter="tableFilter"
+          :filter-function="onFiltered"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
 
-    <!-- Search -->
-    <b-row id="table-panel">
-        <b-col>
-            <span>
-                <h5 style="display:inline">Search: </h5>
-                <Guide v-bind="guides.search"/>
-                <input type="text" class="form-control" id="search-field" v-model="query" @input="searchQuery" placeholder="type search text here..." />
-                <div v-if="!searchResults.errorMsg">{{ searchResultsCount }}</div>
-                <div v-else class="errorMsg"> {{ searchResults.errorMsg }}</div>
-            </span>
-            <div>
-                <b-button size="sm" v-on:click="expandAll" >Expand All</b-button>
-                <b-button size="sm" v-on:click="collapseAll" >Collapse All</b-button>
-            </div>
-        </b-col>
-    </b-row>
+          primary-key='id'
+          striped small
+          responsive="sm" sticky-header="1000px"
+          bordered
+          thead-class="tableHead bg-dark text-white"
+          @row-clicked="expandAdditionalInfo"                     
+          >
 
-        <div>
-                <div v-if="initializeTable">
-                    <!--refs
-                        * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
-                        * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
-                        * max recursion error can occur if filtering or other props are not correct
-                    -->
-                    <b-table hover 
-                      :items="items" 
-                      :fields="fields"
-                      :filter="tableFilter"
-                      :filter-function="onFiltered"
-                      :sort-by.sync="sortBy"
-                      :sort-desc.sync="sortDesc"
+          <template #cell(show_details)="row">
+              <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+              <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
+                -
+              </b-form-checkbox>
+            </template>
 
-                      primary-key='id'
-                      striped small
-                      responsive="sm" sticky-header="1000px"
-                      bordered
-                      thead-class="tableHead bg-dark text-white"
-                      @row-clicked="expandAdditionalInfo"                     
-                      >
-
-                      <template #cell(show_details)="row">
-                          <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-                          <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
-                            -
-                          </b-form-checkbox>
-                        </template>
-
-                    <template #row-details="row">
-                          <b-card>
-                            <b-row class="mb-2">
-                                <b-col sm="6" class="text-sm-left">
-                                    <b-tabs
-                                        v-model="activeTab"
-                                        active-nav-item-class="font-weight-bold" 
-                                        content-class="mt-3">
-                                        <b-tab title="Summary" active>
-                                            <b-card>
-                                            <b-row>
-                                                <b-col sm="5" class="text-sm-left">
-                                                    <b-row ><b>Author: &nbsp</b> {{row.item.author}}</b-row>
-                                                    <b-row ><b>Subject: &nbsp</b> {{row.item.subject}}</b-row>
-                                                    <b-row ><b>Keywords: &nbsp</b> {{row.item.keywords}}</b-row>
-                                                </b-col>
-                                                <b-col sm="7" class="text-sm-left">
-                                                    <b>Contents:</b> <br><span v-html="row.item.pp_toc.join('<br>')"></span> 
-                                                </b-col>
-                                            </b-row>
-                                        </b-card>
-                                        </b-tab>
-                                        <b-tab title="FlipBook" lazy>
-                                            <b-card>
-                                            <b-row>
-                                                <b-col sm="9">
-                                                    <FlipBook 
-                                                        :selectedPage="searchResults.mouseOverSnippet" 
-                                                        :imageArray="row.item.canvas_array"
-                                                        />
-                                                </b-col>
-                                            </b-row>
-                                            </b-card>
-                                        </b-tab>
-                                    </b-tabs>
-                                </b-col>
-                            
-                            <b-col sm="6" class="text-sm-left">
-                                <div v-if="!searchResults.totalDocuments"><b>Document summary: </b> <br/>
-                                    {{ row.item.summary }}
+        <template #row-details="row">
+              <b-card>
+                <b-row class="mb-2">
+                    <b-col sm="6" class="text-sm-left">
+                        <b-tabs
+                            v-model="activeTab"
+                            active-nav-item-class="font-weight-bold" 
+                            content-class="mt-3">
+                            <b-tab title="Summary" active>
+                                <b-card>
+                                <b-row>
+                                    <b-col sm="5" class="text-sm-left">
+                                        <b-row ><b>Author: &nbsp</b> {{row.item.author}}</b-row>
+                                        <b-row ><b>Subject: &nbsp</b> {{row.item.subject}}</b-row>
+                                        <b-row ><b>Keywords: &nbsp</b> {{row.item.keywords}}</b-row>
+                                    </b-col>
+                                    <b-col sm="7" class="text-sm-left">
+                                        <b>Contents:</b> <br><span v-html="row.item.pp_toc.join('<br>')"></span> 
+                                    </b-col>
+                                </b-row>
+                            </b-card>
+                            </b-tab>
+                            <b-tab title="FlipBook" lazy>
+                                <b-card>
+                                <b-row>
+                                    <b-col sm="9">
+                                        <FlipBook 
+                                            :selectedPage="searchResults.mouseOverSnippet" 
+                                            :imageArray="row.item.canvas_array"
+                                            />
+                                    </b-col>
+                                </b-row>
+                                </b-card>
+                            </b-tab>
+                        </b-tabs>
+                    </b-col>
+                
+                <b-col sm="6" class="text-sm-left">
+                    <div v-if="!searchResults.totalDocuments"><b>Document summary: </b> <br/>
+                        {{ row.item.summary }}
+                    </div>
+                    <div v-else><b>Search results in {{ row.item.hit_count }} hits: </b> <Guide v-bind="guides.snippet" /> </div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
+                    <br/>
+                    <div class="left_contentlist">
+                        <div class="itemconfiguration">
+                            <div id="search-results" v-for="(snippet, index) in row.item.snippets">
+                                <div class="snippet" v-on:mouseover="selectSnippetPage(row.item.id, snippet)">
+                                    <span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span>
+                                    <b-button size="sm" v-on:click="postNote($event)">Note
+                                    </b-button>
                                 </div>
-                                <div v-else><b>Search results in {{ row.item.hit_count }} hits: </b> <Guide v-bind="guides.snippet" /> </div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
                                 <br/>
-                                <div class="left_contentlist">
-                                    <div class="itemconfiguration">
-                                        <div id="search-results" v-for="(snippet, index) in row.item.snippets">
-                                            <div class="snippet" v-on:mouseover="selectSnippetPage(row.item.id, snippet)">
-                                                <span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span>
-                                                <b-button size="sm" v-on:click="postNote($event)">Note
-                                                </b-button>
-                                            </div>
-                                            <br/>
-                                        </div>
-                                    </div>
-                                </div> 
-                            </b-col>
-                            </b-row>
-                          </b-card>
-                        </template>
+                            </div>
+                        </div>
+                    </div> 
+                </b-col>
+                </b-row>
+              </b-card>
+            </template>
 
-                    </b-table>
-                </div>
-            </div>
-</div>
+        </b-table>
+    </div>
 </template>
 
 
@@ -148,7 +126,6 @@ export default ({
     },
     data(){
         this.fields = fields
-        this.lunrIndex = null
         
         return {
             initializeTable: false,
@@ -167,19 +144,6 @@ export default ({
                 mouseOverSnippet: ''
             },
             guides: {
-                search:{
-                    id:'search',
-                    title:'Search Patterns',
-                    markdown:`The following are patterns used in search terms:
-* \`foo\` - all search is on stemmed terms so dno't worry about case or word ending
-* \`+foo +bar\` - for logical AND search; otherwise, all search use OR with terms
-* \`+foo bar -baz\` - search without 'baz'
-* \`*foo\` - search terms with characters before foo
-* \`title: foo\` - only search document titles for term foo
-* \`foo^10 bar\` - weight term foo 10-times the importance of bar
-* \`foo~1\` - one edit distance of foo (fuzzy matching)
-`
-                },
                 snippet:{
                     id:'snippet',
                     title:'Search Results',
@@ -197,11 +161,6 @@ Notes sidebar displays and the text snippet appears in the Staging Area.  It is
 ready to be organized with the note Topics.`
                 }
             }
-        }
-    },
-    computed: {
-        searchResultsCount(){
-            return this.query != '' ? `Search returned ${this.searchResults.count} hits, in ${this.searchResults.totalDocuments} documents, using terms: ${this.searchResults.searchTerms}`  : ''
         }
     },
     methods: {
@@ -229,173 +188,10 @@ ready to be organized with the note Topics.`
                 const item = JSON.parse(JSON.stringify( record ))
                 this.items.push( item )
             }
-            //console.log(this.items)
-
-            //create lunr index
-            const docs = this.items;
-            const lunrIndex = lunr(function() {
-                this.ref('id')
-                this.field('clean_body')
-                this.metadataWhitelist = ['position']
-                docs.forEach(function(doc) {
-                    this.add(doc)
-                }, this)
-            })
-            //add to context
-            this.lunrIndex = lunrIndex;
             this.initializeTable = true;
         },
 
-        searchQuery() {
-            /* Provide tableFilter of selected rows' id based on `this.query` input
-            ~~_Note_: `search()` must be instatiated in template, so `return ''` is 
-            used.  This is not clean, but computed's cacheing ability still makes
-            it preferable over other methods.~~   =>  previously `computed`
-            :query str - from text input, should match lunrjs patterns
-            :filter [] - selected files' ids
-            */
-            console.log(this.query)
-            this.searchResults = {...this.searchResults, errorMsg: ''}
 
-            if (this.query.length === 0){
-                this.resetAllItems()
-                return false
-
-            } else if (this.lunrIndex) {
-                
-                //query lunrjs index
-                const queryVal = this.query
-                var searchTerms = ''
-                var results = ''
-                try {
-                    searchTerms = this.lunrIndex.pipeline.run(lunr.tokenizer(queryVal))
-                    this.searchResults = {...this.searchResults, searchTerms: searchTerms}
-                    results = this.lunrIndex.search(queryVal).map(resultFile => { return resultFile })
-                } catch (error) {
-                    this.searchResults = {...this.searchResults, errorMsg: error}
-                    this.resetAllItems()
-                    return false
-                }
-                const resultIds = results.map(resultFile => resultFile.ref)
-                console.log(resultIds)
-
-                //get hit counts for individual doc and total docs
-                const resultGroups = []
-                for(let resultFile of results){
-                    let new_keys = Object.keys( resultFile.matchData.metadata )
-                    let counts = []
-                    let positions = []
-                    let rec = {}
-                    rec['ref'] = resultFile.ref
-                    rec['score'] = resultFile.score.toFixed(3)
-                    for (let key of new_keys){
-                        counts.push( resultFile.matchData.metadata[key].clean_body.position.length )
-                        positions.push( ...resultFile.matchData.metadata[key].clean_body.position )
-                    }
-                    rec['count'] = counts.reduce((pv,cv)=>{return pv+cv}, 0)
-                    rec['positions'] = positions.sort(compareByFirstItem)
-                    resultGroups.push( rec )
-                    }
-                let totalCount = 0
-                totalCount = resultGroups.reduce(function(pv,cv) {return pv + cv.count}, 0)
-                this.searchResults = {...this.searchResults, count: totalCount}
-                console.log(resultGroups)
-
-                //update table items based on query
-                this.tableFilter.length = 0
-
-                if (resultIds.length == 0){
-                    this.resetAllItems()
-                } else {
-                this.items.map(item => {
-                    if (resultIds.includes(item.id)){
-                        //filter and sort table items 
-                        this.tableFilter.push( item.id )
-                        const idx = resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
-                        if (idx <= -1){
-                            this.resetItem(item)
-                        } else {
-                            let resultFile = resultGroups[idx]
-                            item.sort_key = resultFile.score
-                            item.hit_count = resultFile.count
-
-                            //update item row details' snippets
-                            this.searchResults = {...this.searchResults, totalDocuments: resultIds.length}
-                            const MARGIN = 250
-                            //const LIMIT_OUTPUT = 3
-                            //this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
-                            item.snippets.length = 0
-
-                            const positions = resultFile.positions.map(item => item)//.slice(0, LIMIT_OUTPUT)
-                            const positionGroups = []
-                            let incr = 0
-                            for (let index = 0; (index + incr) < positions.length; index++){
-                                let indexCorrected = index + incr
-                                const pos = positions[indexCorrected]
-                                const subgroup = []
-                                subgroup.push(pos)
-                                if (indexCorrected + 1 == positions.length){
-                                    positionGroups.push(subgroup)
-                                    break
-                                } else {
-                                    for(let nextIndex = indexCorrected + 1; nextIndex < positions.length; nextIndex++){
-                                        const nextPos = positions[nextIndex]
-                                        const diff = nextPos[0] - pos[0]
-                                        if (diff < MARGIN * 2){
-                                            subgroup.push(nextPos)
-                                            incr++
-                                            if (index + incr + 1 == positions.length){
-                                                positionGroups.push(subgroup)
-                                            }
-                                        } else {
-                                            positionGroups.push(subgroup)
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                            console.log(positionGroups)
-                            for (let grp of positionGroups){
-                                const snippet = []
-                                for (let [index, pos] of grp.entries()){
-                                    if (index==0){
-                                        const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
-                                        const pageIdx = item.accumPageLines.map(val => {return start < val }).indexOf(true)
-                                        const pageNum = parseInt(pageIdx) + 1
-                                        const startFromPage = pageIdx == 0 ? start : start - item.accumPageLines[pageIdx-1]
-                                        const endPage = item.length_lines_array[pageIdx]
-                                        const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
-                                        const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
-                                        const text = startText + endText
-                                        snippet.push(text)
-                                    } else if (index == grp.length - 1){
-                                        const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
-                                        const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const end = pos[0]+pos[1] + MARGIN < item.clean_body.length ? pos[0]+pos[1] + MARGIN : item.clean_body.length
-                                        const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(pos[0]+pos[1], end)}`
-                                        snippet.push(text)
-                                    } else {
-                                        const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
-                                        const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b>`
-                                        snippet.push(text)
-                                    }
-                                }
-                                item.snippets.push( snippet )
-                            }
-                        }
-                    }
-                })
-                this.sortDesc = true
-                console.log(this.tableFilter)
-                this.activeTab = 1
-                return true
-                }
-            } else {
-                return false
-            }
-        },
 
         onFiltered(row, filter) {
             // Applied to each table row to determine if it 
@@ -415,6 +211,7 @@ ready to be organized with the note Topics.`
             item.snippets = []
         },
 
+        /*
         resetAllItems(){
             this.items.map(item => {
                 this.resetItem(item)
@@ -426,7 +223,7 @@ ready to be organized with the note Topics.`
 
             this.sortDesc = false
             this.tableFilter.length = 0
-        },
+        },*/
 
         // buttons and formatting
         expandAll() {
@@ -452,15 +249,7 @@ ready to be organized with the note Topics.`
 })
 
 
-function compareByFirstItem( a, b ) {
-  if ( a[0] < b[0] ){
-    return -1;
-  }
-  if ( a[0] > b[0] ){
-    return 1;
-  }
-  return 0;
-}
+
 
 
 

@@ -1,56 +1,65 @@
 <template>
-    <p>Click to import files and populate a table:</p>
-    <b-button size="sm" v-b-modal="'import-modal'" class="btn btn-success btn-sm m-1">Import Files</b-button>
-    <div>
-        <!-- The modal -->
-        <b-modal id="import-modal" ok-only>
-            <template #modal-title>
-                Select files for import
-            </template>
-            <br>
-            <form name="uploadForm">
-                <div>
-                    <label for="uploadInput" class="custom-file-upload">
-                        <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
-                    </label>
-                    <input id="uploadInput" 
-                        type="file"
-                        accept=".pdf" 
-                        @change="previewFiles" 
-                        multiple 
-                        /> 
-                    <br/>
-                    <label for="fileCount">Files: &nbsp</label>
-                    <output id="fileCount">0</output><br/>
-                    <label for="fileSize">Total size: &nbsp</label>
-                    <output id="fileSize">0</output>
-                    <br/><div style="text-align: right;"><em>(note that only PDF files can be used at this time)</em></div>
-                </div>
-            </form>
-                
-            <div>
-                <b-progress 
-                    class="progress" 
-                    :max="progressBar.max" 
-                    height="1rem"
-                    show-progress
-                    animated
-                    >
-                    <b-progress-bar 
-                        :value="progressBar.value" 
-                        :variant="progressBar.variant"
-                        >
-                        <span>Processed <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
-                    </b-progress-bar>
-                </b-progress>
-            </div>
+    <p v-if="componentBtn">
+        Click to import files and populate a table:
+    </p>
+    <!-- The button -->
+    <b-button
+        id='btnImport' 
+        v-b-modal="'import-modal'" 
+        variant="primary"
+        :class="{'btn-success': componentBtn}"
+        >
+        {{ btnText }}
+    </b-button>
 
-            <template #modal-footer>
-                    <button @click="uploadInput" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !uploadBtn}" :disabled=uploadBtn>Import Files</button>
-                    <button @click="processData" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !processBtn}" :disabled=processBtn>Process Data</button>
-                </template>
-        </b-modal>
-    </div>
+    <!-- The modal -->
+    <b-modal id="import-modal" ok-only>
+        <template #modal-title>
+            Select files for import
+        </template>
+        <br>
+        <form name="uploadForm">
+            <div>
+                <label for="uploadInput" class="custom-file-upload">
+                    <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
+                </label>
+                <input id="uploadInput" 
+                    type="file"
+                    accept=".pdf" 
+                    @change="previewFiles" 
+                    multiple 
+                    /> 
+                <br/>
+                <label for="fileCount">Files: &nbsp</label>
+                <output id="fileCount">0</output><br/>
+                <label for="fileSize">Total size: &nbsp</label>
+                <output id="fileSize">0</output>
+                <br/><div style="text-align: right;"><em>(note that only PDF files can be used at this time)</em></div>
+            </div>
+        </form>
+            
+        <div>
+            <b-progress 
+                class="progress" 
+                :max="progressBar.max" 
+                height="1rem"
+                show-progress
+                animated
+                >
+                <b-progress-bar 
+                    :value="progressBar.value" 
+                    :variant="progressBar.variant"
+                    >
+                    <span>Processed <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
+                </b-progress-bar>
+            </b-progress>
+        </div>
+
+        <template #modal-footer>
+                <button @click="uploadInput" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !uploadBtn}" :disabled=uploadBtn>Upload Files</button>
+                <button @click="processData" v-b-modal.modal-close_visit class="btn-sm m-1" :class="{'btn-success': !processBtn}" :disabled=processBtn>Process Data</button>
+            </template>
+    </b-modal>
 </template>
 
 <script>
@@ -64,8 +73,12 @@ export default({
     data(){
         return {
             uploadIcon: ["success","secondary"],   //TODO
+            btnText: 'Import Files',
+            componentBtn: true,
             uploadBtn: true,
             processBtn: true,
+
+            //both arrays are epemeral and will always be emptied after use
             importedFiles: [],
             processedFiles: [],
 
@@ -102,8 +115,20 @@ export default({
         processData(){
             const processedFiles = processFiles(this.importedFiles)
             this.processedFiles.push(...processedFiles)
-            this.$bvModal.hide("import-modal")
             this.$emit('imported-records', this.processedFiles)
+            this.resetModal()
+            this.btnText = 'Add More Files'
+        },
+        resetModal(){
+            this.importedFiles.length = 0
+            this.processedFiles.length = 0
+
+            this.componentBtn = false
+            this.$bvModal.hide("import-modal")
+
+            this.progressBar.value = 0
+            this.progressBar.max = 0
+            this.processBtn = true
         }
 }
 })
@@ -203,6 +228,10 @@ function processFiles(files){
 
 
 <style>
+
+#btnImport {
+  margin: 5px;
+}
 input[type="file"] {
     display: none;
 }

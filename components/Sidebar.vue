@@ -1,7 +1,16 @@
 <template>
   <div>
-    <b-button id='btnSidebar' ref='btnSidebar' v-b-toggle.sidebar>Notes Manager</b-button>
+    <!-- The button -->
+    <b-button 
+        id='btnSidebar' 
+        ref='btnSidebar'
+        variant="primary" 
+        v-b-toggle.sidebar
+        >
+        Notes Manager
+    </b-button>
 
+    <!-- The sidebar -->
     <b-sidebar 
         id="sidebar" 
         title="Notes Manager"
@@ -223,7 +232,7 @@ hr {
     border: ".75px solid black";
 }
 #btnSidebar {
-  float:right;
+  margin: 5px;
 }
 .note {
     font-size: 12px;

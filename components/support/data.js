@@ -91,3 +91,10 @@ export class DocumentRecord{
       this.accumPageLines = null
     }
 }
+export const DocumentIndexData = ref({
+  documents: [],
+  indices: {
+    lunrIndex: {},
+    strIndex: ''
+  }
+})
