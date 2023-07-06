@@ -35,21 +35,21 @@ npm run dev
   - ~~fix TOC~~
   - ~~highlight dropzone background on dragover~~
   - create new Search parent component to Table
-  - search snippet
+  - append additional data records to table
+  - exact phrase search snippet
+    - backticks to support alternative search format
     - page for snippet is sometimes incorrect
     - highlight snippet in page image
   - ~~tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)~~ => no - too much interaction
   - ~~download notes to readable format~~
-  - backticks to support alternative search format
   - zoom on bootstrap-vue image carousel
   - row details small, (more) btn click to lengthen down
   - file loading
     + check file sizes
-    + checl file load takes too long
+    + check file load takes too long
     + additional error handling for the browser
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
   - load test File Reader
-  - append additional data records to table
   - export / import logic for primary data records and lunrjs
   - add Tour, About, and Settings buttons
   - add other fields to search: keywords, summary
