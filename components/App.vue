@@ -60,6 +60,7 @@ export default {
       documents: DocumentIndexData.value.documents,
       searchTableResults: {
         query: '',
+        searchTerms: [],
         resultIds: [],
         resultGroups: []
       },
@@ -87,6 +88,7 @@ export default {
     },
     searchTable(results){
       this.searchTableResults = {...this.searchTableResults, query: results.query}
+      this.searchTableResults = {...this.searchTableResults, searchTerms: results.searchTerms}
       this.searchTableResults = {...this.searchTableResults, resultIds: results.resultIds}
       this.searchTableResults = {...this.searchTableResults, resultGroups: results.resultGroups}
     },

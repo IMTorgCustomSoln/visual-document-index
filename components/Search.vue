@@ -54,6 +54,7 @@ export default{
         return{
             searchTableResults:{
                 query: '',
+                terms: [],
                 resultIds: [],
                 resultGroups: []
             },
@@ -104,9 +105,7 @@ export default{
         },
         searchQuery() {
             /* Provide tableFilter of selected rows' id based on `this.query` input
-            ~~_Note_: `search()` must be instatiated in template, so `return ''` is 
-            used.  This is not clean, but computed's cacheing ability still makes
-            it preferable over other methods.~~   =>  previously `computed`
+
             :query str - from text input, should match lunrjs patterns
             :filter [] - selected files' ids
             */
@@ -128,23 +127,52 @@ export default{
                 const phrases = []
                 let substr = ''
                 let select = false
-                for(let char of this.query.length){
-                    if(this.query[char]=='`' && select==false){ 
+                for(let char of this.query){
+                    if(char=='`' && select==false){ 
                         select=true
-                    } else if(this.query[char]=='`' && select==true){
+                    } else if(char=='`' && select==true){
                         select=false
                         phrases.push(substr)
                         substr = '' 
                     } else if(select){
-                        substr += this.query[char]
+                        substr += char
                     } 
                 }
                 //select hits for each phrase
-                for(let phrase of phrases){
-
+                const resultGroups = []
+                for(let record of this.$props.records){
+                    for(let phrase of phrases){
+                        const hit = record.clean_body.includes(phrase)
+                        if(hit){
+                            const result = {
+                                ref: record.id,
+                                phrase: phrase,
+                                score: "0.0",
+                                count: 0,
+                                positions: []
+                                }
+                            const indices = getIndicesOf(phrase, record.clean_body, true)
+                            result.count = indices.length 
+                            result.positions.push(...indices)
+                            resultGroups.push(result)
+                        }
+                    }
                 }
+                const totalCount = resultGroups.map(item => item.positions.length).map((sum => value => sum +=value)(0))[0]
+                const resultIds = removeUsingSet( resultGroups.map(result => result.ref) )
+                resultGroups.map(result => result.score = parseFloat(result.count / totalCount)  )
 
-    
+                this.searchDisplayResults = {...this.searchDisplayResults, searchTerms: phrases}
+                this.searchDisplayResults = {...this.searchDisplayResults, totalDocuments: resultIds.length}
+                this.searchDisplayResults = {...this.searchDisplayResults, count: totalCount}
+
+                this.searchTableResults = {...this.searchTableResults, query: this.query}
+                this.searchTableResults = {...this.searchTableResults, searchTerms: phrases}
+                this.searchTableResults = {...this.searchTableResults, resultIds: resultIds}
+                this.searchTableResults = {...this.searchTableResults, resultGroups: resultGroups}
+
+                this.$emit('search-table-results', this.searchTableResults)
+
             // lunrJs query
             } else if (this.indices.lunrIndex) {
                 
@@ -219,6 +247,30 @@ function compareByFirstItem( a, b ) {
   }
   return 0;
 }
+
+function getIndicesOf(searchStr, str, caseSensitive=false){
+    const searchStrLen = searchStr.length
+    if(searchStrLen == 0){
+        return []
+    }
+    let startIndex = 0, index, indices = []
+    if(!caseSensitive){
+        str = str.toLowerCase()
+        searchStr = searchStr.toLowerCase()
+    }
+    while( (index = str.indexOf(searchStr, startIndex)) > -1){
+        indices.push([index, searchStrLen])
+        startIndex = index + searchStrLen
+    }
+    return indices
+}
+
+function removeUsingSet(arr){
+    let outputArray = Array.from(new Set(arr))
+    return outputArray
+}
+
+
 
 </script>
 

@@ -37,11 +37,13 @@ npm run dev
   - ~~create new Search parent component to Table~~
   - ~~append additional data records to table~~
   - exact phrase search snippet
-    - backticks to support alternative search format
+    - ~~backticks to support alternative search format~~
+    - work on multi-phrase search to ensure results structure of exact matching is the same as lunrJs
     - page for snippet is sometimes incorrect
     - highlight snippet in page image
   - ~~tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)~~ => no - too much interaction
   - ~~download notes to readable format~~
+  - fix `query` var to show actual terms searched
   - adjust row details to reasonable height
   - search opens activeTab to image
   - zoom on bootstrap-vue image carousel
