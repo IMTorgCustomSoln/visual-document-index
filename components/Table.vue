@@ -150,15 +150,7 @@ export default ({
             totalDocuments: 0,
             activeTab: 0,
             mouseOverSnippet: '',
-            /*
-            searchResults: {
-                count: 0,
-                totalDocuments: 0,
-                searchTerms: '',
-                displayLimit: 0,
-                errorMsg: '',
-                mouseOverSnippet: ''
-            },*/
+            //displayLimit: 0,
             guides: {
                 snippet:{
                     id:'snippet',
@@ -193,7 +185,6 @@ ready to be organized with the note Topics.`
         },
 
         searchTable(){
-            console.log(this.$props.search)
             //update table items based on query
             this.totalDocuments = this.$props.search.resultIds.length
             this.tableFilter.length = 0
@@ -214,7 +205,6 @@ ready to be organized with the note Topics.`
                         item.hit_count = resultFile.count
 
                         //update item row details' snippets
-                        //this.searchResults = {...this.searchDisplayResults, totalDocuments: resultIds.length}
                         const MARGIN = 250
                         //const LIMIT_OUTPUT = 3
                         //this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
@@ -248,6 +238,7 @@ ready to be organized with the note Topics.`
                                 }
                             }
                         }
+                        console.log(`positionGroups for file: ${item.id}`)
                         console.log(positionGroups)
                         for (let grp of positionGroups){
                             const snippet = []
@@ -282,7 +273,6 @@ ready to be organized with the note Topics.`
                 }
             })
             this.sortDesc = true
-            console.log(this.tableFilter)
             this.activeTab = 1
             return true
             }
@@ -301,7 +291,7 @@ ready to be organized with the note Topics.`
         },
 
         resetItem(item){
-            item.sort_key = 0   //item.id
+            item.sort_key = item.id
             item.hit_count = 0
             item.snippets = []
         },
@@ -309,12 +299,7 @@ ready to be organized with the note Topics.`
         resetAllItems(){
             this.items.map(item => {
                 this.resetItem(item)
-            })/*
-            this.searchResults = {...this.searchResults, count: 0}
-            this.searchResults = {...this.searchResults, totalDocuments: 0}
-            this.searchResults = {...this.searchResults, searchTerms: ''}
-            this.searchResults = {...this.searchResults, displayLimit: 0}
-            */
+            })
             this.sortDesc = false
             this.tableFilter.length = 0
         },
@@ -432,7 +417,7 @@ const fields = [{
 
 /*ref: http://jsfiddle.net/7w8TC/1/ */
 .itemconfiguration {
-    height:700px;
+    height:700px;      /*TODO: align height of snippets and image*/
 	width:550px;		
     overflow-y:auto;
 	float:left;

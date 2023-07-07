@@ -119,6 +119,7 @@ export default{
             // no query input
             if (this.query.length === 0){
                 this.resetAllItems()
+                this.$emit('search-table-results', this.searchTableResults)
                 return false
 
             // exact phrase search using backticks
@@ -189,114 +190,19 @@ export default{
                 console.log(`resultGroups: `); console.log(resultGroups)
 
                 this.$emit('search-table-results', this.searchTableResults)
-
-                /*update table items based on query
-                this.tableFilter.length = 0
-
-                if (resultIds.length == 0){
-                    this.resetAllItems()
-                } else {
-                this.items.map(item => {
-                    if (resultIds.includes(item.id)){
-                        //filter and sort table items 
-                        this.tableFilter.push( item.id )
-                        const idx = resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
-                        if (idx <= -1){
-                            this.resetItem(item)
-                        } else {
-                            let resultFile = resultGroups[idx]
-                            item.sort_key = resultFile.score
-                            item.hit_count = resultFile.count
-
-                            //update item row details' snippets
-                            this.searchResults = {...this.searchDisplayResults, totalDocuments: resultIds.length}
-                            const MARGIN = 250
-                            //const LIMIT_OUTPUT = 3
-                            //this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
-                            item.snippets.length = 0
-
-                            const positions = resultFile.positions.map(item => item)//.slice(0, LIMIT_OUTPUT)
-                            const positionGroups = []
-                            let incr = 0
-                            for (let index = 0; (index + incr) < positions.length; index++){
-                                let indexCorrected = index + incr
-                                const pos = positions[indexCorrected]
-                                const subgroup = []
-                                subgroup.push(pos)
-                                if (indexCorrected + 1 == positions.length){
-                                    positionGroups.push(subgroup)
-                                    break
-                                } else {
-                                    for(let nextIndex = indexCorrected + 1; nextIndex < positions.length; nextIndex++){
-                                        const nextPos = positions[nextIndex]
-                                        const diff = nextPos[0] - pos[0]
-                                        if (diff < MARGIN * 2){
-                                            subgroup.push(nextPos)
-                                            incr++
-                                            if (index + incr + 1 == positions.length){
-                                                positionGroups.push(subgroup)
-                                            }
-                                        } else {
-                                            positionGroups.push(subgroup)
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                            console.log(positionGroups)
-                            for (let grp of positionGroups){
-                                const snippet = []
-                                for (let [index, pos] of grp.entries()){
-                                    if (index==0){
-                                        const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
-                                        const pageIdx = item.accumPageLines.map(val => {return start < val }).indexOf(true)
-                                        const pageNum = parseInt(pageIdx) + 1
-                                        const startFromPage = pageIdx == 0 ? start : start - item.accumPageLines[pageIdx-1]
-                                        const endPage = item.length_lines_array[pageIdx]
-                                        const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
-                                        const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
-                                        const text = startText + endText
-                                        snippet.push(text)
-                                    } else if (index == grp.length - 1){
-                                        const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
-                                        const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const end = pos[0]+pos[1] + MARGIN < item.clean_body.length ? pos[0]+pos[1] + MARGIN : item.clean_body.length
-                                        const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(pos[0]+pos[1], end)}`
-                                        snippet.push(text)
-                                    } else {
-                                        const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
-                                        const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                        const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b>`
-                                        snippet.push(text)
-                                    }
-                                }
-                                item.snippets.push( snippet )
-                            }
-                        }
-                    }
-                })
-                this.sortDesc = true
-                console.log(this.tableFilter)
-                this.activeTab = 1
-                return true
-                }*/
             } else {
                 return false
             }
         },
         resetAllItems(){
-            /*
-            this.items.map(item => {
-                this.resetItem(item)
-            })*/
+            this.searchTableResults = {...this.searchTableResults, query: ''}
+            this.searchTableResults = {...this.searchTableResults, resultIds: []}
+            this.searchTableResults = {...this.searchTableResults, resultGroups: []}
+
             this.searchDisplayResults = {...this.searchDisplayResults, count: 0}
             this.searchDisplayResults = {...this.searchDisplayResults, totalDocuments: 0}
             this.searchDisplayResults = {...this.searchDisplayResults, searchTerms: ''}
             this.searchDisplayResults = {...this.searchDisplayResults, displayLimit: 0}
-
-            //this.searchTableResults.sortDesc = false
-            //this.searchTableResults.tableFilter.length = 0
         },
     },
 }

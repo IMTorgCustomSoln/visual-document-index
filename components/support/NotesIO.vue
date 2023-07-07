@@ -4,7 +4,7 @@
 
 <template>
     <div id="sidebar-btns">
-    <b-button v-b-modal.export-notes-modal size="sm">Export</b-button>
+    <b-button v-b-modal.export-notes-modal size="sm" variant="primary">Export</b-button>
     <b-modal id="export-notes-modal">
         <template #modal-title>
             Determine type of export
@@ -22,7 +22,7 @@
             </template>
     </b-modal>
 
-    <b-button v-b-modal.import-notes-modal size="sm">Import</b-button>
+    <b-button v-b-modal.import-notes-modal size="sm" variant="primary">Import</b-button>
     <b-modal id="import-notes-modal">
         <template #modal-title>
             Select Notes Manager file

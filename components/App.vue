@@ -9,15 +9,29 @@
       <b-col cols="5"></b-col>
       <b-col cols="5">
         <div id="btnMainPanel">
-          <ImportData v-on:imported-records="addRecords"/>
-          <Sidebar :note="note" />
+          <ImportData 
+            v-on:imported-records="addRecords"
+            />
+          <Sidebar 
+            :note="note" 
+            />
         </div>
       </b-col>
       <b-col cols="2"></b-col>
     </b-row>
       <div v-show="showTablePanel">
-        <Search :records="documents" v-on:search-table-results="searchTable"></Search>
-        <Table :records="documents" :search="searchTableResults" v-on:send-note="updateNotes">{{ createTable }}</Table>
+        <Search 
+          :records="documents" 
+          v-on:search-table-results="searchTable"
+          >
+        </Search>
+        <Table 
+          :records="documents" 
+          :search="searchTableResults" 
+          v-on:send-note="updateNotes"
+          >
+          {{ createTable }}
+        </Table>
       </div>
   </b-container>
 </template>
