@@ -169,7 +169,7 @@ async function uploadFiles(files){
         none
 
         //frontend field*/
-        record.sort_key = record.id
+        record.sort_key = 0     //record.id
         record.hit_count = 0
         record.summary = 'TODO:summary'
         record.snippets = []

@@ -17,9 +17,7 @@
     </b-row>
       <div v-show="showTablePanel">
         <Search :records="documents" v-on:search-table-results="searchTable"></Search>
-        <!--
-        <Table :records="files" v-on:send-note="updateNotes">{{ createTable }}</Table>
-        -->
+        <Table :records="documents" :search="searchTableResults" v-on:send-note="updateNotes">{{ createTable }}</Table>
       </div>
   </b-container>
 </template>
@@ -42,34 +40,47 @@ export default {
     Table,
     Sidebar
   },
-  data(){return {
-    showTablePanel: false,
-    documents: DocumentIndexData.value.documents,
-    note: {}
+  data(){
+    return {
+      showTablePanel: false,
+      documents: DocumentIndexData.value.documents,
+      searchTableResults: {
+        query: '',
+        resultIds: [],
+        resultGroups: []
+      },
+      note: {}
     }
   },
   methods: {
     addRecords(newRecords){
       //check file for uniqueness in reference_number, then append
-      const refNums = this.documents.map(item => item.reference_number)
-      let maxId = Math.max( this.documents.map(item => item.id) )
+      let refNums = []
+      let maxId = 0
+      if(this.documents.length>0){
+        refNums.push(...this.documents.map(item => item.reference_number) )
+        const ids = this.documents.map(item => parseInt(item.id)).filter(item => isNaN(item)==false)
+        maxId = Math.max(...ids)
+      }
       for(let file of newRecords){
         if(!refNums.includes(file.reference_number)){
-          file.id = maxId + 1
-          this.documents.push(file)
+          file.id = String( maxId + 1 )
+          this.documents.push( file )
           maxId++
         }
       }
       this.showTablePanel = true
     },
-    searchTable(){
-
+    searchTable(results){
+      this.searchTableResults = {...this.searchTableResults, query: results.query}
+      this.searchTableResults = {...this.searchTableResults, resultIds: results.resultIds}
+      this.searchTableResults = {...this.searchTableResults, resultGroups: results.resultGroups}
     },
     updateNotes(newNote){
       Object.assign(this.note, newNote)
     }
   },
-};
+}
 </script>
 
 <style>

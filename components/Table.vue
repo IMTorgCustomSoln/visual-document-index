@@ -1,5 +1,9 @@
 <template>
-    <div v-if="initializeTable">
+    <div>
+        <b-button size="sm" variant="primary" v-on:click="expandAll" >Expand All</b-button>
+        <b-button size="sm" variant="primary" v-on:click="collapseAll" >Collapse All</b-button>
+    </div>
+    <div>  <!-- v-if="initializeTable">  -->
         <!--refs
             * showDetails: https://stackoverflow.com/questions/52327549/bootstrap-vue-table-show-details-when-row-clicked
             * reactivity: https://github.com/bootstrap-vue/bootstrap-vue/issues/2960
@@ -55,7 +59,7 @@
                                 <b-row>
                                     <b-col sm="9">
                                         <FlipBook 
-                                            :selectedPage="searchResults.mouseOverSnippet" 
+                                            :selectedPage="mouseOverSnippet" 
                                             :imageArray="row.item.canvas_array"
                                             />
                                     </b-col>
@@ -66,7 +70,7 @@
                     </b-col>
                 
                 <b-col sm="6" class="text-sm-left">
-                    <div v-if="!searchResults.totalDocuments"><b>Document summary: </b> <br/>
+                    <div v-if="!totalDocuments"><b>Document summary: </b> <br/>
                         {{ row.item.summary }}
                     </div>
                     <div v-else><b>Search results in {{ row.item.hit_count }} hits: </b> <Guide v-bind="guides.snippet" /> </div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
@@ -103,17 +107,26 @@ import Guide from './support/Guide.vue'
 export default ({
     name: 'Table',
     props:{
-        records: Array
+        records: Array,
+        search: Object
     },
     watch: { 
         records: {
             handler: function(newVal, oldVal) {
                 //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-                if (this.$data.initializeTable==false && 
-                    Array.isArray(this.$props.records) && 
+                if (Array.isArray(this.$props.records) && 
                     this.$props.records.length > 0
                     ){
-                    this.createTable();
+                    this.createTable()
+                }
+            },
+            deep: false
+        },
+        search: {
+            handler: function(newVal, oldVal) {
+                //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+                if (typeof(this.$props.search)=='object'){
+                    this.searchTable()
                 }
             },
             deep: false
@@ -130,11 +143,14 @@ export default ({
         return {
             initializeTable: false,
             items: [],
-            query: '',
             tableFilter: [],
             sortBy: 'sort_key',
             sortDesc: false,
+
+            totalDocuments: 0,
             activeTab: 0,
+            mouseOverSnippet: '',
+            /*
             searchResults: {
                 count: 0,
                 totalDocuments: 0,
@@ -142,7 +158,7 @@ export default ({
                 displayLimit: 0,
                 errorMsg: '',
                 mouseOverSnippet: ''
-            },
+            },*/
             guides: {
                 snippet:{
                     id:'snippet',
@@ -164,34 +180,113 @@ ready to be organized with the note Topics.`
         }
     },
     methods: {
-        selectSnippetPage(id, snippet){
-            const mouseOverSnippet = `${id}-${snippet}`
-            this.searchResults = {...this.searchResults, mouseOverSnippet: mouseOverSnippet}
-        },
-        postNote(event){
-            const element = event.target.parentElement.children[0]
-            //TODO: no the code below should use `new NoteRecord()`, but from within Draggable - not here
-            const noteItem = {
-                id: element.id.toString(),
-                list: 'stagingNotes',
-                type: 'auto',
-                innerHTML: element.innerHTML.toString(),
-                innerText: element.innerText.toString()
-            }
-            //console.log(noteItem)
-            this.$emit('send-note', noteItem);
-        },
 
+        // Creation and search
         createTable() {
             // Populate the table with the transformed data records
+            this.items.length = 0
             for (const record of this.$props.records) {
                 const item = JSON.parse(JSON.stringify( record ))
                 this.items.push( item )
             }
-            this.initializeTable = true;
+            this.initializeTable = true
         },
 
+        searchTable(){
+            console.log(this.$props.search)
+            //update table items based on query
+            this.totalDocuments = this.$props.search.resultIds.length
+            this.tableFilter.length = 0
 
+            if (this.$props.search.resultIds.length == 0){
+                this.resetAllItems()
+            } else {
+            this.items.map(item => {
+                if (this.$props.search.resultIds.includes(item.id)){
+                    //filter and sort table items 
+                    this.tableFilter.push( item.id )
+                    const idx = this.$props.search.resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
+                    if (idx <= -1){
+                        this.resetItem(item)
+                    } else {
+                        let resultFile = this.$props.search.resultGroups[idx]
+                        item.sort_key = resultFile.score
+                        item.hit_count = resultFile.count
+
+                        //update item row details' snippets
+                        //this.searchResults = {...this.searchDisplayResults, totalDocuments: resultIds.length}
+                        const MARGIN = 250
+                        //const LIMIT_OUTPUT = 3
+                        //this.searchResults = {...this.searchResults, displayLimit: LIMIT_OUTPUT}
+                        item.snippets.length = 0
+
+                        const positions = resultFile.positions.map(item => item)//.slice(0, LIMIT_OUTPUT)
+                        const positionGroups = []
+                        let incr = 0
+                        for (let index = 0; (index + incr) < positions.length; index++){
+                            let indexCorrected = index + incr
+                            const pos = positions[indexCorrected]
+                            const subgroup = []
+                            subgroup.push(pos)
+                            if (indexCorrected + 1 == positions.length){
+                                positionGroups.push(subgroup)
+                                break
+                            } else {
+                                for(let nextIndex = indexCorrected + 1; nextIndex < positions.length; nextIndex++){
+                                    const nextPos = positions[nextIndex]
+                                    const diff = nextPos[0] - pos[0]
+                                    if (diff < MARGIN * 2){
+                                        subgroup.push(nextPos)
+                                        incr++
+                                        if (index + incr + 1 == positions.length){
+                                            positionGroups.push(subgroup)
+                                        }
+                                    } else {
+                                        positionGroups.push(subgroup)
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                        console.log(positionGroups)
+                        for (let grp of positionGroups){
+                            const snippet = []
+                            for (let [index, pos] of grp.entries()){
+                                if (index==0){
+                                    const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
+                                    const pageIdx = item.accumPageLines.map(val => {return start < val }).indexOf(true)
+                                    const pageNum = parseInt(pageIdx) + 1
+                                    const startFromPage = pageIdx == 0 ? start : start - item.accumPageLines[pageIdx-1]
+                                    const endPage = item.length_lines_array[pageIdx]
+                                    const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
+                                    const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
+                                    const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
+                                    const text = startText + endText
+                                    snippet.push(text)
+                                } else if (index == grp.length - 1){
+                                    const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
+                                    const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
+                                    const end = pos[0]+pos[1] + MARGIN < item.clean_body.length ? pos[0]+pos[1] + MARGIN : item.clean_body.length
+                                    const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(pos[0]+pos[1], end)}`
+                                    snippet.push(text)
+                                } else {
+                                    const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
+                                    const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
+                                    const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b>`
+                                    snippet.push(text)
+                                }
+                            }
+                            item.snippets.push( snippet )
+                        }
+                    }
+                }
+            })
+            this.sortDesc = true
+            console.log(this.tableFilter)
+            this.activeTab = 1
+            return true
+            }
+        },
 
         onFiltered(row, filter) {
             // Applied to each table row to determine if it 
@@ -206,26 +301,25 @@ ready to be organized with the note Topics.`
         },
 
         resetItem(item){
-            item.sort_key = item.id
+            item.sort_key = 0   //item.id
             item.hit_count = 0
             item.snippets = []
         },
 
-        /*
         resetAllItems(){
             this.items.map(item => {
                 this.resetItem(item)
-            })
+            })/*
             this.searchResults = {...this.searchResults, count: 0}
             this.searchResults = {...this.searchResults, totalDocuments: 0}
             this.searchResults = {...this.searchResults, searchTerms: ''}
             this.searchResults = {...this.searchResults, displayLimit: 0}
-
+            */
             this.sortDesc = false
             this.tableFilter.length = 0
-        },*/
+        },
 
-        // buttons and formatting
+        // Buttons and formatting
         expandAll() {
             this.items.map(item => this.$set(item, '_showDetails', true))
         },
@@ -244,7 +338,27 @@ ready to be organized with the note Topics.`
         },
         getFormattedPath(path) {
             return path ? path : './';
-        }
+        },
+
+        // Row details 
+        selectSnippetPage(id, snippet){
+            const mouseOverSnippet = `${id}-${snippet}`
+            //this.searchResults = {...this.searchResults, mouseOverSnippet: mouseOverSnippet}
+            this.mouseOverSnippet = mouseOverSnippet
+        },
+        postNote(event){
+            const element = event.target.parentElement.children[0]
+            //TODO: no the code below should use `new NoteRecord()`, but from within Draggable - not here
+            const noteItem = {
+                id: element.id.toString(),
+                list: 'stagingNotes',
+                type: 'auto',
+                innerHTML: element.innerHTML.toString(),
+                innerText: element.innerText.toString()
+            }
+            //console.log(noteItem)
+            this.$emit('send-note', noteItem);
+        },
     }
 })
 

@@ -18,10 +18,6 @@
                         <div v-else class="errorMsg"> {{ searchDisplayResults.errorMsg }}</div>
                     </div>
                 </span>
-                <div>
-                    <b-button size="sm" variant="primary" v-on:click="expandAll" >Expand All</b-button>
-                    <b-button size="sm" variant="primary" v-on:click="collapseAll" >Collapse All</b-button>
-                </div>
             </b-col>
         </b-row>
 </template>    
@@ -115,6 +111,7 @@ export default{
             :filter [] - selected files' ids
             */
             console.log(`query: ${this.query}`)
+            this.searchTableResults = {...this.searchTableResults, query: this.query}
             this.searchResults = {...this.searchDisplayResults, errorMsg: ''}
             const backticksLength = (this.query.match(/`/g) || []).length
             const checkBackticks = backticksLength > 0 && backticksLength % 2 == 0
@@ -166,6 +163,7 @@ export default{
                 const resultIds = results.map(resultFile => resultFile.ref)
                 console.log(`resultdIds: ${resultIds}`)
                 this.searchTableResults = {...this.searchTableResults, resultIds: resultIds}
+                this.searchDisplayResults = {...this.searchDisplayResults, totalDocuments: resultIds.length}
 
                 //get hit counts for individual doc and total docs
                 const resultGroups = []
