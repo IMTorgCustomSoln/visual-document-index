@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-button size="sm" variant="primary" v-on:click="expandAll" >Expand All</b-button>
-        <b-button size="sm" variant="primary" v-on:click="collapseAll" >Collapse All</b-button>
+        <b-button size="sm" variant="primary" v-on:click="expandAll" class="fixed-medium">Expand All</b-button>
+        <b-button size="sm" variant="primary" v-on:click="collapseAll" class="fixed-medium">Collapse All</b-button>
     </div>
     <div>  <!-- v-if="initializeTable">  -->
         <!--refs
@@ -267,7 +267,7 @@ ready to be organized with the note Topics.`
                                     snippet.push(text)
                                 }
                             }
-                            item.snippets.push( snippet )
+                            item.snippets.push( snippet.join('') )
                         }
                     }
                 }
@@ -398,6 +398,10 @@ const fields = [{
 
 
 <style>
+.fixed-medium{
+    width: 94px !important;
+}
+
 #table-panel input {
     margin:5px;
 }

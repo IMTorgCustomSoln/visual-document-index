@@ -71,14 +71,21 @@ export default{
                     id:'search',
                     title:'Search Patterns',
                     markdown:`The following are patterns used in search terms:
-* \`foo\` - all search is on stemmed terms so dno't worry about case or word ending
-* \`+foo +bar\` - for logical AND search; otherwise, all search use OR with terms
-* \`+foo bar -baz\` - search without 'baz'
-* \`*foo\` - search terms with characters before foo
+
+_Fuzzy match_ - terms are matched on their stem by default 
+* \`foo\` - all search is on stemmed terms so don't worry about case or word ending ('-ed', '-es', '-ing', ...)
+* \`+foo +bar\` - for logical AND search; otherwise, all search use OR by default
+* \`+foo bar -baz\` - match pattern without 'baz'
+* \`*foo\` - search terms with characters before foo ('*' is a _wildcard_)
 * \`title: foo\` - only search document titles for term foo
 * \`foo^10 bar\` - weight term foo 10-times the importance of bar
 * \`foo~1\` - one edit distance of foo (fuzzy matching)
+
+_Exact match_ - terms surrounded by backticks '\`' (not quotes) are matched exactly (case sensitive)\n` +
+'* \`` `foo bar` `\` - single exact match \n' + 
+'* \`` `foo bar` `\` \`` `bar baz` `\` - multiple exact matches\n' + 
 `
+The results are ordered by the 'Score' column, which is a weighted formula of the matching pattern.`
                 }
             }
         }
@@ -111,7 +118,7 @@ export default{
             */
             console.log(`query: ${this.query}`)
             this.searchTableResults = {...this.searchTableResults, query: this.query}
-            this.searchResults = {...this.searchDisplayResults, errorMsg: ''}
+            this.searchDisplayResults = {...this.searchDisplayResults, errorMsg: ''}
             const backticksLength = (this.query.match(/`/g) || []).length
             const checkBackticks = backticksLength > 0 && backticksLength % 2 == 0
 
@@ -140,23 +147,30 @@ export default{
                 }
                 //select hits for each phrase
                 const resultGroups = []
-                for(let record of this.$props.records){
-                    for(let phrase of phrases){
-                        const hit = record.clean_body.includes(phrase)
-                        if(hit){
-                            const result = {
-                                ref: record.id,
-                                phrase: phrase,
-                                score: "0.0",
-                                count: 0,
-                                positions: []
-                                }
-                            const indices = getIndicesOf(phrase, record.clean_body, true)
-                            result.count = indices.length 
-                            result.positions.push(...indices)
-                            resultGroups.push(result)
+                try{
+                    for(let record of this.$props.records){
+                        const result = {
+                            ref: record.id,
+                            phrase: [],
+                            score: "0.0",
+                            count: 0,
+                            positions: []
+                            }
+                        for(let phrase of phrases){
+                            const hit = record.clean_body.includes(phrase)
+                            if(hit){
+                                const indices = getIndicesOf(phrase, record.clean_body, true)
+                                result.phrase.push(phrase)
+                                result.count = result.count + indices.length 
+                                result.positions.push(...indices)
+                            }
                         }
+                        resultGroups.push(result)
                     }
+                } catch (error) {
+                    this.searchDisplayResults = {...this.searchDisplayResults, errorMsg: error}
+                    this.resetAllItems()
+                    return false
                 }
                 const totalCount = resultGroups.map(item => item.positions.length).map((sum => value => sum +=value)(0))[0]
                 const resultIds = removeUsingSet( resultGroups.map(result => result.ref) )

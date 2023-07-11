@@ -1,6 +1,7 @@
 <template>
     <p v-if="componentBtn">
-        Click to import files and populate a table:
+        Click to import files and populate a table. Follow<br>
+        the green buttons if you're new:
     </p>
     <!-- The button -->
     <b-button
@@ -8,6 +9,7 @@
         v-b-modal="'import-modal'" 
         variant="primary"
         :class="{'btn-success': componentBtn}"
+        class="fixed-large"
         >
         {{ btnText }}
     </b-button>
@@ -34,7 +36,6 @@
                 <output id="fileCount">0</output><br/>
                 <label for="fileSize">Total size: &nbsp</label>
                 <output id="fileSize">0</output>
-                <br/><div style="text-align: right;"><em>(note that only PDF files can be used at this time)</em></div>
             </div>
         </form>
             
@@ -53,6 +54,18 @@
                     <span>Processed <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
                 </b-progress-bar>
             </b-progress>
+            <br/>
+                <!--<div style="text-align: right;">-->
+                <div>
+                    <em>
+                        Note that at this time:
+                        <ul>
+                            <li>only PDF files can be used</li>
+                            <li>only 6 files should be imported per upload processing</li>
+                            <li>subsequent uploads are only performed on files with different reference numbers</li>
+                        </ul>
+                    </em>
+                </div>
         </div>
 
         <template #modal-footer>
@@ -231,6 +244,12 @@ function processFiles(files){
 
 #btnImport {
   margin: 5px;
+}
+em{
+    font-size: .85rem;
+}
+.fixed-large{
+    width: 140px !important;
 }
 input[type="file"] {
     display: none;

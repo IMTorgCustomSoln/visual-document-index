@@ -6,6 +6,7 @@
         ref='btnSidebar'
         variant="primary" 
         v-b-toggle.sidebar
+        class="fixed-large"
         >
         Notes Manager
     </b-button>
@@ -233,6 +234,9 @@ hr {
 }
 #btnSidebar {
   margin: 5px;
+}
+.fixed-large{
+    width: 140px !important;
 }
 .note {
     font-size: 12px;

@@ -38,18 +38,21 @@ npm run dev
   - ~~append additional data records to table~~
   - exact phrase search snippet
     - ~~backticks to support alternative search format~~
-    - work on multi-phrase search to ensure results structure of exact matching is the same as lunrJs
-    - page for snippet is sometimes incorrect
+    - ~~remove comma ','~~
+    - ~~error on multi-phrase vs multi-term~~
+    - ~~work on multi-phrase search to ensure results structure of exact matching is the same as lunrJs~~
+    - page for snippet is sometimes incorrect; ensure this is aligned
+    - fix score for failed exact match
     - highlight snippet in page image
   - ~~tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)~~ => no - too much interaction
   - ~~download notes to readable format~~
-  - fix `query` var to show actual terms searched
-  - adjust row details to reasonable height
-  - search opens activeTab to image
-  - zoom on bootstrap-vue image carousel
-  - row details small, (more) btn click to lengthen down
+  - fix `query` var to show actual terms searched and format nicely
+    - search opens activeTab to image
   - file loading
     + check file sizes
+    + provide estimate for load time (min,sec) based on (file count, file size)
+    + find limits for upload capacity
+    + fix progress bar (maybe load.event)
     + check file load takes too long
     + additional error handling for the browser
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
@@ -57,6 +60,9 @@ npm run dev
   - export / import logic for primary data records and lunrjs
   - add Tour, About, and Settings buttons
   - add other fields to search: keywords, summary
+  - adjust row details to reasonable height
+  - zoom on bootstrap-vue image carousel
+  - row details small, (more) btn click to lengthen down
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
 * wink
