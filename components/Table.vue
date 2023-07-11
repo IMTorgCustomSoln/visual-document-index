@@ -99,7 +99,7 @@
 
 <script>
 import { getDateFromJsNumber, getFormattedFileSize } from './support/utils.js'
-import FlipBook from './FlipBook.vue'
+import FlipBook from './support/FlipBook.vue'
 import Guide from './support/Guide.vue'
 
 

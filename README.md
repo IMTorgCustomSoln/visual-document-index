@@ -32,23 +32,19 @@ npm run dev
 
 ## ToDo
 
-  - ~~fix TOC~~
-  - ~~highlight dropzone background on dragover~~
-  - ~~create new Search parent component to Table~~
-  - ~~append additional data records to table~~
-  - exact phrase search snippet
-    - ~~backticks to support alternative search format~~
-    - ~~remove comma ','~~
-    - ~~error on multi-phrase vs multi-term~~
-    - ~~work on multi-phrase search to ensure results structure of exact matching is the same as lunrJs~~
-    - page for snippet is sometimes incorrect; ensure this is aligned
-    - fix score for failed exact match
-    - highlight snippet in page image
-  - ~~tooltip on notes for document reference (doc:name, pg:page, charac:index_by_page)~~ => no - too much interaction
-  - ~~download notes to readable format~~
+* search
+  - search within distance (proximity)
+  - big pdf, ppt, excel, docx
+  - 30-40 pdfs for loan file (hand-written, signatures, etc.)
+* exact phrase search
+  - search opens activeTab to image
+  - page for snippet is sometimes incorrect; ensure this is aligned
+  - fix score for failed exact match
+  - highlight snippet in page image
   - fix `query` var to show actual terms searched and format nicely
-    - search opens activeTab to image
-  - file loading
+* file loading
+  - checks
+    + check whether actual pdf or pdf of images (scanned) (acrobat enables OCR to make searchable) DANGER OF NOT SEARCHING
     + check file sizes
     + provide estimate for load time (min,sec) based on (file count, file size)
     + find limits for upload capacity
@@ -65,7 +61,7 @@ npm run dev
   - row details small, (more) btn click to lengthen down
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
-* wink
+* wink nlp
   - subject
   - keywords
   - snippet - extract summary

@@ -48,10 +48,10 @@
                 animated
                 >
                 <b-progress-bar 
-                    :value="progressBar.value" 
+                    :value="progressBar.fileProgress" 
                     :variant="progressBar.variant"
                     >
-                    <span>Processed <strong>{{ progressBar.value }} of {{ progressBar.max }} files</strong></span>
+                    <span>Processed <strong>{{ progressBar.fileProgress }} of {{ progressBar.max }} bytes</strong></span>
                 </b-progress-bar>
             </b-progress>
             <br/>
@@ -97,7 +97,8 @@ export default({
 
             progressBar:{
                 variant: "success",
-                value: 0,
+                fileProgress: 0,
+                totalProgress: 0,
                 max: 0
             }
         }
@@ -107,10 +108,10 @@ export default({
             // Calculate total size
             let numberOfBytes = 0;
             const fileCount = uploadInput.files.length
-            this.progressBar = {...this.progressBar, max: fileCount}
             for (const file of uploadInput.files) {
                 numberOfBytes += file.size;
             }
+            this.progressBar = {...this.progressBar, max: numberOfBytes}
             document.getElementById("fileCount").textContent = fileCount
             const fileSize = getFormattedFileSize(numberOfBytes);
             document.getElementById("fileSize").textContent = fileSize
@@ -139,8 +140,10 @@ export default({
             this.componentBtn = false
             this.$bvModal.hide("import-modal")
 
-            this.progressBar.value = 0
+            this.progressBar.fileProgress = 0
+            this.progressBar.totalProgress = 0
             this.progressBar.max = 0
+
             this.processBtn = true
         }
 }
@@ -160,7 +163,8 @@ async function uploadFiles(files){
         total: 0
     }
     for (const file of files) {
-        let record = await getFileRecord(file)     //TOOD:, progressCallback(progress))
+        const FileStore = {file:file, ctx: this.progressBar}
+        let record = await getFileRecord(FileStore)
 
         // file indexing
         record.id = String(idx)
@@ -190,7 +194,6 @@ async function uploadFiles(files){
 
         importedFiles.push(record)
         idx++
-        this.progressBar = {...this.progressBar, value: idx}
         }
     return importedFiles;
 }

@@ -2,13 +2,13 @@ import { DocumentRecord } from "./data"
 
 // Upload Input
 
-export async function getFileRecord(file, progressCallback){     //TODO: async may not be needed
-  // create a file record from the FileReader() API
+export async function getFileRecord(filestore){     
   return new Promise(function(resolve, reject) {
       const reader = new FileReader()
+      addListeners(reader, filestore.ctx)
       reader.onload = (e) => {
           let typedarray = new Uint8Array(e.target.result)
-          const loadingTask = pdfjsLib.getDocument(typedarray, null, null, progressCallback)        //pdfDataRangeTransport, passwordCallback, loadingProgress
+          const loadingTask = pdfjsLib.getDocument(typedarray)
           loadingTask.promise.then(pdf => {
               const record = new DocumentRecord()
               //document is loaded
@@ -44,15 +44,45 @@ export async function getFileRecord(file, progressCallback){     //TODO: async m
             console.log(error)
           })
       }
-      reader.readAsArrayBuffer(file);
-      reader.onerror = reject;
+      reader.readAsArrayBuffer(filestore.file)
+      reader.onerror = reject
   })
 }
 
-export function progressCallback(progress) {
-  // progress object contains "total" and "loaded" properties
-  let percentLoaded = progress.loaded / progress.total
-  console.log(percentLoaded)
+
+function addListeners(reader, ctx) {
+  reader.ctx = ctx
+  reader.addEventListener("loadstart", handleEvent)
+  reader.addEventListener("load", handleEvent)
+  reader.addEventListener("loadend", handleEvent)
+  reader.addEventListener("progress", handleEvent)
+  reader.addEventListener("error", handleEvent)
+  reader.addEventListener("abort", handleEvent)
+}
+
+function handleEvent(event) {
+  let update = 0
+  let log = `${event.type}: ${event.loaded} bytes transferred\n`
+  console.log(log)
+
+  //successful events
+  if (event.type=='loadstart'){
+    update = event.currentTarget.ctx.totalProgress+1
+    event.currentTarget.ctx.fileProgress = update
+  } else if (event.type=='load'){
+    update = event.currentTarget.ctx.totalProgress + event.loaded
+    event.currentTarget.ctx.totalProgress = update
+    event.currentTarget.ctx.fileProgress = update
+  } else if (event.type=='progress'){
+    update = event.currentTarget.ctx.fileProgress = event.currentTarget.ctx.totalProgress + event.loaded
+    event.currentTarget.ctx.fileProgress = update
+  } 
+  //file progress should always include total progress
+  if (event.currentTarget.ctx.fileProgress < event.currentTarget.ctx.totalProgress){
+    event.currentTarget.ctx = {...event.currentTarget.ctx, fileProgress: event.currentTarget.ctx.totalProgress}
+    event.currentTarget.ctx.fileProgress = event.currentTarget.ctx.totalProgress
+  }
+  console.log(event.currentTarget.ctx.fileProgress)
 }
 
 function createMetadata(pdf, record){
@@ -83,7 +113,6 @@ function createOutline(pdf, record){
     }
   })
 }
-
 
 function createCanvasImage(page, idx, record){
   //ref: https://stackoverflow.com/questions/62744470/turn-pdf-into-array-of-pngs-using-javascript-with-pdf-js
