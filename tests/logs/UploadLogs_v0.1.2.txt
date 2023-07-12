@@ -1,0 +1,22 @@
+18433: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'start' with 0 bytes transferred
+ 18444: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'loadstart' with 0 bytes transferred
+ 18448: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'progress' with 65536 bytes transferred
+ 18455: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'load' with 1445295 bytes transferred
+ 18474: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'start' with 0 bytes transferred
+ 20786: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'loadend' with 1445295 bytes transferred
+ 22421: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'loadstart' with 0 bytes transferred
+ 22456: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'progress' with 65536 bytes transferred
+ 22482: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'load' with 378739 bytes transferred
+ 22490: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'start' with 0 bytes transferred
+ 22907: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'loadend' with 378739 bytes transferred
+ 23127: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'loadstart' with 0 bytes transferred
+ 23136: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'progress' with 65536 bytes transferred
+ 23757: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'progress' with 196608 bytes transferred
+ 24020: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'progress' with 262144 bytes transferred
+ 24056: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'load' with 3031782 bytes transferred
+ 24065: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'start' with 0 bytes transferred
+ 29753: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'loadend' with 3031782 bytes transferred
+ 29899: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'loadstart' with 0 bytes transferred
+ 29915: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'progress' with 65536 bytes transferred
+ 29920: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'load' with 139070 bytes transferred
+ 30509: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'loadend' with 139070 bytes transferred

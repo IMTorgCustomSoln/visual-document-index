@@ -1,0 +1,106 @@
+18433: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'start' with 0 bytes transferred
+ 18444: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'loadstart' with 0 bytes transferred
+ 18448: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'progress' with 65536 bytes transferred
+ 18455: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'load' with 1445295 bytes transferred
+ 18474: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'start' with 0 bytes transferred
+ 20786: file 0 - 54931863796627370000-econ_2301.00410.pdf underwent event 'loadend' with 1445295 bytes transferred
+ 22421: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'loadstart' with 0 bytes transferred
+ 22456: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'progress' with 65536 bytes transferred
+ 22482: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'load' with 378739 bytes transferred
+ 22490: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'start' with 0 bytes transferred
+ 22907: file 1 - 10469527483063392000-cs_nlp_2301.09640.pdf underwent event 'loadend' with 378739 bytes transferred
+ 23127: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'loadstart' with 0 bytes transferred
+ 23136: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'progress' with 65536 bytes transferred
+ 23757: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'progress' with 196608 bytes transferred
+ 24020: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'progress' with 262144 bytes transferred
+ 24056: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'load' with 3031782 bytes transferred
+ 24065: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'start' with 0 bytes transferred
+ 29753: file 2 - 12339337107776143000-nuclear_2201.00276.pdf underwent event 'loadend' with 3031782 bytes transferred
+ 29899: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'loadstart' with 0 bytes transferred
+ 29915: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'progress' with 65536 bytes transferred
+ 29920: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'load' with 139070 bytes transferred
+ 30509: file 3 - 51172457010912950000-prob_2301.09751.pdf underwent event 'loadend' with 139070 bytes transferred
+ 120474: file 0 -  DS - PATTERNS, PREDICTIONS, AND ACTIONS A story about machine learning.pdf underwent event 'start' with 0 bytes transferred
+ 120489: file 0 -  DS - PATTERNS, PREDICTIONS, AND ACTIONS A story about machine learning.pdf underwent event 'loadstart' with 0 bytes transferred
+ 120493: file 0 -  DS - PATTERNS, PREDICTIONS, AND ACTIONS A story about machine learning.pdf underwent event 'progress' with 65536 bytes transferred
+ 120502: file 0 -  DS - PATTERNS, PREDICTIONS, AND ACTIONS A story about machine learning.pdf underwent event 'load' with 2050247 bytes transferred
+ 120549: file 1 - @Math - Topology Without Tears _topbook.pdf underwent event 'start' with 0 bytes transferred
+ 128869: file 0 -  DS - PATTERNS, PREDICTIONS, AND ACTIONS A story about machine learning.pdf underwent event 'loadend' with 2050247 bytes transferred
+ 144668: file 1 - @Math - Topology Without Tears _topbook.pdf underwent event 'loadstart' with 0 bytes transferred
+ 144700: file 1 - @Math - Topology Without Tears _topbook.pdf underwent event 'progress' with 65536 bytes transferred
+ 144754: file 1 - @Math - Topology Without Tears _topbook.pdf underwent event 'progress' with 3674112 bytes transferred
+ 144797: file 1 - @Math - Topology Without Tears _topbook.pdf underwent event 'load' with 8885979 bytes transferred
+ 144867: file 2 - A First Course In Probability (Solution Manual) by Sheldon Ross (z-lib.org).pdf underwent event 'start' with 0 bytes transferred
+ 175231: file 1 - @Math - Topology Without Tears _topbook.pdf underwent event 'loadend' with 8885979 bytes transferred
+ 202266: file 2 - A First Course In Probability (Solution Manual) by Sheldon Ross (z-lib.org).pdf underwent event 'loadstart' with 0 bytes transferred
+ 202345: file 2 - A First Course In Probability (Solution Manual) by Sheldon Ross (z-lib.org).pdf underwent event 'progress' with 65536 bytes transferred
+ 202357: file 2 - A First Course In Probability (Solution Manual) by Sheldon Ross (z-lib.org).pdf underwent event 'load' with 1027149 bytes transferred
+ 202390: file 3 - AWS - AWS_Operational_Checklists.pdf underwent event 'start' with 0 bytes transferred
+ 206636: file 2 - A First Course In Probability (Solution Manual) by Sheldon Ross (z-lib.org).pdf underwent event 'loadend' with 1027149 bytes transferred
+ 211336: file 3 - AWS - AWS_Operational_Checklists.pdf underwent event 'loadstart' with 0 bytes transferred
+ 211365: file 3 - AWS - AWS_Operational_Checklists.pdf underwent event 'progress' with 65536 bytes transferred
+ 213553: file 3 - AWS - AWS_Operational_Checklists.pdf underwent event 'progress' with 266240 bytes transferred
+ 213600: file 3 - AWS - AWS_Operational_Checklists.pdf underwent event 'load' with 502894 bytes transferred
+ 213616: file 4 - AWS - AWS_SecureWorkloads_Checklist.pdf underwent event 'start' with 0 bytes transferred
+ 214071: file 3 - AWS - AWS_Operational_Checklists.pdf underwent event 'loadend' with 502894 bytes transferred
+ 214564: file 4 - AWS - AWS_SecureWorkloads_Checklist.pdf underwent event 'loadstart' with 0 bytes transferred
+ 214586: file 4 - AWS - AWS_SecureWorkloads_Checklist.pdf underwent event 'progress' with 65536 bytes transferred
+ 214598: file 4 - AWS - AWS_SecureWorkloads_Checklist.pdf underwent event 'load' with 818996 bytes transferred
+ 214607: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'start' with 0 bytes transferred
+ 216924: file 4 - AWS - AWS_SecureWorkloads_Checklist.pdf underwent event 'loadend' with 818996 bytes transferred
+ 217603: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'loadstart' with 0 bytes transferred
+ 217753: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'progress' with 65536 bytes transferred
+ 217915: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'progress' with 131072 bytes transferred
+ 218102: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'progress' with 196608 bytes transferred
+ 218111: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'load' with 233080 bytes transferred
+ 218471: file 5 - Arl Trees - TCF-Species-Available-Spring-2022-1.pdf underwent event 'loadend' with 233080 bytes transferred
+ 316676: file 0 - book.mixu.net-Distributed systems.pdf underwent event 'start' with 0 bytes transferred
+ 316687: file 0 - book.mixu.net-Distributed systems.pdf underwent event 'loadstart' with 0 bytes transferred
+ 316692: file 0 - book.mixu.net-Distributed systems.pdf underwent event 'progress' with 65536 bytes transferred
+ 316700: file 0 - book.mixu.net-Distributed systems.pdf underwent event 'load' with 1312000 bytes transferred
+ 316718: file 1 - Causal Inference in Statistics A Primer by Judea Pearl, Madelyn Glymour, Nicholas P. Jewell (z-lib.org).pdf underwent event 'start' with 0 bytes transferred
+ 317932: file 0 - book.mixu.net-Distributed systems.pdf underwent event 'loadend' with 1312000 bytes transferred
+ 320725: file 1 - Causal Inference in Statistics A Primer by Judea Pearl, Madelyn Glymour, Nicholas P. Jewell (z-lib.org).pdf underwent event 'loadstart' with 0 bytes transferred
+ 320734: file 1 - Causal Inference in Statistics A Primer by Judea Pearl, Madelyn Glymour, Nicholas P. Jewell (z-lib.org).pdf underwent event 'progress' with 65536 bytes transferred
+ 320754: file 1 - Causal Inference in Statistics A Primer by Judea Pearl, Madelyn Glymour, Nicholas P. Jewell (z-lib.org).pdf underwent event 'load' with 1523325 bytes transferred
+ 320778: file 2 - Causal_Diagrams_for_Epidemiologic_Research.8.pdf underwent event 'start' with 0 bytes transferred
+ 325519: file 1 - Causal Inference in Statistics A Primer by Judea Pearl, Madelyn Glymour, Nicholas P. Jewell (z-lib.org).pdf underwent event 'loadend' with 1523325 bytes transferred
+ 331448: file 2 - Causal_Diagrams_for_Epidemiologic_Research.8.pdf underwent event 'loadstart' with 0 bytes transferred
+ 331464: file 2 - Causal_Diagrams_for_Epidemiologic_Research.8.pdf underwent event 'progress' with 65536 bytes transferred
+ 331488: file 2 - Causal_Diagrams_for_Epidemiologic_Research.8.pdf underwent event 'load' with 1120474 bytes transferred
+ 331494: file 3 - Causality Models, Reasoning and Inference by Judea Pearl (z-lib.org).pdf underwent event 'start' with 0 bytes transferred
+ 334572: file 2 - Causal_Diagrams_for_Epidemiologic_Research.8.pdf underwent event 'loadend' with 1120474 bytes transferred
+ 335970: file 3 - Causality Models, Reasoning and Inference by Judea Pearl (z-lib.org).pdf underwent event 'loadstart' with 0 bytes transferred
+ 335985: file 3 - Causality Models, Reasoning and Inference by Judea Pearl (z-lib.org).pdf underwent event 'progress' with 65536 bytes transferred
+ 336095: file 3 - Causality Models, Reasoning and Inference by Judea Pearl (z-lib.org).pdf underwent event 'progress' with 4005888 bytes transferred
+ 336112: file 3 - Causality Models, Reasoning and Inference by Judea Pearl (z-lib.org).pdf underwent event 'load' with 7634358 bytes transferred
+ 336160: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'start' with 0 bytes transferred
+ 350658: file 3 - Causality Models, Reasoning and Inference by Judea Pearl (z-lib.org).pdf underwent event 'loadend' with 7634358 bytes transferred
+ 365243: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'loadstart' with 0 bytes transferred
+ 365265: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'progress' with 65536 bytes transferred
+ 371435: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'progress' with 196608 bytes transferred
+ 372101: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'progress' with 206451 bytes transferred
+ 372141: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'load' with 206451 bytes transferred
+ 372151: file 5 - collobert11a.pdf underwent event 'start' with 0 bytes transferred
+ 372310: file 4 - ch-51-point-aws-security-configuration-checklist.pdf underwent event 'loadend' with 206451 bytes transferred
+ 372481: file 5 - collobert11a.pdf underwent event 'loadstart' with 0 bytes transferred
+ 372537: file 5 - collobert11a.pdf underwent event 'progress' with 65536 bytes transferred
+ 372541: file 5 - collobert11a.pdf underwent event 'load' with 424780 bytes transferred
+ 372551: file 6 - Commodity Derivatives Markets and Applications (The Wiley Finance Series) (Neil C. Schofield) (z-lib.org).pdf underwent event 'start' with 0 bytes transferred
+ 373839: file 5 - collobert11a.pdf underwent event 'loadend' with 424780 bytes transferred
+ 376242: file 6 - Commodity Derivatives Markets and Applications (The Wiley Finance Series) (Neil C. Schofield) (z-lib.org).pdf underwent event 'loadstart' with 0 bytes transferred
+ 376399: file 6 - Commodity Derivatives Markets and Applications (The Wiley Finance Series) (Neil C. Schofield) (z-lib.org).pdf underwent event 'progress' with 65536 bytes transferred
+ 376410: file 6 - Commodity Derivatives Markets and Applications (The Wiley Finance Series) (Neil C. Schofield) (z-lib.org).pdf underwent event 'load' with 1542337 bytes transferred
+ 376449: file 7 - CS - @Beej's Guide to Network Programming.pdf underwent event 'start' with 0 bytes transferred
+ 381190: file 6 - Commodity Derivatives Markets and Applications (The Wiley Finance Series) (Neil C. Schofield) (z-lib.org).pdf underwent event 'loadend' with 1542337 bytes transferred
+ 391461: file 7 - CS - @Beej's Guide to Network Programming.pdf underwent event 'loadstart' with 0 bytes transferred
+ 391496: file 7 - CS - @Beej's Guide to Network Programming.pdf underwent event 'progress' with 65536 bytes transferred
+ 393436: file 7 - CS - @Beej's Guide to Network Programming.pdf underwent event 'progress' with 233472 bytes transferred
+ 393467: file 7 - CS - @Beej's Guide to Network Programming.pdf underwent event 'load' with 555232 bytes transferred
+ 393491: file 8 - CS - @What Every Programmer Should Know About Memory.pdf underwent event 'start' with 0 bytes transferred
+ 397292: file 7 - CS - @Beej's Guide to Network Programming.pdf underwent event 'loadend' with 555232 bytes transferred
+ 402696: file 8 - CS - @What Every Programmer Should Know About Memory.pdf underwent event 'loadstart' with 0 bytes transferred
+ 402725: file 8 - CS - @What Every Programmer Should Know About Memory.pdf underwent event 'progress' with 65536 bytes transferred
+ 402895: file 8 - CS - @What Every Programmer Should Know About Memory.pdf underwent event 'progress' with 229376 bytes transferred
+ 402903: file 8 - CS - @What Every Programmer Should Know About Memory.pdf underwent event 'load' with 934051 bytes transferred
+ 405555: file 8 - CS - @What Every Programmer Should Know About Memory.pdf underwent event 'loadend' with 934051 bytes transferred
