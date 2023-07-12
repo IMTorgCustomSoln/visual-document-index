@@ -5,7 +5,8 @@ import { DocumentRecord } from "./data"
 export async function getFileRecord(filestore){     
   return new Promise(function(resolve, reject) {
       const reader = new FileReader()
-      addListeners(reader, filestore.ctx)
+      filestore.startTime = performance.now()
+      addListeners(reader, filestore)
       reader.onload = (e) => {
           let typedarray = new Uint8Array(e.target.result)
           const loadingTask = pdfjsLib.getDocument(typedarray)
@@ -50,39 +51,50 @@ export async function getFileRecord(filestore){
 }
 
 
-function addListeners(reader, ctx) {
-  reader.ctx = ctx
+function addListeners(reader, filestore) {
+  /* Add listeners and event handlers to the reader object.
+
+  This is directly dependent upon the ImportData component and 
+  TODO: should be moved ImportData component for correct coupling
+  */
+  reader.idx= filestore.idx
+  reader.file = filestore.file
+  reader.startTime = filestore.startTime
+  reader.ctx = filestore.ctx
+  const log = `${filestore.startTime}: file ${filestore.idx} - ${filestore.file.name} underwent event 'start' with 0 bytes transferred\n`
+  filestore.ctx.importLogs.push( log )
+
   reader.addEventListener("loadstart", handleEvent)
   reader.addEventListener("load", handleEvent)
   reader.addEventListener("loadend", handleEvent)
   reader.addEventListener("progress", handleEvent)
   reader.addEventListener("error", handleEvent)
   reader.addEventListener("abort", handleEvent)
-}
 
-function handleEvent(event) {
-  let update = 0
-  let log = `${event.type}: ${event.loaded} bytes transferred\n`
-  console.log(log)
+  function handleEvent(event) {
+    let update = 0
+    const log = `${performance.now()}: file ${filestore.idx} - ${event.currentTarget.file.name} underwent event '${event.type}' with ${event.loaded} bytes transferred\n`
+    event.currentTarget.ctx.importLogs.push( log )
+    //console.log(log)
 
-  //successful events
-  if (event.type=='loadstart'){
-    update = event.currentTarget.ctx.totalProgress+1
-    event.currentTarget.ctx.fileProgress = update
-  } else if (event.type=='load'){
-    update = event.currentTarget.ctx.totalProgress + event.loaded
-    event.currentTarget.ctx.totalProgress = update
-    event.currentTarget.ctx.fileProgress = update
-  } else if (event.type=='progress'){
-    update = event.currentTarget.ctx.fileProgress = event.currentTarget.ctx.totalProgress + event.loaded
-    event.currentTarget.ctx.fileProgress = update
-  } 
-  //file progress should always include total progress
-  if (event.currentTarget.ctx.fileProgress < event.currentTarget.ctx.totalProgress){
-    event.currentTarget.ctx = {...event.currentTarget.ctx, fileProgress: event.currentTarget.ctx.totalProgress}
-    event.currentTarget.ctx.fileProgress = event.currentTarget.ctx.totalProgress
+    //successful events
+    if (event.type=='loadstart'){
+      update = event.currentTarget.ctx.totalProgress + 1
+      event.currentTarget.ctx.fileProgress = update
+    } else if (event.type=='load'){
+      update = event.currentTarget.ctx.totalProgress + event.loaded
+      event.currentTarget.ctx.totalProgress = update
+      event.currentTarget.ctx.fileProgress = update
+    } else if (event.type=='progress'){
+      update = event.currentTarget.ctx.fileProgress = event.currentTarget.ctx.totalProgress + event.loaded
+      event.currentTarget.ctx.fileProgress = update
+    } 
+    //file progress should always include total progress
+    if (event.currentTarget.ctx.fileProgress < event.currentTarget.ctx.totalProgress){
+      event.currentTarget.ctx.fileProgress = event.currentTarget.ctx.totalProgress
+    }
+    //console.log(event.currentTarget.ctx.fileProgress)
   }
-  console.log(event.currentTarget.ctx.fileProgress)
 }
 
 function createMetadata(pdf, record){
@@ -141,6 +153,32 @@ function createCanvasImage(page, idx, record){
 
 
 // ProcessData
+
+export function getEstimatedProcessTime(fileCount, fileSizeInBytes){
+  /* Get the estimated time to process a file, in human-
+  readable minutes or seconds.
+  TODO: this is entirely dependent on platform from which the 
+  function is run.
+  */
+  let formatted = ''
+  let result = ''
+  const coef1 = .5
+  const coef2 = .005
+  if (Number.isInteger(fileCount) && Number.isFinite(fileSizeInBytes)){
+    const seconds = coef1 * fileCount + coef2 * fileSizeInBytes
+    if (seconds > 60){
+      const intermediate = seconds / 60 
+      formatted = `${intermediate.toFixed(2)} min`
+    } else {
+      formatted = `${seconds.toFixed(2)} sec`
+    }
+    result = formatted
+  } else {
+    result = '-1'
+  }
+  return result
+}
+
 
 export function getFileReferenceNumber(filename, searchTermOrIndexArray=[9,17], regex=false){
   /* Get a file reference number from file name
@@ -208,14 +246,14 @@ export function getFormattedFileSize(numberOfBytes, longFormat=true) {
   if(longFormat){
       output = exponent === 0 ?
           `${numberOfBytes} bytes` :
-          `${approx.toFixed(3)} ${
+          `${approx.toFixed(2)} ${
                 units[exponent]
               } (${numberOfBytes} bytes)`;
   }else{
       output =
           exponent === 0 ?
           `${numberOfBytes} bytes` :
-          `${approx.toFixed(3)} ${
+          `${approx.toFixed(2)} ${
                 units[exponent]}`;
   }
   return output;

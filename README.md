@@ -32,23 +32,14 @@ npm run dev
 
 ## ToDo
 
-* search
-  - search within distance (proximity)
-  - big pdf, ppt, excel, docx
-  - 30-40 pdfs for loan file (hand-written, signatures, etc.)
-* exact phrase search
-  - search opens activeTab to image
-  - page for snippet is sometimes incorrect; ensure this is aligned
-  - fix score for failed exact match
-  - highlight snippet in page image
-  - fix `query` var to show actual terms searched and format nicely
 * file loading
   - checks
-    + check whether actual pdf or pdf of images (scanned) (acrobat enables OCR to make searchable) DANGER OF NOT SEARCHING
-    + check file sizes
+    + ~~fix progress bar (maybe load.event)~~
+    + ~~provide load results instead of immediately exiting modal~~
+    + ~~logs and export of import times~~
+    + ~~check whether actual pdf or pdf of images (scanned) (acrobat enables OCR to make searchable)~~ DANGER OF NOT SEARCHING, SO DO NOT ADD TO FILES []
     + provide estimate for load time (min,sec) based on (file count, file size)
     + find limits for upload capacity
-    + fix progress bar (maybe load.event)
     + check file load takes too long
     + additional error handling for the browser
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
@@ -61,6 +52,16 @@ npm run dev
   - row details small, (more) btn click to lengthen down
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
+* search
+  - search within distance (proximity)
+  - big pdf, ppt, excel, docx
+  - 30-40 pdfs for loan file (hand-written, signatures, etc.)
+* exact phrase search
+  - search opens activeTab to image
+  - page for snippet is sometimes incorrect; ensure this is aligned
+  - fix score for failed exact match
+  - highlight snippet in page image
+  - fix `query` var to show actual terms searched and format nicely
 * wink nlp
   - subject
   - keywords

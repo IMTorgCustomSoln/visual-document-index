@@ -15,7 +15,8 @@ export default ({mode}) => {
     define: {
       __VERSION__: `"${process.env.VITE_APP_VERSION}"`,
       __EXPORT_FILE_NAME__: `"${process.env.EXPORT_FILE_NAME}"`,
-      __EXPORT_TEXT_NAME__: `"${process.env.EXPORT_TEXT_NAME}"`
+      __EXPORT_TEXT_NAME__: `"${process.env.EXPORT_TEXT_NAME}"`,
+      __UPLOAD_LOGS_TEXT_NAME__: `"${process.env.UPLOAD_LOGS_TEXT_NAME}"`
     },
     resolve: {
       alias: {
