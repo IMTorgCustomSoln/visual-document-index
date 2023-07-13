@@ -15,6 +15,7 @@
           <Sidebar 
             :note="note" 
             />
+          <SaveWork/>
         </div>
       </b-col>
       <b-col cols="2"></b-col>
@@ -42,6 +43,7 @@ import Search from './Search.vue'
 import Table from './Table.vue'
 import Sidebar from './Sidebar.vue'
 
+import SaveWork from './support/SaveWork.vue'
 import { DocumentIndexData } from './support/data'
 
 
@@ -50,9 +52,10 @@ export default {
   name: 'app',
   components: {
     ImportData,
+    Sidebar,
+    SaveWork,
     Search,
     Table,
-    Sidebar
   },
   data(){
     return {

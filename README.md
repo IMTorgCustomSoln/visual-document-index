@@ -38,6 +38,11 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
+* add save / continue functionality
+  - save lunrjs index to DocumentMetadata
+  - pass all of DocumentMetadata to App
+  - save all objects to file
+* add `scoped` to all components' style
 * file loading
   - checks
     + add batch_idx to log output

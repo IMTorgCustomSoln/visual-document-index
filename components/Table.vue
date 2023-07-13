@@ -397,7 +397,7 @@ const fields = [{
 </script>
 
 
-<style>
+<style scoped>
 .fixed-medium{
     width: 94px !important;
 }
