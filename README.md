@@ -16,6 +16,12 @@ Begin interactive (hot-reload) development with command:
 npm run dev
 ```
 
+If you need to re-evaluate the model estimates, this can be done using python.  Either run the pytest `test_create_estimation_model.py`, interactively, or directly via the commandline:
+
+```
+python create_estimation_model.py --input_dir = "./tests/logs/"
+```
+
 ## References
 
 * Bootstrap-vue is not quite ready for Vue3 (explained [here](https://bootstrap-vue.org/vue3))
@@ -34,11 +40,12 @@ npm run dev
 
 * file loading
   - checks
+    + add batch_idx to log output
     + ~~fix progress bar (maybe load.event)~~
     + ~~provide load results instead of immediately exiting modal~~
     + ~~logs and export of import times~~
     + ~~check whether actual pdf or pdf of images (scanned) (acrobat enables OCR to make searchable)~~ DANGER OF NOT SEARCHING, SO DO NOT ADD TO FILES []
-    + provide estimate for load time (min,sec) based on (file count, file size)
+    + ~~provide estimate for load time (min,sec) based on (file count, file size)~~
     + find limits for upload capacity
     + check file load takes too long
     + additional error handling for the browser

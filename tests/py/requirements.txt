@@ -1,1 +1,4 @@
 pandas
+sklearn
+pytest
+plotnine

@@ -35,7 +35,7 @@
                 <ul class="no-li-dot">
                     <li><label for="fileCount">Files: &nbsp</label> <output id="fileCount">{{ preview.fileCount }}</output></li>
                     <li><label for="fileSize">Total size: &nbsp</label> <output id="fileSize"> {{ preview.fileSize }}</output></li>
-                    <li><label for="estimatedTime">Time to upload and process: &nbsp</label> <output id="estimatedTime"> {{ preview.estimateProcessTime }}</output></li>
+                    <li><label for="estimatedTime">Approximate time to upload and process: &nbsp</label> <output id="estimatedTime"> {{ preview.estimateProcessTime }}</output></li>
                 </ul>
             </div>
         </form>
@@ -53,7 +53,10 @@
                     :value="progressBar.fileProgress" 
                     :variant="progressBar.variant"
                     >
-                    <span>Processed <strong>{{ progressBar.fileProgress }} of {{ progressBar.max }} bytes</strong></span>
+                    <span>
+                        Processed <strong>{{ progressBar.fileProgress }} 
+                        of {{ progressBar.max }} bytes</strong>
+                    </span>
                 </b-progress-bar>
             </b-progress>
             <br/>
@@ -106,7 +109,8 @@
 <script>
 import { ExportLogsFileName } from './support/data.js'
 import { getFileRecord } from './support/utils.js'
-import { getDateFromJsNumber, getEstimatedProcessTime, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
+import { getEstimatedProcessTime, getFormattedMilliseconds } from './support/utils.js'
+import { getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
 
 
 export default({
@@ -186,7 +190,7 @@ export default({
             const endTime = parseInt( finalLogItem.split(':')[0] )
             const startTime = parseInt( this.progressBar.importLogs[0].split(':')[0] )
             const duration = endTime - startTime    //in milliseconds, index based on performance.now() integer length
-            this.resultDisplay = {...this.resultDisplay, actualProcessTime: duration}
+            this.resultDisplay = {...this.resultDisplay, actualProcessTime: getFormattedMilliseconds(duration) }
 
             //check files for searchable text
             for (const file of this.processedFiles){
@@ -231,6 +235,9 @@ export default({
                 document.body.removeChild(link)
             })
         },
+        getFormattedFileSize(bytes, long){
+            getFormattedFileSize(bytes, long)
+        }
 }
 })
 
@@ -368,7 +375,7 @@ em{
     font-size:12px;
     padding:2px;
     margin:5px;
-    width: 105px !important;
+    width: 115px !important;
 }
 .fixed-large{
     width: 140px !important;

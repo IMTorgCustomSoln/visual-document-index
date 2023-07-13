@@ -1,4 +1,5 @@
 import { DocumentRecord } from "./data"
+import * as model from "../../tests/py/results.json"
 
 // Upload Input
 
@@ -162,21 +163,37 @@ export function getEstimatedProcessTime(fileCount, fileSizeInBytes){
   */
   let formatted = ''
   let result = ''
-  const coef1 = .5
-  const coef2 = .005
+  const {size, file_count} = model.coefs['0.75']    //TODO:add high estimate to this median estimate
+
   if (Number.isInteger(fileCount) && Number.isFinite(fileSizeInBytes)){
-    const seconds = coef1 * fileCount + coef2 * fileSizeInBytes
-    if (seconds > 60){
-      const intermediate = seconds / 60 
-      formatted = `${intermediate.toFixed(2)} min`
+    const log_fileCount = Math.log(fileCount)
+    const log_Size = Math.log(fileSizeInBytes)
+    const log_milliseconds = size * log_fileCount + file_count * log_Size
+    const milliseconds = Math.exp(log_milliseconds)
+
+    if (Number.isFinite(milliseconds )){
+      result = getFormattedMilliseconds(milliseconds)
     } else {
-      formatted = `${seconds.toFixed(2)} sec`
+      result = '-1'
     }
-    result = formatted
+    return result
   } else {
     result = '-1'
   }
-  return result
+}
+
+export function getFormattedMilliseconds(milliseconds){
+  let formatted = ''
+  if (milliseconds >= 60000){
+    const intermediate = milliseconds / 60000 
+    formatted = `${intermediate.toFixed(2)} min`
+  } else if (milliseconds < 60000 && milliseconds >= 1000){
+    const intermediate = milliseconds / 1000 
+    formatted = `${intermediate.toFixed(2)} sec`
+  } else {
+    formatted = `${milliseconds.toFixed(2)} milliseconds`
+  }
+  return formatted
 }
 
 
