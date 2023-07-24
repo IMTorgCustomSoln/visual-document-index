@@ -108,7 +108,10 @@ The results are ordered by the 'Score' column, which is a weighted formula of th
                 }, this)
             })
             //add to context
-            this.indices = {...this.indices, lunrIndex: lunrIndex}
+            this.indices.lunrIndex = lunrIndex
+        },
+        continueWorkspaceIndex(){
+            //TODO: use previous index if loaded
         },
         searchQuery() {
             /* Provide tableFilter of selected rows' id based on `this.query` input

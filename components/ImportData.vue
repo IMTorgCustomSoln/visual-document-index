@@ -180,6 +180,7 @@ export default({
             const processedFiles = processFiles(this.importedFiles)
             this.processedFiles.push(...processedFiles)
             this.$emit('imported-records', this.processedFiles)
+            
             this.resetModal()
             this.btnText = 'Add More Files'
         },
@@ -348,6 +349,7 @@ function processFiles(files){
         }
     return processedFiles;
 }
+
 </script>
 
 

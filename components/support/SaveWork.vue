@@ -19,9 +19,7 @@
         <!-- Explanation TODO:fix-->
         <div v-if="description">
             <p>
-            <bold style="font-weight: bold; color: red">FAIL: this does not currently work</bold><br><br>
-
-            Determine whether to save current work state or to continue from a previous state by 
+            Determine whether to <code>i) Save</code> current work state or to <code>2) Continue</code> from a previous state by 
             uploading from a save file.<br><br>
 
             Because this is an offline application, data cannot be automatically saved.  <bold style="font-weight: bold">If you close 
@@ -31,7 +29,7 @@
             data can be saved to a machine-readable file on your machine.  This can be imported, later,
             to continue where you last saved.<br><br>  
             
-            <em>Note: the saved file typically quite large in size (several megabytes).  If you want a light-weight file with only your managed notes (such as to share with team 
+            <em>Note: the saved file is typically quite large in size (several megabytes).  If you want a light-weight file with only your managed notes (such as to share with team 
             members), instead, open the <code>Notes Manager</code> sidebar and click <code>Export</code> > <code>Data Storage</code></em>.
             </p>
         </div>
@@ -77,6 +75,7 @@ import { getFormattedFileSize } from './utils.js'
 
 export default({
     name: 'SaveWork',
+    emits:['imported-workspace'],
     data(){
         return {
             btnText: 'Save / Continue',
@@ -86,9 +85,10 @@ export default({
                 fileSize: ''
             },
             documentsIndex: DocumentIndexData,
+            managedNotes: ManagedNotesData,
 
-            topics: ManagedNotesData.value.topics,
-            notes: ManagedNotesData.value.notes,
+            //topics: ManagedNotesData.value.topics,
+            //notes: ManagedNotesData.value.notes,
         }
     },
     methods: {
@@ -96,8 +96,9 @@ export default({
             const create = e.target
             const object = {
                 documentsIndex: this.documentsIndex,
-                topics: this.topics,
-                notes: this.notes
+                managedNotes: this.managedNotes
+                //topics: this.topics,
+                //notes: this.notes
             }
             const jsonObj = JSON.stringify( toRaw(object) )
             const a = document.createElement('a')
@@ -130,12 +131,16 @@ export default({
         async uploadAppDataInput(){
             const file = uploadAppDataInput.files[0]
             const object = await parseJsonFile(file)
-            this.topics.length = 0
-            this.notes.length = 0
-            Object.assign(this.documentsIndex, object.documentsIndex)
 
-            Object.assign(this.topics, object.topics)
-            Object.assign(this.notes, object.notes)
+            this.documentsIndex.documents.length = 0
+            this.managedNotes.topics.length = 0
+            this.managedNotes.notes.length = 0
+
+            Object.assign(this.documentsIndex, object.documentsIndex)
+            Object.assign(this.managedNotes.topics, object.managedNotes.topics)
+            Object.assign(this.managedNotes.notes, object.managedNotes.notes)
+
+            this.$emit('imported-workspace', true)
             this.$bvModal.hide("save-continue-modal")
             this.description = true
         }

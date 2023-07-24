@@ -95,7 +95,7 @@ export class DocumentRecord{
 }
 export const DocumentIndexData = ref({
   documents: [],
-  indices: {
+  indices: {        //TODO: indices are saved / loaded, but indices are currrently created from document records
     lunrIndex: {},
     strIndex: ''
   }

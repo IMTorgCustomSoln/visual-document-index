@@ -39,9 +39,10 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 ## ToDo
 
 * add save / continue functionality
-  - save lunrjs index to DocumentMetadata
-  - pass all of DocumentMetadata to App
-  - save all objects to file
+  - ~~save lunrjs index to DocumentMetadata~~
+  - ~~pass all of DocumentMetadata to App~~
+  - ~~save all objects to file~~
+  - move 'continue' to the ImportData.vue
 * add `scoped` to all components' style
 * file loading
   - checks
@@ -54,10 +55,11 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
     + find limits for upload capacity
     + check file load takes too long
     + additional error handling for the browser
+* test
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
   - load test File Reader
   - export / import logic for primary data records and lunrjs
-  - add Tour, About, and Settings buttons
+  - add Tour, About, and Settings buttons (https://driverjs.com/docs/installation/)
   - add other fields to search: keywords, summary
   - adjust row details to reasonable height
   - zoom on bootstrap-vue image carousel

@@ -10,12 +10,14 @@
       <b-col cols="5">
         <div id="btnMainPanel">
           <ImportData 
-            v-on:imported-records="addRecords"
+            v-on:imported-records="addRecordsFromImport"
             />
           <Sidebar 
             :note="note" 
             />
-          <SaveWork/>
+          <SaveWork
+            v-on:imported-workspace="addRecordsFromContinue"
+            />
         </div>
       </b-col>
       <b-col cols="2"></b-col>
@@ -71,7 +73,7 @@ export default {
     }
   },
   methods: {
-    addRecords(newRecords){
+    addRecordsFromImport(newRecords){
       //check file for uniqueness in reference_number, then append
       let refNums = []
       let maxId = 0
@@ -94,6 +96,12 @@ export default {
       this.searchTableResults = {...this.searchTableResults, searchTerms: results.searchTerms}
       this.searchTableResults = {...this.searchTableResults, resultIds: results.resultIds}
       this.searchTableResults = {...this.searchTableResults, resultGroups: results.resultGroups}
+    },
+    addRecordsFromContinue(importedWorkspace){
+      if (importedWorkspace == true){
+        this.documents.push(...DocumentIndexData.value.documents)
+        this.showTablePanel = true
+      }
     },
     updateNotes(newNote){
       Object.assign(this.note, newNote)
