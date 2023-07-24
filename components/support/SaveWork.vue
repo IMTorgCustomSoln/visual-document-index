@@ -171,7 +171,7 @@ async function parseJsonFile(file) {
 
 </script>
 
-<style>
+<style scoped>
 #btnSaveContinue {
   margin: 5px;
 }
@@ -182,5 +182,13 @@ async function parseJsonFile(file) {
 }
 .no-li-dot label{
     margin: 0px;
+}
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
 }
 </style>

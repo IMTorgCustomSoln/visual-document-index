@@ -294,7 +294,7 @@ function removeUsingSet(arr){
 
 
 
-<style>
+<style scoped>
 
 
 </style>

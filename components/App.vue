@@ -110,7 +110,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #jumbotron{
   padding-bottom: 16px;
 }

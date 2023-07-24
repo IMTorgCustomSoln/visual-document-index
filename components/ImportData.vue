@@ -353,7 +353,7 @@ function processFiles(files){
 </script>
 
 
-<style>
+<style scoped>
 
 #btnImport {
   margin: 5px;

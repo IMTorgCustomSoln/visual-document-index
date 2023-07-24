@@ -38,12 +38,20 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
+* change layout to index and full-page pdf
+* ~~add `scoped` to all components' style~~
+* exact phrase search
+  - search opens activeTab to image
+  - page for snippet is sometimes incorrect; ensure this is aligned
+  - fix score for failed exact match
+  - highlight snippet in page image
+  - fix `query` var to show actual terms searched and format nicely
 * add save / continue functionality
   - ~~save lunrjs index to DocumentMetadata~~
   - ~~pass all of DocumentMetadata to App~~
   - ~~save all objects to file~~
   - move 'continue' to the ImportData.vue
-* add `scoped` to all components' style
+
 * file loading
   - checks
     + add batch_idx to log output
@@ -70,12 +78,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - search within distance (proximity)
   - big pdf, ppt, excel, docx
   - 30-40 pdfs for loan file (hand-written, signatures, etc.)
-* exact phrase search
-  - search opens activeTab to image
-  - page for snippet is sometimes incorrect; ensure this is aligned
-  - fix score for failed exact match
-  - highlight snippet in page image
-  - fix `query` var to show actual terms searched and format nicely
+
 * wink nlp
   - subject
   - keywords

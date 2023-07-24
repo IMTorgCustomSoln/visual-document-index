@@ -180,7 +180,7 @@ async function parseJsonFile(file) {
 </script>
 
 
-<style>
+<style scoped>
 /*TODO: align right
 #sidebar-btns{
     margin-left: auto; 

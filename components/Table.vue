@@ -400,6 +400,7 @@ const fields = [{
 <style scoped>
 .fixed-medium{
     width: 94px !important;
+    margin:5px;
 }
 
 #table-panel input {
@@ -417,6 +418,7 @@ const fields = [{
 .snippet > .btn-sm {
     font-size:8px;
     padding:2px;
+    margin-left: 10px;
 }
 
 /*ref: http://jsfiddle.net/7w8TC/1/ */
