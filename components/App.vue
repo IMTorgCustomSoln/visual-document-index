@@ -11,12 +11,12 @@
         <div id="btnMainPanel">
           <ImportData 
             v-on:imported-records="addRecordsFromImport"
+            v-on:imported-workspace="addRecordsFromContinue"
             />
           <Sidebar 
             :note="note" 
             />
           <SaveWork
-            v-on:imported-workspace="addRecordsFromContinue"
             />
         </div>
       </b-col>

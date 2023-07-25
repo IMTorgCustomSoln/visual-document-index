@@ -236,7 +236,7 @@ hr {
   margin: 5px;
 }
 .fixed-large{
-    width: 140px !important;
+    width: 150px !important;
 }
 .note {
     font-size: 12px;

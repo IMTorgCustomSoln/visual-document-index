@@ -50,7 +50,9 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - ~~save lunrjs index to DocumentMetadata~~
   - ~~pass all of DocumentMetadata to App~~
   - ~~save all objects to file~~
-  - move 'continue' to the ImportData.vue
+  - ~~move 'continue' to the ImportData.vue~~
+  - deactivate 'Import Workspace' tab, or alert 'This will delete all current records'
+  - cleanup SaveWork.vue by removing comments and ensuring correctness
 
 * file loading
   - checks

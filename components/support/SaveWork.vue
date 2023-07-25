@@ -13,26 +13,24 @@
     <!-- modal -->
     <b-modal id='save-continue-modal' ok-only>
         <template #modal-title>
-            Save current work or Continue from a previously saved session
+            Save current work session
         </template>
         <br>
         <!-- Explanation TODO:fix-->
         <div v-if="description">
             <p>
-            Determine whether to <code>i) Save</code> current work state or to <code>2) Continue</code> from a previous state by 
-            uploading from a save file.<br><br>
-
-            Because this is an offline application, data cannot be automatically saved.  <bold style="font-weight: bold">If you close 
+            Because this is an offline application, the Workspace cannot be automatically saved.  <bold style="font-weight: bold">If you close 
             your browser, all work will be lost.</bold> <br><br> 
             
             To maintain your application state, including imported data files and managed notes, the 
-            data can be saved to a machine-readable file on your machine.  This can be imported, later,
+            Workspace data can be saved to a machine-readable file on your machine.  This can be imported, later,
             to continue where you last saved.<br><br>  
             
             <em>Note: the saved file is typically quite large in size (several megabytes).  If you want a light-weight file with only your managed notes (such as to share with team 
             members), instead, open the <code>Notes Manager</code> sidebar and click <code>Export</code> > <code>Data Storage</code></em>.
             </p>
         </div>
+        <!--
         <div v-else>
             <form name="uploadForm">
                 <p>
@@ -52,17 +50,19 @@
             </ul>
         </form><br/>
 
-        </div>
+        </div>-->
 
         <!-- Control -->
         <template #modal-footer>
             <div v-if="description">
-                <b-button @click="saveWork" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Save</b-button>
-                <b-button @click="importToContinue" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary">Continue</b-button>
+                <b-button @click="saveWork" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Save Workspace</b-button>
+                <!--<b-button @click="importToContinue" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary">Continue</b-button>-->
             </div>
+            <!--
             <div v-else>
                 <b-button @click="uploadAppDataInput" v-b-modal.modal-close_visit class="btn-sm m-1" variant="success">Upload</b-button>
             </div>
+            -->
         </template>
     </b-modal>
 </template>
@@ -75,10 +75,10 @@ import { getFormattedFileSize } from './utils.js'
 
 export default({
     name: 'SaveWork',
-    emits:['imported-workspace'],
+    //emits:['imported-workspace'],
     data(){
         return {
-            btnText: 'Save / Continue',
+            btnText: 'Save Workspace',
             description: true,
             preview: {
                 fileName: '',
@@ -116,10 +116,12 @@ export default({
             this.$bvModal.hide("save-continue-modal")
         },
 
+        /*
         importToContinue(){
             this.description = false
         },
 
+        
         previewFile() {
             // Preview files to upload and process
             const file = uploadAppDataInput.files[0]
@@ -143,7 +145,7 @@ export default({
             this.$emit('imported-workspace', true)
             this.$bvModal.hide("save-continue-modal")
             this.description = true
-        }
+        }*/
     }
 })
 
@@ -160,6 +162,7 @@ function makeTextFile(text) {
     return textFile
 }
 
+/*
 async function parseJsonFile(file) {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader()
@@ -168,10 +171,14 @@ async function parseJsonFile(file) {
     fileReader.readAsText(file)
   })
 }
+*/
 
 </script>
 
 <style scoped>
+.fixed-large{
+    width: 150px !important;
+}
 #btnSaveContinue {
   margin: 5px;
 }
@@ -182,6 +189,9 @@ async function parseJsonFile(file) {
 }
 .no-li-dot label{
     margin: 0px;
+}
+em{
+    font-size: .85rem;
 }
 input[type="file"] {
     display: none;
