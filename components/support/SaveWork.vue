@@ -4,7 +4,6 @@
         id='btnSaveContinue' 
         v-b-modal="'save-continue-modal'"
         variant="primary"
-        :class="{'btn-success': componentBtn}"
         class="fixed-large"
         >
         {{ btnText }}
@@ -30,39 +29,12 @@
             members), instead, open the <code>Notes Manager</code> sidebar and click <code>Export</code> > <code>Data Storage</code></em>.
             </p>
         </div>
-        <!--
-        <div v-else>
-            <form name="uploadForm">
-                <p>
-                Select a previously saved session file (ie. <code>VDI_ApplicationStateData_v*.*.*.json'</code>) to continue your work.
-                </p>
-            <label for="uploadAppDataInput" class="custom-file-upload">
-                <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
-            </label><br/>
-            <input id="uploadAppDataInput" 
-                   type="file" 
-                   @change="previewFile"
-                   accept=".json"
-            />
-            <ul class="no-li-dot">
-                <li><label for="fileName">File: &nbsp</label><output id="fileName">{{ preview.fileName }}</output></li>
-                <li><label for="fileSize">Size: &nbsp</label><output id="fileSize">{{ preview.fileSize }}</output></li>
-            </ul>
-        </form><br/>
-
-        </div>-->
 
         <!-- Control -->
         <template #modal-footer>
             <div v-if="description">
                 <b-button @click="saveWork" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Save Workspace</b-button>
-                <!--<b-button @click="importToContinue" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary">Continue</b-button>-->
             </div>
-            <!--
-            <div v-else>
-                <b-button @click="uploadAppDataInput" v-b-modal.modal-close_visit class="btn-sm m-1" variant="success">Upload</b-button>
-            </div>
-            -->
         </template>
     </b-modal>
 </template>
@@ -71,11 +43,9 @@
 import { isProxy, toRaw } from 'vue'
 import { DocumentIndexData, ManagedNotesData } from './data'
 import { ExportAppStateFileName } from './data.js'
-import { getFormattedFileSize } from './utils.js'
 
 export default({
     name: 'SaveWork',
-    //emits:['imported-workspace'],
     data(){
         return {
             btnText: 'Save Workspace',
@@ -86,9 +56,6 @@ export default({
             },
             documentsIndex: DocumentIndexData,
             managedNotes: ManagedNotesData,
-
-            //topics: ManagedNotesData.value.topics,
-            //notes: ManagedNotesData.value.notes,
         }
     },
     methods: {
@@ -97,8 +64,6 @@ export default({
             const object = {
                 documentsIndex: this.documentsIndex,
                 managedNotes: this.managedNotes
-                //topics: this.topics,
-                //notes: this.notes
             }
             const jsonObj = JSON.stringify( toRaw(object) )
             const a = document.createElement('a')
@@ -115,37 +80,6 @@ export default({
             })
             this.$bvModal.hide("save-continue-modal")
         },
-
-        /*
-        importToContinue(){
-            this.description = false
-        },
-
-        
-        previewFile() {
-            // Preview files to upload and process
-            const file = uploadAppDataInput.files[0]
-            const fileSize = getFormattedFileSize(file.size)
-            this.preview = {...this.preview, fileSize: fileSize}
-            this.preview = {...this.preview, fileName: file.name}
-        },
-
-        async uploadAppDataInput(){
-            const file = uploadAppDataInput.files[0]
-            const object = await parseJsonFile(file)
-
-            this.documentsIndex.documents.length = 0
-            this.managedNotes.topics.length = 0
-            this.managedNotes.notes.length = 0
-
-            Object.assign(this.documentsIndex, object.documentsIndex)
-            Object.assign(this.managedNotes.topics, object.managedNotes.topics)
-            Object.assign(this.managedNotes.notes, object.managedNotes.notes)
-
-            this.$emit('imported-workspace', true)
-            this.$bvModal.hide("save-continue-modal")
-            this.description = true
-        }*/
     }
 })
 
@@ -162,18 +96,8 @@ function makeTextFile(text) {
     return textFile
 }
 
-/*
-async function parseJsonFile(file) {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader()
-    fileReader.onload = event => resolve(JSON.parse(event.target.result))
-    fileReader.onerror = error => reject(error)
-    fileReader.readAsText(file)
-  })
-}
-*/
-
 </script>
+
 
 <style scoped>
 .fixed-large{

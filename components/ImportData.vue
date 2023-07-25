@@ -1,11 +1,7 @@
 <template>
-    <p v-if="componentBtn">
-        Click to import files and populate a table. Follow<br>
-        the green buttons if you're new:
-    </p>
     <!-- Open modal button -->
     <b-button
-        id='btnImport' 
+        id='btnImport'
         v-b-modal="'import-modal'" 
         variant="primary"
         :class="{'btn-success': componentBtn}"
@@ -13,15 +9,28 @@
         >
         {{ btnText }}
     </b-button>
+    <b-popover
+        id="btnImportPop" 
+        target="btnImport"
+        triggers="manual"
+        :show.sync="componentBtn"
+        placement="top"
+        container="null"
+        >
+        Click to import files and populate a table. Follow
+        the green buttons if you're a new user.
+    </b-popover>
 
     <!-- modal -->
-    <b-modal id="import-modal" ok-only>
+    <b-modal 
+        id="import-modal" 
+        ok-only>
         <template #modal-title>
             Import files or workspace
         </template>
         <p>
-        Determine whether to import files or to continue from a previous state by 
-            uploading from a save file.
+        To begin, import individual files or continue from a previous state by 
+            uploading from a saved workspace file.
         </p>
 
         <!-- tabs -->
@@ -209,6 +218,19 @@ export default({
             }
         }
     },
+    mounted(){
+        this.$root.$on('bv::modal::show', (bvEvent, modalId)=> {
+            if(modalId=="import-modal" ){
+                this.componentBtn = false
+            }
+        })
+        /* //not necessary
+        this.$root.$on('bv::modal::hide', (bvEvent, modalId)=> {
+            if(modalId=="import-modal" ){
+                this.componentBtn = true
+            }
+        })*/
+    },
     methods: {
         previewFiles() {
             // Preview files to upload and process
@@ -299,6 +321,7 @@ export default({
             this.processBtn = true
             this.uploadWorkspaceBtn = true
             this.$bvModal.hide("import-modal")
+            this.componentBtn = false
 
             this.preview.fileName = ''
             this.preview.fileSize = 0.0

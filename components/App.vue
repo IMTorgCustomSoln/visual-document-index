@@ -7,20 +7,21 @@
     </b-jumbotron>
     <b-row>
       <b-col cols="5"></b-col>
-      <b-col cols="5">
+      <b-col cols="7">
         <div id="btnMainPanel">
-          <ImportData 
-            v-on:imported-records="addRecordsFromImport"
-            v-on:imported-workspace="addRecordsFromContinue"
-            />
-          <Sidebar 
-            :note="note" 
-            />
-          <SaveWork
-            />
-        </div>
+        <b-button-group>
+            <ImportData 
+              v-on:imported-records="addRecordsFromImport"
+              v-on:imported-workspace="addRecordsFromContinue"
+              />
+            <Sidebar 
+              :note="note" 
+              />
+            <SaveWork
+              />
+        </b-button-group>
+      </div>
       </b-col>
-      <b-col cols="2"></b-col>
     </b-row>
       <div v-show="showTablePanel">
         <Search 
@@ -112,9 +113,12 @@ export default {
 
 <style scoped>
 #jumbotron{
-  padding-bottom: 16px;
+  padding-top: 32px;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
 }
 #btnMainPanel{
   float: right;
 }
+
 </style>
