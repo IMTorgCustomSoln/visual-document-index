@@ -374,11 +374,12 @@ em{
 }
 
 .btn-sm {
-    font-size:12px;
-    padding:2px;
-    margin:5px;
-    width: 115px !important;
-}
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  border-radius: .2rem;
+}   
+
 .fixed-large{
     width: 140px !important;
 }
