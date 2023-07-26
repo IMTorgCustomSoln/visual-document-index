@@ -37,10 +37,15 @@
                 <b-row class="mb-2">
                     <b-col sm="6" class="text-sm-left">
                         <b-tabs
-                            v-model="activeTab"
+                            v-model="row._activeDetailsTab"
+                            @changed="onTabChanged"
                             active-nav-item-class="font-weight-bold" 
-                            content-class="mt-3">
-                            <b-tab title="Summary" active>
+                            content-class="mt-3"
+                            >
+                            <b-tab 
+                                title="Summary"
+                                lazy
+                                >
                                 <b-card>
                                 <b-row>
                                     <b-col sm="5" class="text-sm-left">
@@ -54,7 +59,10 @@
                                 </b-row>
                             </b-card>
                             </b-tab>
-                            <b-tab title="FlipBook" lazy>
+                            <b-tab 
+                                title="FlipBook"
+                                lazy
+                                >
                                 <b-card>
                                 <b-row>
                                     <b-col sm="9">
@@ -148,7 +156,7 @@ export default ({
             sortDesc: false,
 
             totalDocuments: 0,
-            activeTab: 0,
+            activeDetailsTab: 0,
             mouseOverSnippet: '',
             //displayLimit: 0,
             guides: {
@@ -273,7 +281,7 @@ ready to be organized with the note Topics.`
                 }
             })
             this.sortDesc = true
-            this.activeTab = 1
+            this.activeDetailsTab = 1
             return true
             }
         },
@@ -304,6 +312,7 @@ ready to be organized with the note Topics.`
             this.tableFilter.length = 0
         },
 
+
         // Buttons and formatting
         expandAll() {
             this.items.map(item => this.$set(item, '_showDetails', true))
@@ -311,8 +320,14 @@ ready to be organized with the note Topics.`
         collapseAll() {
             this.items.map(item => this.$set(item, '_showDetails', false))
         },
+
+        //TODO: despite the two below rows, changing the active tab to '1' (image) does not work
         expandAdditionalInfo(row) {
-            row._showDetails = !row._showDetails;
+            row._showDetails = !row._showDetails
+            row._activeDetailsTab = this.activeDetailsTab
+        },
+        onTabChanged(){
+            this.items.map(item => this.$set(item, '_activeDetailsTab', this.activeDetailsTab))
         },
         formatDateAssigned(value) {
             const dt = getDateFromJsNumber(value)
@@ -322,7 +337,7 @@ ready to be organized with the note Topics.`
             return getFormattedFileSize(value, false);
         },
         getFormattedPath(path) {
-            return path ? path : './';
+            return path ? path : './'
         },
 
         // Row details 

@@ -89,7 +89,8 @@ export class DocumentRecord{
       this.hit_count = null
       this.snippets = null
       this.selected_snippet_page = null
-      this._showDetails = null
+      this._showDetails = false
+      this._activeDetailsTab = 0
       this.accumPageLines = null
     }
 }

@@ -41,7 +41,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 * change layout to index and full-page pdf
 * ~~add `scoped` to all components' style~~
 * exact phrase search
-  - search opens activeTab to image
+  - FAIL, search opens activeTab to image
   - page for snippet is sometimes incorrect; ensure this is aligned
   - fix score for failed exact match
   - highlight snippet in page image
@@ -51,7 +51,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - ~~pass all of DocumentMetadata to App~~
   - ~~save all objects to file~~
   - ~~move 'continue' to the ImportData.vue~~
-  - deactivate 'Import Workspace' tab, or alert 'This will delete all current records'
+  - ~~deactivate 'Import Workspace' tab, or alert 'This will delete all current records'~~
   - ~~cleanup SaveWork.vue by removing comments and ensuring correctness~~
   
 * file loading
@@ -62,13 +62,19 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
     + ~~logs and export of import times~~
     + ~~check whether actual pdf or pdf of images (scanned) (acrobat enables OCR to make searchable)~~ DANGER OF NOT SEARCHING, SO DO NOT ADD TO FILES []
     + ~~provide estimate for load time (min,sec) based on (file count, file size)~~
-    + find limits for upload capacity
-    + check file load takes too long
+    + create output report with model estimates (coef, rsq, ...)
+    + find limits for upload capacity: number of files and total size
+    + checks to determine if file load takes too long
     + additional error handling for the browser
 * test
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
   - load test File Reader
-  - export / import logic for primary data records and lunrjs
+
+* search
+  - search within distance (proximity)
+  - big pdf, ppt, excel, docx
+  - 30-40 pdfs for loan file (hand-written, signatures, etc.)
+* additional search
   - add Tour, About, and Settings buttons (https://driverjs.com/docs/installation/)
   - add other fields to search: keywords, summary
   - adjust row details to reasonable height
@@ -76,10 +82,15 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - row details small, (more) btn click to lengthen down
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
-* search
-  - search within distance (proximity)
-  - big pdf, ppt, excel, docx
-  - 30-40 pdfs for loan file (hand-written, signatures, etc.)
+* prepare for performance
+  - what size dataset should we expect?
+  - what should be done on the server? [ref](https://stackoverflow.com/questions/17078210/searching-a-large-amount-of-text-using-javascript-and-html5-storage)
+  - writing to file: `Uncaught InternalError: allocation size overflow`
+  - read files in chunks: [ref](https://stackoverflow.com/questions/14438187/javascript-filereader-parsing-long-file-in-chunks), [ref](https://stackoverflow.com/questions/50254537/how-to-read-any-local-file-by-chunks-using-javascript), [ref](https://stackoverflow.com/questions/55468777/json-stringify-large-object-optimization)
+  - write files in [streams](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_writable_streams)
+  - do not search until ready by pressing return
+  - lazily return snippets
+  - improve search speed
 
 * wink nlp
   - subject

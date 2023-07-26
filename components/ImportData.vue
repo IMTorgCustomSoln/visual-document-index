@@ -40,11 +40,25 @@
             content-class="mt-3"
             >
 
-
             <!-- Files -->
             <b-tab title="Files" 
                 active
+                id="tabFiles"
                 >
+                <!--  // maybe some explanation for why the Workspace tab is disabled is needed
+                <b-popover
+                    target="tabFiles"
+                    triggers="hover"
+                    :show.sync="disableWorkspaceBtn"
+                    placement="top"
+                    container="null"
+                    >
+                    Workspace tab is disabled.  Loading a Workspace after loading 
+                    files is not allowed as it will remove all current data.  To 
+                    load a Workspace, reload the app, first.
+                </b-popover>
+                -->
+
                 <form name="uploadForm">
                     <div>
                         <label for="uploadInput" class="custom-file-upload">
@@ -128,7 +142,9 @@
             <!-- Workspace -->
             <b-tab 
                 title="Workspace"
-                >
+                :disabled = disableWorkspaceBtn
+                id="tabWorkspace"
+                > <!-- popover placed in tab-0 -->
                 <div>
                 <form name="uploadForm">
                     <p>
@@ -188,6 +204,7 @@ export default({
             uploadBtn: true,
             processBtn: true,
             uploadWorkspaceBtn: true,
+            disableWorkspaceBtn: false,
 
             documentsIndex: DocumentIndexData,
             managedNotes: ManagedNotesData,
@@ -261,8 +278,9 @@ export default({
             // Process files by adding / modifying attributes
             const processedFiles = processFiles(this.importedFiles)
             this.processedFiles.push(...processedFiles)
+
             this.$emit('imported-records', this.processedFiles)
-            
+            this.disableWorkspaceBtn = true
             this.resetModal()
             this.btnText = 'Add More Files'
         },
@@ -307,6 +325,7 @@ export default({
             Object.assign(this.managedNotes.notes, object.managedNotes.notes)
 
             this.$emit('imported-workspace', true)
+            this.disableWorkspaceBtn = true
             this.resetModal()
             this.btnText = 'Add More Files'
         },
@@ -321,7 +340,6 @@ export default({
             this.processBtn = true
             this.uploadWorkspaceBtn = true
             this.$bvModal.hide("import-modal")
-            this.componentBtn = false
 
             this.preview.fileName = ''
             this.preview.fileSize = 0.0
@@ -336,7 +354,6 @@ export default({
             this.resultDisplay.checkFilesUsable.length = 0
 
             this.processBtn = true
-            //TODO: deactivate 'Import Workspace' tab, or alert 'This will delete all current records'
         },
         exportLogsToText(e){
             const create = e.target
