@@ -38,7 +38,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
-* change layout to index and full-page pdf
+* ~~place About button~~
 * ~~add `scoped` to all components' style~~
 * exact phrase search
   - FAIL, search opens activeTab to image
@@ -71,10 +71,12 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - load test File Reader
 
 * search
+  - drop-down for search type (stem, exact, proximity, word vector)
   - search within distance (proximity)
   - big pdf, ppt, excel, docx
   - 30-40 pdfs for loan file (hand-written, signatures, etc.)
-* additional search
+* change layout to index and full-page pdf
+* additional support
   - add Tour, About, and Settings buttons (https://driverjs.com/docs/installation/)
   - add other fields to search: keywords, summary
   - adjust row details to reasonable height
@@ -84,12 +86,14 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - useTextSelection: https://vueuse.org/core/useTextSelection/
 * prepare for performance
   - what size dataset should we expect?
+  - model load [ref](https://queue.acm.org/detail.cfm?id=3595862)
   - what should be done on the server? [ref](https://stackoverflow.com/questions/17078210/searching-a-large-amount-of-text-using-javascript-and-html5-storage)
   - writing to file: `Uncaught InternalError: allocation size overflow`
   - read files in chunks: [ref](https://stackoverflow.com/questions/14438187/javascript-filereader-parsing-long-file-in-chunks), [ref](https://stackoverflow.com/questions/50254537/how-to-read-any-local-file-by-chunks-using-javascript), [ref](https://stackoverflow.com/questions/55468777/json-stringify-large-object-optimization)
   - write files in [streams](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_writable_streams)
   - do not search until ready by pressing return
   - lazily return snippets
+  - do not automatically move to page on snippet hover; instead, require a click
   - improve search speed
 
 * wink nlp

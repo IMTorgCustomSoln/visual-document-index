@@ -19,6 +19,8 @@
               />
             <SaveWork
               />
+            <About
+              />
         </b-button-group>
       </div>
       </b-col>
@@ -47,6 +49,7 @@ import Table from './Table.vue'
 import Sidebar from './Sidebar.vue'
 
 import SaveWork from './support/SaveWork.vue'
+import About from './support/About.vue'
 import { DocumentIndexData } from './support/data'
 
 
@@ -57,6 +60,7 @@ export default {
     ImportData,
     Sidebar,
     SaveWork,
+    About,
     Search,
     Table,
   },
