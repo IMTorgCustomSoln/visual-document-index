@@ -471,11 +471,12 @@ function processFiles(files){
         }else{
             length_lines = 1;
         }
+        item.length_lines = length_lines
+
         let dt = getDateFromJsNumber(item.date)
         item.original_date = item.date
         item.date = dt;
-        item.length_lines = length_lines
-
+        
         // body items
         let bodyArr = Object.values(item.body_pages)
         item.body = bodyArr.length > 0 ? bodyArr.reduce((partialSum, a) => partialSum += (a || 0)) : ''
@@ -485,7 +486,9 @@ function processFiles(files){
         item.pp_toc = item.toc.map(section => `${section.title} (pg.${section.pageNumber})`)
 
         // prepare page numbers for search snippets
-        item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
+       //item.accumPageLines = item.length_lines_array.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
+        let charArr = Object.values(item.body_chars)
+        item.accumPageChars = charArr.map((sum => value => sum += value)(0))    //.map((sum = 0, n => sum += n))  -> assignment to undeclared variable
         // prepare images
         item.canvas_array = item.canvas_array.sort((a,b)=> a.idx - b.idx)
         item.selected_snippet_page = 1

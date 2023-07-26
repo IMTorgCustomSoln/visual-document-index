@@ -38,37 +38,31 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
-* ~~place About button~~
-* ~~add `scoped` to all components' style~~
 * exact phrase search
   - FAIL, search opens activeTab to image
-  - page for snippet is sometimes incorrect; ensure this is aligned
+  - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
+    + ~~pg.4|char2094 is actually on pg5., at beginning~~
+    + ~~pg.5|char.1648~~
   - fix score for failed exact match
   - highlight snippet in page image
   - fix `query` var to show actual terms searched and format nicely
-* add save / continue functionality
-  - ~~save lunrjs index to DocumentMetadata~~
-  - ~~pass all of DocumentMetadata to App~~
-  - ~~save all objects to file~~
-  - ~~move 'continue' to the ImportData.vue~~
-  - ~~deactivate 'Import Workspace' tab, or alert 'This will delete all current records'~~
-  - ~~cleanup SaveWork.vue by removing comments and ensuring correctness~~
   
 * file loading
   - checks
     + add batch_idx to log output
+    + set upload limits: number of documents, total upload size
     + ~~fix progress bar (maybe load.event)~~
     + ~~provide load results instead of immediately exiting modal~~
     + ~~logs and export of import times~~
     + ~~check whether actual pdf or pdf of images (scanned) (acrobat enables OCR to make searchable)~~ DANGER OF NOT SEARCHING, SO DO NOT ADD TO FILES []
     + ~~provide estimate for load time (min,sec) based on (file count, file size)~~
     + create output report with model estimates (coef, rsq, ...)
-    + find limits for upload capacity: number of files and total size
+    + find limits for upload capacity: number of files and total size, [ref](https://queue.acm.org/detail.cfm?id=3595862)
     + checks to determine if file load takes too long
     + additional error handling for the browser
 * test
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
-  - load test File Reader
+  - load testing File Reader
 
 * search
   - drop-down for search type (stem, exact, proximity, word vector)
@@ -77,6 +71,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - 30-40 pdfs for loan file (hand-written, signatures, etc.)
 * change layout to index and full-page pdf
 * additional support
+  - edge examples of what text is parsed (lines, equations, tables, ...) and what isn't (formatting [tables, endnotes, ...], style, line breaks)
   - add Tour, About, and Settings buttons (https://driverjs.com/docs/installation/)
   - add other fields to search: keywords, summary
   - adjust row details to reasonable height
@@ -84,14 +79,15 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - row details small, (more) btn click to lengthen down
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
+  - custom scss for: modal z-index, button sizes
 * prepare for performance
   - what size dataset should we expect?
-  - model load [ref](https://queue.acm.org/detail.cfm?id=3595862)
   - what should be done on the server? [ref](https://stackoverflow.com/questions/17078210/searching-a-large-amount-of-text-using-javascript-and-html5-storage)
   - writing to file: `Uncaught InternalError: allocation size overflow`
   - read files in chunks: [ref](https://stackoverflow.com/questions/14438187/javascript-filereader-parsing-long-file-in-chunks), [ref](https://stackoverflow.com/questions/50254537/how-to-read-any-local-file-by-chunks-using-javascript), [ref](https://stackoverflow.com/questions/55468777/json-stringify-large-object-optimization)
   - write files in [streams](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_writable_streams)
   - do not search until ready by pressing return
+  - separate return hits and snippet generation
   - lazily return snippets
   - do not automatically move to page on snippet hover; instead, require a click
   - improve search speed

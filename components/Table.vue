@@ -253,10 +253,10 @@ ready to be organized with the note Topics.`
                             for (let [index, pos] of grp.entries()){
                                 if (index==0){
                                     const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
-                                    const pageIdx = item.accumPageLines.map(val => {return start < val }).indexOf(true)
+                                    const pageIdx = item.accumPageChars.map(val => {return start < val }).indexOf(true)
                                     const pageNum = parseInt(pageIdx) + 1
-                                    const startFromPage = pageIdx == 0 ? start : start - item.accumPageLines[pageIdx-1]
-                                    const endPage = item.length_lines_array[pageIdx]
+                                    const startFromPage = pageIdx == 0 ? start : start - item.accumPageChars[pageIdx-1]
+                                    const endPage = item.body_chars[pageIdx]
                                     const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
                                     const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
                                     const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''

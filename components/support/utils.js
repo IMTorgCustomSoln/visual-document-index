@@ -12,11 +12,13 @@ export async function getFileRecord(filestore){
           let typedarray = new Uint8Array(e.target.result)
           const loadingTask = pdfjsLib.getDocument(typedarray)
           loadingTask.promise.then(pdf => {
+              //document is loaded 
               const record = new DocumentRecord()
-              //document is loaded
-              record.page_nos = pdf.numPages;
+              record.page_nos = pdf.numPages
+              /*(commented-out b/c already assigned)
               record.length_lines_array = []
-              record.body_pages = {}
+              record.body_chars = {}
+              record.body_pages = {}*/
 
               createMetadata(pdf, record)
               createOutline(pdf, record)
@@ -31,9 +33,11 @@ export async function getFileRecord(filestore){
                               page_text += String(item.str)
                               if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
                           }
-                          let edit1 = page_text.replaceAll('- ','')
-                          record.body_pages[n] = edit1 + "\n\n"
-                          let sentence_count = (edit1.match(/./g) || []).length
+                          let edit1 = page_text//.replaceAll('- ','')
+                          record.body_pages[n] = edit1// + "\n\n"
+                          record.body_chars[n] = edit1.length
+                          let approxCharsInSentence = 10
+                          let sentence_count = edit1.split('.').filter(item => item.length > approxCharsInSentence).length    //orig:`(edit1.match(/./g) || []).length` 
                           record.length_lines_array.push(sentence_count)
                       });
                       //console.log(`Page ${n} of ${pdf.numPages} for file ${file.name}`)

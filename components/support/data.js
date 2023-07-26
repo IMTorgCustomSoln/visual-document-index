@@ -60,7 +60,7 @@ export class DocumentRecord{
       this.file_extension = file_extension
       this.filetype = filetype 
       this.page_nos = page_nos
-      this.length_lines = length_lines
+      this.length_lines = length_lines    //sentences
       this.file_size_mb = file_size_mb 
       this.date = date
 
@@ -71,7 +71,10 @@ export class DocumentRecord{
       this.toc = []
       this.pp_toc = pp_toc
 
-      this.body_pages = body_pages
+      this.body_chars = {}
+      this.body_pages = {}
+      this.length_lines_array = []
+      this.length_lines = 0
       this.body = body
       this.clean_body = clean_body
       this.readability_score = readability_score
@@ -80,7 +83,6 @@ export class DocumentRecord{
       this.summary = summary
 
       //added by frontend
-      this.length_lines_array = null
       this.date_created = null
       this.date_mod = null
       this.canvas_array = []
