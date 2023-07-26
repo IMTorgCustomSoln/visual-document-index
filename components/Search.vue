@@ -175,9 +175,9 @@ The results are ordered by the 'Score' column, which is a weighted formula of th
                     this.resetAllItems()
                     return false
                 }
-                const totalCount = resultGroups.map(item => item.positions.length).map((sum => value => sum +=value)(0))[0]
-                const resultIds = removeUsingSet( resultGroups.map(result => result.ref) )
-                resultGroups.map(result => result.score = parseFloat(result.count / totalCount)  )
+                const totalCount = resultGroups.map(item => item.positions.length).map((sum => value => sum +=value)(0))[ resultGroups.length - 1 ]
+                const resultIds = removeDuplicatesUsingSet( resultGroups.filter(item => item.positions.length > 0 ).map(result => result.ref) )
+                resultGroups.map(result => result.score = parseFloat(result.count / totalCount).toFixed(2)  )
 
                 this.searchDisplayResults = {...this.searchDisplayResults, searchTerms: phrases}
                 this.searchDisplayResults = {...this.searchDisplayResults, totalDocuments: resultIds.length}
@@ -282,7 +282,7 @@ function getIndicesOf(searchStr, str, caseSensitive=false){
     return indices
 }
 
-function removeUsingSet(arr){
+function removeDuplicatesUsingSet(arr){
     let outputArray = Array.from(new Set(arr))
     return outputArray
 }

@@ -257,20 +257,24 @@ ready to be organized with the note Topics.`
                                     const pageNum = parseInt(pageIdx) + 1
                                     const startFromPage = pageIdx == 0 ? start : start - item.accumPageChars[pageIdx-1]
                                     const endPage = item.body_chars[pageIdx]
-                                    const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                    const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.clean_body.slice(start, pos[0])} <b style="background-color: yellow">${hightlight}</b>`
-                                    const endText = grp.length == 1  ?  item.clean_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
-                                    const text = startText + endText
+                                    const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
+                                    const hdr = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  `
+                                    const startText = item.html_body.slice(start, pos[0])
+                                    const middleText = `<b style="background-color: yellow">${hightlight}</b>`
+                                    //const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.html_body.slice(start, pos[0])}<b style="background-color: yellow">${hightlight}</b>`
+                                    const endText = grp.length == 1  ?  item.html_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
+                                    //const text = startText + endText
+                                    const text = hdr + startText + middleText + endText
                                     snippet.push(text)
                                 } else if (index == grp.length - 1){
-                                    const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
-                                    const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
-                                    const end = pos[0]+pos[1] + MARGIN < item.clean_body.length ? pos[0]+pos[1] + MARGIN : item.clean_body.length
-                                    const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.clean_body.slice(pos[0]+pos[1], end)}`
+                                    const middleStart = item.html_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
+                                    const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
+                                    const end = pos[0]+pos[1] + MARGIN < item.html_body.length ? pos[0]+pos[1] + MARGIN : item.html_body.length
+                                    const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.html_body.slice(pos[0]+pos[1], end)}`
                                     snippet.push(text)
                                 } else {
-                                    const middleStart = item.clean_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
-                                    const hightlight = item.clean_body.slice(pos[0], pos[0]+pos[1])
+                                    const middleStart = item.html_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
+                                    const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
                                     const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b>`
                                     snippet.push(text)
                                 }

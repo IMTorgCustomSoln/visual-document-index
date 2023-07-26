@@ -39,13 +39,13 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 ## ToDo
 
 * exact phrase search
-  - FAIL, search opens activeTab to image
   - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
     + ~~pg.4|char2094 is actually on pg5., at beginning~~
     + ~~pg.5|char.1648~~
-  - fix score for failed exact match
-  - highlight snippet in page image
-  - fix `query` var to show actual terms searched and format nicely
+  - ~~fix score for failed exact match~~
+  - exact match snippets get too much text; ex: "`2. Mir` `3. The`"
+  - fuzzy match doesn't exclude individual terms; `+main +result`
+  - fix `query` var to show actual terms searched and formatted nicely with logical operators
   
 * file loading
   - checks
@@ -65,13 +65,15 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - load testing File Reader
 
 * search
+  - search opens activeTab to image (tried many times earlier)
+  - highlight snippet in page image
   - drop-down for search type (stem, exact, proximity, word vector)
   - search within distance (proximity)
   - big pdf, ppt, excel, docx
   - 30-40 pdfs for loan file (hand-written, signatures, etc.)
 * change layout to index and full-page pdf
 * additional support
-  - edge examples of what text is parsed (lines, equations, tables, ...) and what isn't (formatting [tables, endnotes, ...], style, line breaks)
+  - edge examples of what text is parsed (lines, equations, tables, graphs[wierdly]...) and what isn't (formatting [tables, endnotes, ...], style, line breaks)
   - add Tour, About, and Settings buttons (https://driverjs.com/docs/installation/)
   - add other fields to search: keywords, summary
   - adjust row details to reasonable height
@@ -80,6 +82,10 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
   - custom scss for: modal z-index, button sizes
+* output
+  - output to Word document
+  - extract / capture images and diagrams to place in managed notes
+
 * prepare for performance
   - what size dataset should we expect?
   - what should be done on the server? [ref](https://stackoverflow.com/questions/17078210/searching-a-large-amount-of-text-using-javascript-and-html5-storage)
@@ -91,6 +97,9 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - lazily return snippets
   - do not automatically move to page on snippet hover; instead, require a click
   - improve search speed
+
+  
+
 
 * wink nlp
   - subject

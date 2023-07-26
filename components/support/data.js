@@ -83,6 +83,7 @@ export class DocumentRecord{
       this.summary = summary
 
       //added by frontend
+      this.html_body = null
       this.date_created = null
       this.date_mod = null
       this.canvas_array = []
