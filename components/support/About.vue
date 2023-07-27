@@ -18,10 +18,10 @@
 
          <div>
              <p>
-             The VDI tool is an information retrieval application designed to solve two problems:
+             The VDI browser application is designed to solve two problems:
              <ul>
-                <li>Quickly search large amounts of text across multiple documents</li>
-                <li>Extract and organize useful text references for follow-on work</li>
+                <li>flexibly search large amounts of text across multiple documents</li>
+                <li>select, organize, and output references for follow-on work</li>
              </ul>
              It addresses these problems fairly well, but with some caveats.  The tool is limited
              in the number and types of documents that can be uploaded.  The application's performance 

@@ -130,7 +130,7 @@
                             <ul>
                                 <li>only PDF files can be used</li>
                                 <li>PDF files must contain searchable text - not images</li>
-                                <li>only 6 files should be imported per upload processing</li>
+                                <li>only ~10 files should be imported per upload processing</li>
                                 <li>subsequent uploads are only performed on files with different reference numbers</li>
                             </ul>
                         </em>

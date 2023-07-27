@@ -43,7 +43,9 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
     + ~~pg.4|char2094 is actually on pg5., at beginning~~
     + ~~pg.5|char.1648~~
   - ~~fix score for failed exact match~~
-  - exact match snippets get too much text; ex: "`2. Mir` `3. The`"
+  - first snippet in column does not respond to hover for move-to-page
+  - exact match snippets get too much text; ex: "`2. Mir` `3. The`" for `econ_2301.00410.pdf`
+  - exact match add AND, OR operators; ex: "+`2. Mir` +`3. The`"
   - fuzzy match doesn't exclude individual terms; `+main +result`
   - fix `query` var to show actual terms searched and formatted nicely with logical operators
   
