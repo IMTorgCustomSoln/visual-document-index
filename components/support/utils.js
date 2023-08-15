@@ -245,8 +245,14 @@ export const getDateFromJsNumber = num => {
 };
 
 
-export function getFormattedFileSize(numberOfBytes, longFormat=true) {
-  // Approximate to the closest prefixed unit
+export function getFormattedFileSize(numberOfBytes, format='both') {
+  /* Approximate to the closest prefixed unit
+  
+  format = <decimal, unit, both>
+  getFormattedFileSize(139070, 'decimal')  >>> "135.81"
+  getFormattedFileSize(139070, 'unit')  >>> "135.81 KiB"
+  getFormattedFileSize(139070, 'both')  >>> "135.81 KiB (139070 bytes)"
+  */
   const units = [
       "B",
       "KiB",
@@ -264,20 +270,25 @@ export function getFormattedFileSize(numberOfBytes, longFormat=true) {
   );
   const approx = numberOfBytes / 1024 ** exponent;
   let output = ''
-  if(longFormat){
-      output = exponent === 0 ?
+  if(format == 'both'){
+    output = exponent === 0 ?
           `${numberOfBytes} bytes` :
           `${approx.toFixed(2)} ${
                 units[exponent]
-              } (${numberOfBytes} bytes)`;
-  }else{
-      output =
+              } (${numberOfBytes} bytes)`
+  }else if (format == 'unit'){
+    output =
           exponent === 0 ?
           `${numberOfBytes} bytes` :
           `${approx.toFixed(2)} ${
-                units[exponent]}`;
+                units[exponent]}`
+  }else if (format == 'decimal'){
+    output =
+    exponent === 0 ?
+    `${numberOfBytes} bytes` :
+    `${approx.toFixed(2)}`
   }
-  return output;
+  return output
 }
 
 

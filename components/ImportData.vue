@@ -83,7 +83,7 @@
                 <div>
                     <b-progress 
                         class="progress" 
-                        :max="progressBar.max" 
+                        :max="progressBar.maxProgress" 
                         height="1rem"
                         show-progress
                         animated
@@ -93,24 +93,25 @@
                             :variant="progressBar.variant"
                             >
                             <span>
-                                Processed <strong>{{ progressBar.fileProgress }} 
-                                of {{ progressBar.max }} bytes</strong>
+                                <!--ORIGINAL: Processed <strong>{{ progressBar.fileProgress }} of {{ progressBar.maxProgress }} bytes</strong> -->
+                                Processed <strong>{{ getFileProgressDisplay }} of {{ getMaxProgressDisplay }} </strong>
+                                <!--PREFERRED : Processed <strong>{{ getFormattedFileSize(progressBar.fileProgress, 'numeric') }} of {{ getFormattedFileSize(progressBar.max, 'unit') }} bytes</strong>-->
                             </span>
                         </b-progress-bar>
                     </b-progress>
                     <br/>
 
                     <!-- Conditional Results Display -->
-                    <div v-if="resultDisplay.display" style="color: red">
+                    <div v-if="resultDisplay.display">
                         <bold style="font-weight: bold">Results: </bold><br/>
                         Actual upload time was {{ resultDisplay.actualProcessTime }}<br/>
-                        <div v-if="resultDisplay.checkFilesUsable.length > 0">
+                        <div v-if="resultDisplay.checkFilesUsable.length > 0" style="color: red">
                             The following files are not loaded because they do not appear to be searchable:<br/>
                             <div v-for="filepath in resultDisplay.checkFilesUsable">
                                 <div>{{ filepath }}</div>
                             </div>
                         </div>
-                        <div v-else>
+                        <div v-else style="color: #28a745">
                             All files are loaded
                         </div>
                         <b-button
@@ -130,7 +131,8 @@
                             <ul>
                                 <li>only PDF files can be used</li>
                                 <li>PDF files must contain searchable text - not images</li>
-                                <li>only ~10 files should be imported per upload processing</li>
+                                <li>limit upload batch to less than 20 files for performance</li>
+                                <li>performance can degrade with more than 40 files loaded</li>
                                 <li>subsequent uploads are only performed on files with different reference numbers</li>
                             </ul>
                         </em>
@@ -225,7 +227,7 @@ export default({
                 importLogs: [],
                 fileProgress: 0,
                 totalProgress: 0,
-                max: 0
+                maxProgress: 0
             },
             
             resultDisplay: {
@@ -248,6 +250,14 @@ export default({
             }
         })*/
     },
+    computed:{
+        getFileProgressDisplay(){
+            return getFormattedFileSize(this.progressBar.fileProgress, 'decimal')
+        },
+        getMaxProgressDisplay(){
+            return getFormattedFileSize(this.progressBar.maxProgress, 'unit')
+        }
+    },
     methods: {
         previewFiles() {
             // Preview files to upload and process
@@ -256,7 +266,7 @@ export default({
             for (const file of uploadInput.files) {
                 numberOfBytes += file.size;
             }
-            this.progressBar = {...this.progressBar, max: numberOfBytes}
+            this.progressBar = {...this.progressBar, maxProgress: numberOfBytes}
             this.preview = {...this.preview, fileCount: fileCount}
             const fileSize = getFormattedFileSize(numberOfBytes)
             this.preview = {...this.preview, fileSize: fileSize}
@@ -347,7 +357,7 @@ export default({
 
             this.progressBar.fileProgress = 0
             this.progressBar.totalProgress = 0
-            this.progressBar.max = 0
+            this.progressBar.maxProgress = 0
 
             this.resultDisplay.display = false
             this.resultDisplay.actualProcessTime = 0
@@ -372,9 +382,6 @@ export default({
                 document.body.removeChild(link)
             })
         },
-        getFormattedFileSize(bytes, long){
-            getFormattedFileSize(bytes, long)
-        }
 }
 })
 

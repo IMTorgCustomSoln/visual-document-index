@@ -38,6 +38,10 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
+* ~~minor ImportData~~
+  - ~~progress bar~~
+  - ~~green text for good~~
+  - ~~update performance notes~~
 * exact phrase search
   - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
     + ~~pg.4|char2094 is actually on pg5., at beginning~~
@@ -48,6 +52,8 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - exact match add AND, OR operators; ex: "+`2. Mir` +`3. The`"
   - fuzzy match doesn't exclude individual terms; `+main +result`
   - fix `query` var to show actual terms searched and formatted nicely with logical operators
+  - Notes' export / import modals' buttons need style
+  - About modals' buttons need style
   
 * file loading
   - checks

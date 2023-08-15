@@ -338,7 +338,7 @@ ready to be organized with the note Topics.`
             return dt;
         },
         getFormattedFileSize(value) {
-            return getFormattedFileSize(value, false);
+            return getFormattedFileSize(value, 'unit')
         },
         getFormattedPath(path) {
             return path ? path : './'
