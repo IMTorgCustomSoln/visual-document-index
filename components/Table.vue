@@ -314,7 +314,7 @@ ready to be organized with the note Topics.`
 
         onFiltered(row, filter) {
             // Applied to each table row to determine if it 
-            //should be displayed   //TODO: does this need to be computed?
+            //should be displayed   //TODO: does this need to be a computed instead of method?
             if (filter.length == 0) {
                 return true;
             } else if (filter.includes(row.id)){
@@ -374,7 +374,7 @@ ready to be organized with the note Topics.`
         },
         postNote(event){
             const element = event.target.parentElement.children[0]
-            //TODO: no the code below should use `new NoteRecord()`, but from within Draggable - not here
+            //TODO: fix the code below which should use `new NoteRecord()`, but from within Draggable - not here
             const noteItem = {
                 id: element.id.toString(),
                 list: 'stagingNotes',
@@ -464,7 +464,7 @@ const fields = [{
 
 /*ref: http://jsfiddle.net/7w8TC/1/ */
 .itemconfiguration {
-    height:700px;      /*TODO: align height of snippets and image*/
+    height:700px;      /* TODO: align height of snippets and image */
 	width:550px;		
     overflow-y:auto;
 	float:left;

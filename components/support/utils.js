@@ -60,7 +60,7 @@ function addListeners(reader, filestore) {
   /* Add listeners and event handlers to the reader object.
 
   This is directly dependent upon the ImportData component and 
-  TODO: should be moved ImportData component for correct coupling
+  TODO: should be moved into ImportData component because it is tightly coupled
   */
   reader.idx= filestore.idx
   reader.file = filestore.file
@@ -167,7 +167,7 @@ export function getEstimatedProcessTime(fileCount, fileSizeInBytes){
   */
   let formatted = ''
   let result = ''
-  const {size, file_count} = model.coefs['0.75']    //TODO:add high estimate to this median estimate
+  const {size, file_count} = model.coefs['0.75']    //TODO:add high estimate to this median estimate to give users a better range of values
 
   if (Number.isInteger(fileCount) && Number.isFinite(fileSizeInBytes)){
     const log_fileCount = Math.log(fileCount)

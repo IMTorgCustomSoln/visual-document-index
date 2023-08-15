@@ -184,7 +184,7 @@ associated Notes are deleted.`
         removeNote(note){
             this.notes.splice(this.notes.indexOf(note), 1)
         },
-        /*TODO: editNote
+        /*TODO: editNote could be used to edit an existing note, but maybe this is overly-complicated
         editNote(topic) {
             this.beforeEditCache = topic.title
             this.editedTopic = topic
@@ -209,7 +209,7 @@ function camelize(str) {
 }
 
 /*
-TODO: is this promise needed to create a NoteRecord object?
+TODO: ~~is this promise needed to create a NoteRecord object?~~ I don't understand the purpose of this function, maybe remove?
 async function addNoteFromTable(newNote){
     return new Promise(function(resolve, reject){
         const noteRec = new NoteRecord(

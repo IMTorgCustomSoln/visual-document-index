@@ -199,7 +199,7 @@ export default({
     emits:['imported-records', 'imported-workspace'],
     data(){
         return {
-            uploadIcon: ["success","secondary"],   //TODO
+            uploadIcon: ["success","secondary"],   //TODO:change to blue after docs selected
             btnText: 'Import Data',
             activeTab: 0,
             componentBtn: true,
@@ -490,7 +490,7 @@ function processFiles(files){
         let clean_body = item.body
         item.clean_body = clean_body
         item.html_body = clean_body     //.replaceAll("\n\n", "<br>")
-        item.summary = clean_body.slice(0,500)   //TODO:set constant
+        item.summary = clean_body.slice(0,500)   //TODO:apply model to summarize text
         item.pp_toc = item.toc.map(section => `${section.title} (pg.${section.pageNumber})`)
 
         // prepare page numbers for search snippets
