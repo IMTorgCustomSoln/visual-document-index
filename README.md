@@ -54,6 +54,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - fix `query` var to show actual terms searched and formatted nicely with logical operators
   - Notes' export / import modals' buttons need style
   - About modals' buttons need style
+* snippet generation is not aligned to doc pages (`./support/utils.js (ln.37)`)
   
 * file loading
   - checks

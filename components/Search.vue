@@ -232,7 +232,7 @@ The results are ordered by the 'Score' column, which is a weighted formula of th
                 totalCount = resultGroups.reduce(function(pv,cv) {return pv + cv.count}, 0)
                 this.searchDisplayResults = {...this.searchDisplayResults, count: totalCount}
                 this.searchTableResults = {...this.searchTableResults, resultGroups: resultGroups}
-                console.log(`resultGroups: `); console.log(resultGroups)
+                console.log(`resultGroups (array of all hits within a doc): `); console.log(resultGroups)
 
                 this.$emit('search-table-results', this.searchTableResults)
             } else {

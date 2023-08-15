@@ -246,17 +246,34 @@ ready to be organized with the note Topics.`
                                 }
                             }
                         }
-                        console.log(`positionGroups for file: ${item.id}`)
+                        console.log(`positionGroups (array (snippets) of arrays (hits)) for file: ${item.id}`)
                         console.log(positionGroups)
                         for (let grp of positionGroups){
                             const snippet = []
+                            /*
+                            item.body_chars - object of each page's length indexed from pageNum (unordered)
+                            item.accumPageChars - array of each page's length indexed from first (zero-indexed) page (ordered)
+
+                            Document Snippets
+                            * resultGrps - array of all hits within a doc
+                            * positionGroups - array (snippets) of arrays (hits)
+                            * grp - snippet of targets
+
+                            Starting Header references the position from which the snippet starts
+                            * pageNum - page (human, 1-indexed) the snippet begins
+                            * startFromPage - starting character for snippet on that page
+                            * endPage - count of characters for that page
+                            */
                             for (let [index, pos] of grp.entries()){
+                                //initial target
                                 if (index==0){
                                     const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
                                     const pageIdx = item.accumPageChars.map(val => {return start < val }).indexOf(true)
+                                    //starting header
                                     const pageNum = parseInt(pageIdx) + 1
                                     const startFromPage = pageIdx == 0 ? start : start - item.accumPageChars[pageIdx-1]
-                                    const endPage = item.body_chars[pageIdx]
+                                    const endPage = item.body_chars[pageNum]
+                                    //target
                                     const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
                                     const hdr = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  `
                                     const startText = item.html_body.slice(start, pos[0])
@@ -265,13 +282,18 @@ ready to be organized with the note Topics.`
                                     const endText = grp.length == 1  ?  item.html_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
                                     //const text = startText + endText
                                     const text = hdr + startText + middleText + endText
+                                    if(endPage < startFromPage){
+                                        console.log('stopped')
+                                    }
                                     snippet.push(text)
+                                //middle targets
                                 } else if (index == grp.length - 1){
                                     const middleStart = item.html_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
                                     const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
                                     const end = pos[0]+pos[1] + MARGIN < item.html_body.length ? pos[0]+pos[1] + MARGIN : item.html_body.length
                                     const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.html_body.slice(pos[0]+pos[1], end)}`
                                     snippet.push(text)
+                                //end targets
                                 } else {
                                     const middleStart = item.html_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
                                     const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])

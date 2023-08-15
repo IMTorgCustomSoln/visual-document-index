@@ -34,7 +34,7 @@ export async function getFileRecord(filestore){
                               if (item.hasEOL==true){ page_text += ' '}   //>>>alternative: ' <EOL> '
                           }
                           let edit1 = page_text//.replaceAll('- ','')
-                          record.body_pages[n] = edit1 + "<br><br>" //+ "\n\n"    //TODO:BAD => must separate frontend display from actual text
+                          record.body_pages[n] = edit1 + "<br><br>" //+ "\n\n"    //TODO:BAD => must separate frontend display from actual text, this destroys mapping to correct page if doc is long
                           record.body_chars[n] = edit1.length
                           let approxCharsInSentence = 10
                           let sentence_count = edit1.split('.').filter(item => item.length > approxCharsInSentence).length    //orig:`(edit1.match(/./g) || []).length` 
