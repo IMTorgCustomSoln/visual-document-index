@@ -43,6 +43,12 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
   - ~~green text for good~~
   - ~~update performance notes~~
 * search slows with addition of more documents
+  - study problem and hypothesize
+    + current hypo: creating snippets is too long, just get scores, then generate snippets once row is opened
+  - modify workflow
+  - review results
+* can't save Workspace: 'allocation size overflow, SaveWork.vue:68:34'
+
 * exact phrase search
   - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
     + ~~pg.4|char2094 is actually on pg5., at beginning~~
