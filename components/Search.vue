@@ -14,7 +14,7 @@
                         placeholder="type search text here..." 
                         />
                     <div v-if="searchDisplayResults.searchTerms">
-                        <div v-if="!searchDisplayResults.errorMsg">{{ searchResultsCount }}</div>
+                        <div v-if="!searchDisplayResults.errorMsg" style="white-space: pre-line">{{ searchResultsCount }}</div>
                         <div v-else class="errorMsg"> {{ searchDisplayResults.errorMsg }}</div>
                     </div>
                 </span>
@@ -92,7 +92,7 @@ The results are ordered by the 'Score' column, which is a weighted formula of th
     },
     computed: {
         searchResultsCount(){
-            return this.query != '' ? `Search returned ${this.searchDisplayResults.count} hits, in ${this.searchDisplayResults.totalDocuments} documents, using terms: ${this.searchDisplayResults.searchTerms}`  : ''
+            return this.query != '' ? `Search returned ${this.searchDisplayResults.count} hits, in ${this.searchDisplayResults.totalDocuments} documents \nTerms used: ${this.searchDisplayResults.searchTerms}`  : ''
         }
     },
     methods: {
@@ -295,6 +295,8 @@ function removeDuplicatesUsingSet(arr){
 
 
 <style scoped>
-
+.text{
+    white-space: pre-wrap;
+}
 
 </style>
