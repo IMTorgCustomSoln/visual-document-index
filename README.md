@@ -38,16 +38,18 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
-* ~~minor ImportData~~
-  - ~~progress bar~~
-  - ~~green text for good~~
-  - ~~update performance notes~~
-* search slows with addition of more documents
+* improve scalability of search
+  - search slows with addition of more documents
   - study problem and hypothesize
     + current hypo: creating snippets is too long, just get scores, then generate snippets once row is opened
   - modify workflow
   - review results
+
+* ~~check for whether reference numbers are used or not~~
+  - ~~if not, don't extract~~
+
 * can't save Workspace: 'allocation size overflow, SaveWork.vue:68:34'
+  - alert before closing browser or tab
 
 * exact phrase search
   - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
@@ -76,9 +78,19 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
     + find limits for upload capacity: number of files and total size, [ref](https://queue.acm.org/detail.cfm?id=3595862)
     + checks to determine if file load takes too long
     + additional error handling for the browser
+* move current data stores to pinia state management
 * test
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
   - load testing File Reader
+
+* concept search to find topics
+  - use word vectors
+
+
+* use generative-AI to create rough draft of memo
+  - gen-AI working in `apply-gen-ai` branch
+  - study problem: hyp) need to select exact text to make prompt statement
+  - apply prompt to make output
 
 * search
   - search opens activeTab to image (tried many times earlier)

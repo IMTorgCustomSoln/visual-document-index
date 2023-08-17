@@ -9,10 +9,10 @@
         <template #modal-title>
             Determine type of export
         </template>
-        <div>AI status: {{ getFormattedLlmConfigStatus }}</div>
+        
         <p>
             <ul><b>Human-readable format:</b> write notes to text file for reporting purposes.</ul>
-            <ul><b>AI-drafted memo format:</b> a rough draft of your memo is created using generative-AI.  Ensure the `AI status` is ready before using.  <b>not available at this time</b></ul>
+            <ul><b>AI-drafted memo format:</b> a rough draft of your memo is created using generative-AI.  Ensure the `AI status` is ready before using.  <div><code>AI status: {{ getFormattedLlmConfigStatus }}</code></div></ul>
             <ul><b>Data storage format:</b> save your work to a .json file so you can Import the file,
                 and return to your current state, later, or share your work with teammates.  
                 <i>Note:</i> this is the only method to save your work.</ul>
