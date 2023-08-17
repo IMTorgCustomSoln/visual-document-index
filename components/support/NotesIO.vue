@@ -54,7 +54,18 @@
 <script>
 import { isProxy, toRaw } from 'vue'
 import {ExportFileName, ExportTextName, ManagedNotesData} from './data.js'
-import {LLM} from './llm'
+
+//placeholder for when LLM is used
+class LLM {
+    static run = true
+    static init_label = ''
+    static generate_label = ''
+    static chat = ''
+
+    static async configure(){
+        return true
+    }
+}
 
 
 export default{
@@ -92,8 +103,12 @@ export default{
         if(navigator.gpu && navigator.gpu.requestAdapter() && this.llm.run){
             console.log('loading llm...')
             await this.llm.configure()
-            //await this.llm.createDialogue()   //only for testing
-            console.log('llm loading completed')
+            if (this.llm.createDialogue){
+                //await this.llm.createDialogue()   //only for testing
+                console.log('llm loading completed')
+            } else {
+                console.log('llm not available')
+            }
         }
     },
     methods:{
