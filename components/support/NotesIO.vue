@@ -12,7 +12,7 @@
         <div>AI status: {{ getFormattedLlmConfigStatus }}</div>
         <p>
             <ul><b>Human-readable format:</b> write notes to text file for reporting purposes.</ul>
-            <ul><b>AI-drafted memo format:</b> a rough draft of your memo is created using generative-AI.  Ensure the `AI status` is ready before using.</ul>
+            <ul><b>AI-drafted memo format:</b> a rough draft of your memo is created using generative-AI.  Ensure the `AI status` is ready before using.  <b>not available at this time</b></ul>
             <ul><b>Data storage format:</b> save your work to a .json file so you can Import the file,
                 and return to your current state, later, or share your work with teammates.  
                 <i>Note:</i> this is the only method to save your work.</ul>
@@ -20,7 +20,7 @@
         <br/>
             <template #modal-footer>
                 <b-button @click="exportToText" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Human-Readable</b-button>
-                <b-button @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >AI-Drafted</b-button>
+                <b-button disabled @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >AI-Drafted</b-button>
                 <b-button @click="exportToJson" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Data Storage</b-button>
             </template>
     </b-modal>

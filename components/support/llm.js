@@ -1,10 +1,11 @@
 import * as webllm from "@mlc-ai/web-llm"
+import { ChatWorkerHandler, ChatModule } from "@mlc-ai/web-llm"
 //import {ref} from 'vue'   //TODO:add reactivity to init_label and generate_label
 
 
 export class LLM {
 
-    static run = false
+    static run = true
     static init_label = ''
     static generate_label = ''
     static chat = ''
@@ -28,11 +29,55 @@ export class LLM {
           "repetition_penalty": 1.01
         }
 
-        //const chat = new ChatModule()
+        /* // without worker
+        const chat = new ChatModule()
+        */
+
+        // worker in separate file
         this.chat = new webllm.ChatWorkerClient(new Worker(
             new URL('./llm_worker.js', import.meta.url),
             {type: 'module'}
           ))
+        
+
+        /*
+        // test inline worker
+        var blob = new Blob([ '(',`
+        function(){
+          self.onmessage = function(e){
+            self.postMessage('msg from worker')
+          }
+        }`, 
+        ')()' ], {type: 'text/javascript'} )
+
+        var blobURL = URL.createObjectURL(blob)
+        const worker = new Worker(blobURL)
+        worker.onmessage = function(e){
+          console.log('Received ' + e.data)
+        }
+        worker.postMessage('hello')
+        */
+        
+        /*
+        // worker in anonymous function  => TODO:inline worker fails because of incorrect import location
+        //ref: stackoverflow, web workers without a separate javascript file
+        var blob = new Blob([ '(',`
+        function(){
+        importScripts('../../../node_modules/@mlc-ai/web-llm')
+
+        // Hookup a chat module to a worker handler
+        const chat = new ChatModule();
+        const handler = new ChatWorkerHandler(chat);
+        self.onmessage = (msg) => {     //msg: MessageEvent
+          handler.onmessage(msg);
+        }
+        }`, 
+        ')()' ], {type: 'application/javascript'} )
+        var blobURL = URL.createObjectURL(blob)
+        const worker = new Worker(blobURL)
+        this.chat = new webllm.ChatWorkerClient(worker)
+        */
+
         this.chat.setInitProgressCallback((report) => {      //report: webllm.InitProgressReport
             this.init_label = report.text
             console.log(this.init_label)
