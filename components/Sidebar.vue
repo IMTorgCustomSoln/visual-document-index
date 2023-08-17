@@ -26,7 +26,7 @@
                 <div class="description">
                     <p>Create notes and organize them by topics.  Save your notes to a file for use in future sessions, 
                     and share them with your team.
-                    <Guide v-bind="guides.managedNotes"/>
+                    <Guide v-bind="guides.managedNotes"/> 
                     <NotesIO/>
                     </p>
                 </div>
@@ -122,6 +122,7 @@ export default ({
             dropZoneName: {
                 createDropList: ''
             },
+            
             guides: {
                 managedNotes: {
                     id:'managedNotes',

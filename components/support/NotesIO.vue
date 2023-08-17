@@ -9,8 +9,10 @@
         <template #modal-title>
             Determine type of export
         </template>
+        <div>AI status: {{ getFormattedLlmConfigStatus }}</div>
         <p>
             <ul><b>Human-readable format:</b> write notes to text file for reporting purposes.</ul>
+            <ul><b>AI-drafted memo format:</b> a rough draft of your memo is created using generative-AI.  Ensure the `AI status` is ready before using.</ul>
             <ul><b>Data storage format:</b> save your work to a .json file so you can Import the file,
                 and return to your current state, later, or share your work with teammates.  
                 <i>Note:</i> this is the only method to save your work.</ul>
@@ -18,6 +20,7 @@
         <br/>
             <template #modal-footer>
                 <button @click="exportToText" v-b-modal.modal-close_visit class="btn-sm m-1">Human-Readable</button>
+                <button @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1">AI-Drafted</button>
                 <button @click="exportToJson" v-b-modal.modal-close_visit class="btn-sm m-1">Data Storage</button>
             </template>
     </b-modal>
@@ -51,6 +54,7 @@
 <script>
 import { isProxy, toRaw } from 'vue'
 import {ExportFileName, ExportTextName, ManagedNotesData} from './data.js'
+import {LLM} from './llm'
 
 
 export default{
@@ -59,7 +63,33 @@ export default{
         return {
             topics: ManagedNotesData.value.topics,
             notes: ManagedNotesData.value.notes,
-            file: ''
+            file: '',
+
+            llm: LLM,
+        }
+    },
+    computed:{
+        getFormattedLlmConfigStatus(){
+            if(this.llm.init_label.includes('/')){
+                const fraction = this.llm.init_label.split(']')[0].split('[')[1]
+                const num = parseInt( fraction.split('/')[0 ])
+                const denom = parseInt( fraction.split('/')[1] )
+                if(num/denom == 1){
+                    return 'ready'
+                }else{
+                    return 'loading ' + fraction
+                }
+            }else{
+                return 'ready'
+            }
+        }
+    },
+    async mounted(){
+        if(navigator.gpu && navigator.gpu.requestAdapter() && this.llm.run){
+            console.log('loading llm...')
+            await this.llm.configure()
+            //await this.llm.createDialogue()   //only for testing
+            console.log('llm loading completed')
         }
     },
     methods:{
@@ -104,6 +134,56 @@ export default{
                 document.body.removeChild(link)
             })
             this.$bvModal.hide("export-notes-modal")
+        },
+        async exportToTextWithAI(e){
+            const create = e.target
+            const output = []
+            const initial = `# Notes`
+            output.push(initial)
+            let allTopics = [...this.topics]
+            const staging = {title:'Staging Notes', 
+                            dropZoneName:'stagingNotes'
+                        }
+            allTopics.push(staging)
+            for (let topic of allTopics){
+                let hdr = `\n\n\n## ${topic.title}\n\n`
+                output.push(hdr)
+
+                for (let note of this.notes){
+                    if (note.list == topic.dropZoneName){
+                        if (note.type == "hand"){
+                            let ul = `* ${note.innerText}\n`
+                            output.push(ul)
+                        } else if (note.type == "auto"){
+                            //let ul = `* ${note.id}\n${note.innerText}\n`
+                            let prompt = `In one sentence, describe how ${note.innerText} causes ${topic}`
+                            console.log(prompt)
+                            let reply = await this.llm.createDialogue(prompt)
+                            let ul = `* ${reply}`
+                            console.log(ul)
+                            output.push(ul)
+                        } else {
+                            continue
+                        }
+                    }
+                }
+            }
+
+            const strOutput = output.join(' ')
+            const a = document.createElement('a')
+            var link = create.appendChild(a)
+            link.setAttribute('download', ExportTextName)
+            link.href = makeTextFile(strOutput)
+            document.body.appendChild(link)
+
+            // wait for the link to be added to the document
+            window.requestAnimationFrame(function () {
+                var event = new MouseEvent('click')
+                link.dispatchEvent(event)
+                document.body.removeChild(link)
+            })
+            this.$bvModal.hide("export-notes-modal")
+
         },
         exportToJson(e){
             const create = e.target
