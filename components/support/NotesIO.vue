@@ -20,7 +20,7 @@
         <br/>
             <template #modal-footer>
                 <b-button @click="exportToText" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Human-Readable</b-button>
-                <b-button disabled @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >AI-Drafted</b-button>
+                <b-button @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >AI-Drafted</b-button>
                 <b-button @click="exportToJson" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Data Storage</b-button>
             </template>
     </b-modal>
