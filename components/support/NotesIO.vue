@@ -19,9 +19,9 @@
         </p>
         <br/>
             <template #modal-footer>
-                <button @click="exportToText" v-b-modal.modal-close_visit class="btn-sm m-1">Human-Readable</button>
-                <button @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1">AI-Drafted</button>
-                <button @click="exportToJson" v-b-modal.modal-close_visit class="btn-sm m-1">Data Storage</button>
+                <b-button @click="exportToText" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Human-Readable</b-button>
+                <b-button @click="exportToTextWithAI" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >AI-Drafted</b-button>
+                <b-button @click="exportToJson" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Data Storage</b-button>
             </template>
     </b-modal>
 
@@ -44,8 +44,8 @@
         </form><br/>
             Select whether to append to existing notes or replace them:
             <template #modal-footer>
-                <button @click="appendNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Append</button>
-                <button @click="replaceNotes" v-b-modal.modal-close_visit class="btn-sm m-1">Replace</button>
+                <b-button @click="appendNotes" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Append</b-button>
+                <b-button @click="replaceNotes" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Replace</b-button>
             </template>
     </b-modal>
     </div>
@@ -70,7 +70,11 @@ export default{
     },
     computed:{
         getFormattedLlmConfigStatus(){
-            if(this.llm.init_label.includes('/')){
+            const check1 = this.llm.init_label == ''
+            const check2 = this.llm.init_label.includes('/')
+            if(check1){
+                return 'not available'
+            } else if (check2){
                 const fraction = this.llm.init_label.split(']')[0].split('[')[1]
                 const num = parseInt( fraction.split('/')[0 ])
                 const denom = parseInt( fraction.split('/')[1] )

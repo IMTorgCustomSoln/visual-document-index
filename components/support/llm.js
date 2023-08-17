@@ -4,7 +4,7 @@ import * as webllm from "@mlc-ai/web-llm"
 
 export class LLM {
 
-    static run = true
+    static run = false
     static init_label = ''
     static generate_label = ''
     static chat = ''
