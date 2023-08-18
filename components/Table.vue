@@ -134,7 +134,7 @@ export default ({
             handler: function(newVal, oldVal) {
                 //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
                 if (typeof(this.$props.search)=='object'){
-                    this.searchTable()
+                    this.filterTable()
                 }
             },
             deep: false
@@ -156,7 +156,7 @@ export default ({
             sortDesc: false,
 
             totalDocuments: 0,
-            activeDetailsTab: 0,
+            activeDetailsTab: 1,
             mouseOverSnippet: '',
             //displayLimit: 0,
             guides: {
@@ -192,11 +192,11 @@ ready to be organized with the note Topics.`
             this.initializeTable = true
         },
 
-        searchTable(){
-            //update table items based on query
+        filterTable(){
+            //filter table based on selected items
+            //also include score, sort and row details' text
             this.totalDocuments = this.$props.search.resultIds.length
             this.tableFilter.length = 0
-
             if (this.$props.search.resultIds.length == 0){
                 this.resetAllItems()
             } else {
@@ -204,6 +204,141 @@ ready to be organized with the note Topics.`
                 if (this.$props.search.resultIds.includes(item.id)){
                     //filter and sort table items 
                     this.tableFilter.push( item.id )
+                    const idx = this.$props.search.resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
+                    if (idx <= -1){
+                        this.resetItem(item)
+                    } else {
+                        let resultFile = this.$props.search.resultGroups[idx]
+                        item.sort_key = resultFile.score
+                        item.hit_count = resultFile.count
+                    }
+                }
+            })
+            this.sortDesc = true
+            this.activeDetailsTab = 1
+            return true
+            }
+        },
+
+        createSearchSnippets(row, MARGIN = 250){
+            console.log(row.id)
+            this.items.map(item => {
+                if (row.id == item.id){
+                    const idx = this.$props.search.resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
+                    if(idx >= 0){
+                        let resultFile = this.$props.search.resultGroups[idx]
+
+                        //reset snippets
+                        item.snippets.length = 0
+
+                        //combine hits within the MARGIN space into same snippet
+                        const positions = resultFile.positions.map(item => item)
+                        const positionGroups = []
+                        let incr = 0
+                        for (let index = 0; (index + incr) < positions.length; index++){
+                            let indexCorrected = index + incr
+                            const pos = positions[indexCorrected]
+                            const subgroup = []
+                            subgroup.push(pos)
+                            if (indexCorrected + 1 == positions.length){
+                                positionGroups.push(subgroup)
+                                break
+                            } else {
+                                for(let nextIndex = indexCorrected + 1; nextIndex < positions.length; nextIndex++){
+                                    const nextPos = positions[nextIndex]
+                                    const diff = nextPos[0] - pos[0]
+                                    if (diff < MARGIN * 2){
+                                        subgroup.push(nextPos)
+                                        incr++
+                                        if (index + incr + 1 == positions.length){
+                                            positionGroups.push(subgroup)
+                                        }
+                                    } else {
+                                        positionGroups.push(subgroup)
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                        console.log(`positionGroups (array (snippets) of arrays (hits)) for file id: ${item.id}`)
+                        console.log(positionGroups)
+
+                        //create array of snippts
+                        for (let grp of positionGroups){
+                            const snippet = []
+                            /*
+                            item.body_chars - object of each page's length indexed from pageNum (unordered)
+                            item.accumPageChars - array of each page's length indexed from first (zero-indexed) page (ordered)
+
+                            Document Snippets
+                            * resultGrps - array of all hits within a doc
+                            * positionGroups - array (snippets) of arrays (hits)
+                            * grp - snippet of targets
+
+                            Starting Header references the position from which the snippet starts
+                            * pageNum - page (human, 1-indexed) the snippet begins
+                            * startFromPage - starting character for snippet on that page
+                            * endPage - count of characters for that page
+                            */
+                            for (let [index, pos] of grp.entries()){
+                                //initial target
+                                if (index==0){
+                                    const start = pos[0] - MARGIN > 0 ? pos[0] - MARGIN : 0
+                                    const pageIdx = item.accumPageChars.map(val => {return start < val }).indexOf(true)
+                                    //starting header
+                                    const pageNum = parseInt(pageIdx) + 1
+                                    const startFromPage = pageIdx == 0 ? start : start - item.accumPageChars[pageIdx-1]
+                                    const endPage = item.body_chars[pageNum]
+                                    //target
+                                    const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
+                                    const hdr = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  `
+                                    const startText = item.html_body.slice(start, pos[0])
+                                    const middleText = `<b style="background-color: yellow">${hightlight}</b>`
+                                    //const startText = `<b>pg.${pageNum.toString()}| char.${startFromPage}/${endPage})</b>  ${item.html_body.slice(start, pos[0])}<b style="background-color: yellow">${hightlight}</b>`
+                                    const endText = grp.length == 1  ?  item.html_body.slice(pos[0]+pos[1], pos[0]+pos[1] + MARGIN)  :  ''
+                                    //const text = startText + endText
+                                    const text = hdr + startText + middleText + endText
+                                    if(endPage < startFromPage){
+                                        console.log('stopped')
+                                    }
+                                    snippet.push(text)
+                                //middle targets
+                                } else if (index == grp.length - 1){
+                                    const middleStart = item.html_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
+                                    const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
+                                    const end = pos[0]+pos[1] + MARGIN < item.html_body.length ? pos[0]+pos[1] + MARGIN : item.html_body.length
+                                    const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b> ${item.html_body.slice(pos[0]+pos[1], end)}`
+                                    snippet.push(text)
+                                //end targets
+                                } else {
+                                    const middleStart = item.html_body.slice(grp[index-1][0]+grp[index-1][1], pos[0])
+                                    const hightlight = item.html_body.slice(pos[0], pos[0]+pos[1])
+                                    const text = `${middleStart} <b style="background-color: yellow">${hightlight}</b>`
+                                    snippet.push(text)
+                                }
+                            }
+                            item.snippets.push( snippet.join('') )
+                        }
+                        //END
+
+                    }
+                }
+            })
+
+        },
+        /*
+        searchTable(){
+            //update table items based on query
+            this.totalDocuments = this.$props.search.resultIds.length
+            //this.tableFilter.length = 0
+
+            if (this.$props.search.resultIds.length == 0){
+                //this.resetAllItems()
+            } else {
+            this.items.map(item => {
+                if (this.$props.search.resultIds.includes(item.id)){
+                    //filter and sort table items 
+                    //this.tableFilter.push( item.id )
                     const idx = this.$props.search.resultGroups.map(resultFile => resultFile.ref).indexOf(item.id)
                     if (idx <= -1){
                         this.resetItem(item)
@@ -263,7 +398,7 @@ ready to be organized with the note Topics.`
                             * pageNum - page (human, 1-indexed) the snippet begins
                             * startFromPage - starting character for snippet on that page
                             * endPage - count of characters for that page
-                            */
+                            //
                             for (let [index, pos] of grp.entries()){
                                 //initial target
                                 if (index==0){
@@ -303,6 +438,8 @@ ready to be organized with the note Topics.`
                             }
                             item.snippets.push( snippet.join('') )
                         }
+
+
                     }
                 }
             })
@@ -310,7 +447,7 @@ ready to be organized with the note Topics.`
             this.activeDetailsTab = 1
             return true
             }
-        },
+        },*/
 
         onFiltered(row, filter) {
             // Applied to each table row to determine if it 
@@ -350,7 +487,10 @@ ready to be organized with the note Topics.`
         //TODO: despite the two below rows, changing the active tab to '1' (image) does not work
         expandAdditionalInfo(row) {
             row._showDetails = !row._showDetails
-            row._activeDetailsTab = this.activeDetailsTab
+            row._activeDetailsTab = 1  //this.activeDetailsTab
+            if(row._showDetails){
+                this.createSearchSnippets(row)
+            }
         },
         onTabChanged(){
             this.items.map(item => this.$set(item, '_activeDetailsTab', this.activeDetailsTab))

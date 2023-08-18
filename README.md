@@ -38,7 +38,7 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
-* improve scalability of search
+* ~~improve scalability of search~~
   - search slows with addition of more documents
   - study problem and hypothesize
     + current hypo: creating snippets is too long, just get scores, then generate snippets once row is opened
