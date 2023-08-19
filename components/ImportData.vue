@@ -158,7 +158,7 @@
                 <input id="uploadAppDataInput" 
                        type="file" 
                        @change="previewWorkspace"
-                       accept=".json"
+                       accept=".blob"
                 />
                 <ul class="no-li-dot">
                     <li><label for="fileName">File: &nbsp</label><output id="fileName">{{ preview.fileName }}</output></li>
@@ -322,7 +322,7 @@ export default({
             this.preview = {...this.preview, fileName: file.name}
             this.uploadWorkspaceBtn = false
         },
-        async uploadAppDataInput(){
+        async uploadAppDataInputORIGINAL(){
             const file = uploadAppDataInput.files[0]
             const object = await parseJsonFile(file)
 
@@ -338,6 +338,35 @@ export default({
             this.disableWorkspaceBtn = true
             this.resetModal()
             this.btnText = 'Add More Files'
+        },
+        async uploadAppDataInput(){
+            let object = ''
+            const stream = uploadAppDataInput.files[0].stream()
+            const reader = stream.getReader();
+            while( true ) {
+              const { done, object } = await reader.read();
+              if( done ) { break; }
+              console.log( "received a new buffer", object.byteLength )   //TODO: Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'byteLength')
+
+            }
+            console.log( "all done" );
+
+            /*
+            const object = await parseJsonFile(file)
+
+            this.documentsIndex.documents.length = 0
+            this.managedNotes.topics.length = 0
+            this.managedNotes.notes.length = 0
+
+            Object.assign(this.documentsIndex, object.documentsIndex)
+            Object.assign(this.managedNotes.topics, object.managedNotes.topics)
+            Object.assign(this.managedNotes.notes, object.managedNotes.notes)
+
+            this.$emit('imported-workspace', true)
+            this.disableWorkspaceBtn = true
+            this.resetModal()
+            this.btnText = 'Add More Files'
+            */
         },
 
 

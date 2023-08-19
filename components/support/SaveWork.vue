@@ -33,7 +33,7 @@
         <!-- Control -->
         <template #modal-footer>
             <div v-if="description">
-                <b-button @click="saveWork" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Save Workspace</b-button>
+                <b-button @click="saveWorkStream" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Save Workspace</b-button>
             </div>
         </template>
     </b-modal>
@@ -80,6 +80,52 @@ export default({
             })
             this.$bvModal.hide("save-continue-modal")
         },
+
+        saveWorkBlob(e){
+            const create = e.target
+            const object = {
+                documentsIndex: this.documentsIndex,
+                managedNotes: this.managedNotes
+            }
+            const blob = new Blob([ JSON.stringify(object) ], { type: 'application/json' })
+            const a = document.createElement('a')
+            var link = create.appendChild(a)
+            link.setAttribute('download', ExportAppStateFileName)
+            link.href = window.URL.createObjectURL(blob)
+            document.body.appendChild(link)
+
+            // wait for the link to be added to the document
+            window.requestAnimationFrame(function () {
+                var event = new MouseEvent('click')
+                link.dispatchEvent(event)
+                document.body.removeChild(link)
+            })
+            this.$bvModal.hide("save-continue-modal")
+        },
+
+        async saveWorkStream(e){
+            const create = e.target
+            const object = {
+                documentsIndex: this.documentsIndex,
+                managedNotes: this.managedNotes
+            }
+            try {
+                const blob = new Blob([ JSON.stringify(object) ], { type: 'application/json' })
+                // create a new handle
+                const newHandle = await window.showSaveFilePicker(e);
+                // create a FileSystemWritableFileStream to write to
+                const writableStream = await newHandle.createWritable();
+                // write our file
+                await writableStream.write(blob);
+                // close the file and write the contents to disk.
+                await writableStream.close();
+              } catch (err) {
+                console.error(err.name, err.message);
+              }
+              this.$bvModal.hide("save-continue-modal")
+        },
+
+
     }
 })
 
