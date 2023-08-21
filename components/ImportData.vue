@@ -158,7 +158,7 @@
                 <input id="uploadAppDataInput" 
                        type="file" 
                        @change="previewWorkspace"
-                       accept=".blob"
+                       TODOaccept=".blob"
                 />
                 <ul class="no-li-dot">
                     <li><label for="fileName">File: &nbsp</label><output id="fileName">{{ preview.fileName }}</output></li>
@@ -321,7 +321,7 @@ export default({
             this.preview = {...this.preview, fileSize: fileSize}
             this.preview = {...this.preview, fileName: file.name}
             this.uploadWorkspaceBtn = false
-        },
+        },/*
         async uploadAppDataInputORIGINAL(){
             const file = uploadAppDataInput.files[0]
             const object = await parseJsonFile(file)
@@ -338,21 +338,21 @@ export default({
             this.disableWorkspaceBtn = true
             this.resetModal()
             this.btnText = 'Add More Files'
-        },
+        },*/
         async uploadAppDataInput(){
-            let object = ''
-            const stream = uploadAppDataInput.files[0].stream()
-            const reader = stream.getReader();
+            let buffer = ''
+            let stream = uploadAppDataInput.files[0].stream()
+            //const reader = stream.getReader()
+            //const decompressedStream = stream.pipeThrough(new TextDecoderStream())
+            const decompressedStream = stream.pipeThrough(new DecompressionStream('gzip'))    //.pipeThrough(new TextDocoderStream())  TODO: decoding fails
+            const reader = decompressedStream.getReader();
             while( true ) {
-              const { done, object } = await reader.read();
-              if( done ) { break; }
-              console.log( "received a new buffer", object.byteLength )   //TODO: Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'byteLength')
-
+                const { done, value } = await reader.read()
+                if( done ) { break; }
+                console.log( "received a new buffer", value.byteLength)
+                buffer += new TextDecoder().decode(value)
             }
-            console.log( "all done" );
-
-            /*
-            const object = await parseJsonFile(file)
+            const object = JSON.parse(buffer)
 
             this.documentsIndex.documents.length = 0
             this.managedNotes.topics.length = 0
@@ -366,7 +366,7 @@ export default({
             this.disableWorkspaceBtn = true
             this.resetModal()
             this.btnText = 'Add More Files'
-            */
+            
         },
 
 
@@ -411,8 +411,11 @@ export default({
                 document.body.removeChild(link)
             })
         },
-}
+    }
 })
+
+
+
 
 
 

@@ -41,6 +41,7 @@
 
 <script>
 import { isProxy, toRaw } from 'vue'
+
 import { DocumentIndexData, ManagedNotesData } from './data'
 import { ExportAppStateFileName } from './data.js'
 
@@ -59,6 +60,7 @@ export default({
         }
     },
     methods: {
+        /*
         saveWork(e){
             const create = e.target
             const object = {
@@ -69,7 +71,7 @@ export default({
             const a = document.createElement('a')
             var link = create.appendChild(a)
             link.setAttribute('download', ExportAppStateFileName)
-            link.href = makeTextFile(jsonObj)
+            link.href = this.makeTextFile(jsonObj)
             document.body.appendChild(link)
 
             // wait for the link to be added to the document
@@ -80,6 +82,18 @@ export default({
             })
             this.$bvModal.hide("save-continue-modal")
         },
+        // no longer used
+        makeTextFile(text) {
+            let textFile = null
+            const data = new Blob([text], {type: 'text/plain'})            
+            // If we are replacing a previously generated file we need to
+            // manually revoke the object URL to avoid memory leaks.
+            if (textFile !== null) {
+              window.URL.revokeObjectURL(textFile)
+            }         
+            textFile = window.URL.createObjectURL(data)          
+            return textFile
+        }
 
         saveWorkBlob(e){
             const create = e.target
@@ -103,14 +117,14 @@ export default({
             this.$bvModal.hide("save-continue-modal")
         },
 
-        async saveWorkStream(e){
+        async saveWorkStreamORIGINAL(e){
             const create = e.target
             const object = {
                 documentsIndex: this.documentsIndex,
                 managedNotes: this.managedNotes
             }
             try {
-                const blob = new Blob([ JSON.stringify(object) ], { type: 'application/json' })
+                const blob = new Blob(JSON.stringify([ object ]), { type: 'application/json' })
                 // create a new handle
                 const newHandle = await window.showSaveFilePicker(e);
                 // create a FileSystemWritableFileStream to write to
@@ -123,24 +137,40 @@ export default({
                 console.error(err.name, err.message);
               }
               this.$bvModal.hide("save-continue-modal")
+        },*/
+
+        async saveWorkStream(e){
+            const create = e.target
+            const object = {
+                documentsIndex: this.documentsIndex,
+                managedNotes: this.managedNotes
+            }
+            try {
+                const readStream = new Blob( [JSON.stringify(object)], { type: 'application/json' }).stream()
+                //const compressedStream = readStream.pipeThrough(new TextEncoderStream())    //(new CompressionStream('gzip'))   TODO: I don't know why decoding pipeline fails
+                const compressedStream = readStream.pipeThrough(new CompressionStream('gzip'))
+                const fileHandle = await showSaveFilePicker( {
+                    types: [
+                        {
+                            suggestedName: ExportAppStateFileName,
+                            description: "GZIP File",
+                            accept: {
+                                "application/gzip": [".gz"]
+                            }
+                        }
+                    ]
+                })
+                const writableStream = await fileHandle.createWritable()
+                compressedStream.pipeTo(writableStream)
+              } catch (err) {
+                console.error(err.name, err.message);
+              }
+              this.$bvModal.hide("save-continue-modal")
         },
 
 
     }
 })
-
-
-function makeTextFile(text) {
-    let textFile = null
-    const data = new Blob([text], {type: 'text/plain'})            
-    // If we are replacing a previously generated file we need to
-    // manually revoke the object URL to avoid memory leaks.
-    if (textFile !== null) {
-      window.URL.revokeObjectURL(textFile)
-    }         
-    textFile = window.URL.createObjectURL(data)          
-    return textFile
-}
 
 </script>
 

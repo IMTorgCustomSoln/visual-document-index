@@ -38,6 +38,8 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
+__Release: 0.2.0__
+
 * ~~improve scalability of search~~
   - search slows with addition of more documents
   - study problem and hypothesize
@@ -48,8 +50,13 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 * ~~check for whether reference numbers are used or not~~
   - ~~if not, don't extract~~
 
-* can't save Workspace: 'allocation size overflow, SaveWork.vue:68:34'
+* ~~can't save Workspace: 'allocation size overflow, SaveWork.vue:68:34'~~
   - alert before closing browser or tab
+
+* ~~add webllm and determine feasibility~~
+
+
+__ Staging__
 
 * exact phrase search
   - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
