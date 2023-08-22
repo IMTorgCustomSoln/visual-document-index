@@ -30,12 +30,6 @@
              </p>
          </div>
  
-         <!-- Control 
-         <template #modal-footer>
-             <div v-if="description">
-                 <b-button @click="saveWork" v-b-modal.modal-close_visit class="btn-sm m-1" variant="primary" >Save Workspace</b-button>
-             </div>
-         </template>-->
      </b-modal>
  </template>
 

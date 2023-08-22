@@ -188,7 +188,7 @@
 import { ExportLogsFileName } from './support/data.js'
 import { DocumentIndexData, ManagedNotesData } from './support/data.js'
 
-import { getFileRecord } from './support/utils.js'
+import { getFileRecord } from './support/pdf_extract.js'
 import { getEstimatedProcessTime, getFormattedMilliseconds } from './support/utils.js'
 import { getDateFromJsNumber, getFormattedFileSize, getFileReferenceNumber } from './support/utils.js'
 
