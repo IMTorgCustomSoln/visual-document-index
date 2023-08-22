@@ -129,11 +129,10 @@
                         <em>
                             Note that at this time:
                             <ul>
-                                <li>only PDF files can be used</li>
-                                <li>PDF files must contain searchable text - not images</li>
-                                <li>limit upload batch to less than 20 files for performance</li>
-                                <li>performance can degrade with more than 40 files loaded</li>
-                                <li>subsequent uploads are only performed on files with different reference numbers</li>
+                                <li>only PDF files with selectable text (not images) can be used.</li>
+                                <li>limit single upload batch to less than 20 files for processing performance.  Multiple batches may be performed.</li>
+                                <li>subsequent uploads are only performed on files with different reference numbers.  If no reference number is available in file name, a unique hash of the file name is created for reference.</li>
+                                <li>workspace session may not be saveable after 50MB.</li>
                             </ul>
                         </em>
                     </div>
@@ -150,7 +149,7 @@
                 <div>
                 <form name="uploadForm">
                     <p>
-                    Select a previously saved session file (ie. <code>VDI_ApplicationStateData_v*.*.*.json'</code>) to continue your work.
+                    Select a previously saved session file (ie. <code>VDI_ApplicationStateData_v*.*.*.gz'</code>) to continue your work.
                     </p>
                 <label for="uploadAppDataInput" class="custom-file-upload">
                     <b-icon-cloud-arrow-up-fill class="h2 mb-0" variant="success" /> Upload
@@ -158,7 +157,7 @@
                 <input id="uploadAppDataInput" 
                        type="file" 
                        @change="previewWorkspace"
-                       TODOaccept=".blob"
+                       accept=".gz"
                 />
                 <ul class="no-li-dot">
                     <li><label for="fileName">File: &nbsp</label><output id="fileName">{{ preview.fileName }}</output></li>

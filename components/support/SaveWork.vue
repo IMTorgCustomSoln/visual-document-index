@@ -150,9 +150,9 @@ export default({
                 //const compressedStream = readStream.pipeThrough(new TextEncoderStream())    //(new CompressionStream('gzip'))   TODO: I don't know why decoding pipeline fails
                 const compressedStream = readStream.pipeThrough(new CompressionStream('gzip'))
                 const fileHandle = await showSaveFilePicker( {
+                    suggestedName: ExportAppStateFileName,
                     types: [
                         {
-                            suggestedName: ExportAppStateFileName,
                             description: "GZIP File",
                             accept: {
                                 "application/gzip": [".gz"]

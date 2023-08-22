@@ -91,6 +91,9 @@ export default {
         if(!refNums.includes(file.reference_number)){
           file.id = String( maxId + 1 )
           this.documents.push( file )
+          if(this.documents.length > DocumentIndexData.value.documents-1){
+            DocumentIndexData.value.documents.push( file )
+          }
           maxId++
         }
       }

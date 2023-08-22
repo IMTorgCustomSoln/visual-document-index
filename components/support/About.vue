@@ -18,16 +18,13 @@
 
          <div>
              <p>
-             The VDI browser application is designed to solve two problems:
+             The Visual Document Index (VDI) browser application is designed to solve two problems:
              <ul>
                 <li>flexibly search large amounts of text across multiple documents</li>
                 <li>select, organize, and output references for follow-on work</li>
              </ul>
-             It addresses these problems fairly well, but with some caveats.  The tool is limited
-             in the number and types of documents that can be uploaded.  The application's performance 
-             degrades after around 10 individual documents and a total upload size of 50MB.  
-             Additionally, there is no Optical Character Recognition (OCR) capabilities, so only true 
-             text (selectable) .pdf files can be searched - not scans of documents.  
+             It addresses these problems fairly well, but with some caveats.  Please review 
+             the <code>Add More Files</code> modal for details.  
              
              These caveats will be addressed as the project progresses.
              </p>

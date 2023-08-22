@@ -55,6 +55,8 @@ __Release: 0.2.0__
 
 * ~~add webllm and determine feasibility~~
 
+* Browser app has ~50MB limit, then it cannot save workspace
+
 
 __ Staging__
 

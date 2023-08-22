@@ -1,10 +1,13 @@
+import { camelize } from './utils.js'
+
 import {ref} from 'vue'
+
 
 
 
 // Managed Notes
 
-export const ExportAppStateFileName = `${__EXPORT_APP_STATE_FILE_NAME__}_v${__VERSION__}.blob`
+export const ExportAppStateFileName = `${__EXPORT_APP_STATE_FILE_NAME__}_v${__VERSION__}.gz`
 export const ExportFileName = `${__EXPORT_FILE_NAME__}_v${__VERSION__}.json`
 export const ExportTextName = `${__EXPORT_TEXT_NAME__}_v${__VERSION__}.txt` 
 export const ExportLogsFileName  = `${__UPLOAD_LOGS_TEXT_NAME__}_v${__VERSION__}.log`
@@ -26,15 +29,21 @@ export class NoteRecord{
     this.innerText = innerText
   }
 }
-const notes_records = []
+const records = []
+const topics = []
 for (let idx=1; idx<=2; idx++){     //change for testing
-  let text = 'Item '+idx
+  let text = `<Placeholder for item ${idx}>`
   let note = new NoteRecord(idx.toString(), 'stagingNotes', 'hand', '', text)
-  notes_records.push(note)
+  records.push(note)
+
+  let title = `<Topic-${idx} placeholder>`
+  let edited_title = title.trim()
+  let topic = new TopicRecord(idx.toString(), edited_title, camelize(edited_title) + Date.now())
+  topics.push(topic)
 }
 export const ManagedNotesData = ref({
-  topics: [],
-  notes: notes_records
+  topics: topics,
+  notes: records
 })
 
 

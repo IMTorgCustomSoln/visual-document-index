@@ -87,6 +87,8 @@
 <script>
 //import {NoteRecord, TopicRecord} from './support/data.js'
 import {ManagedNotesData} from './support/data.js'
+import { camelize } from './support/utils.js'
+
 import Draggable from './support/Draggable.vue'
 import NotesIO from './support/NotesIO.vue'
 import Guide from './support/Guide.vue'
@@ -202,12 +204,7 @@ associated Notes are deleted.`
 
 // Support Functions
 
-function camelize(str) {
-    //Turn any string into camelCase
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-        return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    }).replace(/\s+/g, '');
-}
+
 
 /*
 TODO: ~~is this promise needed to create a NoteRecord object?~~ I don't understand the purpose of this function, maybe remove?
