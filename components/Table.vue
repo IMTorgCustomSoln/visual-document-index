@@ -84,7 +84,10 @@
                     <div v-else><b>Search results in {{ row.item.hit_count }} hits: </b> <Guide v-bind="guides.snippet" /> </div><!--, showing the first {{ searchResults.displayLimit }}:</b></div>-->
                     <br/>
                     <div class="left_contentlist">
-                        <div class="itemconfiguration">
+                        <div v-if="(row.item.hit_count > 0) && (row.item.snippets.length == 0)">
+                            <span class="warningMsg">To view search result snippets, press `Collapse All`, then individually click the row(s).</span>
+                        </div>
+                        <div v-else class="itemconfiguration">
                             <div id="search-results" v-for="(snippet, index) in row.item.snippets">
                                 <div class="snippet" v-on:mouseover="selectSnippetPage(row.item.id, snippet)">
                                     <span :id="row.item.filepath + '-index_' + index" v-html="snippet"></span>
@@ -195,6 +198,8 @@ ready to be organized with the note Topics.`
         filterTable(){
             //filter table based on selected items
             //also include score, sort and row details' text
+            //remove snippets display to improve performance
+            this.collapseAll()
             this.totalDocuments = this.$props.search.resultIds.length
             this.tableFilter.length = 0
             if (this.$props.search.resultIds.length == 0){
@@ -211,6 +216,7 @@ ready to be organized with the note Topics.`
                         let resultFile = this.$props.search.resultGroups[idx]
                         item.sort_key = resultFile.score
                         item.hit_count = resultFile.count
+                        item.snippets.length = 0 
                     }
                 }
             })
@@ -595,6 +601,9 @@ const fields = [{
 }
 .errorMsg {
     color: red;
+}
+.warningMsg{
+    color: orange;
 }
 .snippet > .btn-sm {
     font-size:8px;

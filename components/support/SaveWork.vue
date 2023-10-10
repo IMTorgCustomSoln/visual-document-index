@@ -18,12 +18,28 @@
         <!-- Explanation TODO:fix-->
         <div v-if="description">
             <p>
-            Because this is an offline application, the Workspace cannot be automatically saved.  <bold style="font-weight: bold">If you close 
-            your browser, all work will be lost.</bold> <br><br> 
+            For the Workspace to be automatically saved you must configure a save file.  <bold style="font-weight: bold">Without a save file configuration, closing 
+            your browser will cause all work to be lost.</bold> This can be imported, later, to continue where you last saved.<br><br> 
             
-            To maintain your application state, including imported data files and managed notes, the 
-            Workspace data can be saved to a machine-readable file on your machine.  This can be imported, later,
-            to continue where you last saved.<br><br>  
+            The current configuration is:
+            <ul class="no-li-dot">
+                <li><label for="fileName">File: &nbsp</label><output id="fileName">{{ config.fileName }}</output></li>
+                <li><div>
+                    <label for="autoSave">Autosave: &nbsp</label>
+                    <input 
+                        type="checkbox"
+                        v-model="config.autoSave"
+                        value="true"
+                        unchecked-value="false"
+                        variant="primary"
+                        >
+                </div>
+                </li>
+            </ul>
+
+            <div v-if="resultDisplay.error" style="color: red">
+                {{resultDisplay.error}}
+            </div>
             
             <em>Note: the saved file is typically quite large in size (several megabytes).  If you want a light-weight file with only your managed notes (such as to share with team 
             members), instead, open the <code>Notes Manager</code> sidebar and click <code>Export</code> > <code>Data Storage</code></em>.
@@ -51,9 +67,14 @@ export default({
         return {
             btnText: 'Save Workspace',
             description: true,
-            preview: {
+            config: {
+                fileHandle: '',
                 fileName: '',
-                fileSize: ''
+                fileSize: '',
+                autoSave: true,
+            },
+            resultDisplay: {
+                error: ''
             },
             documentsIndex: DocumentIndexData,
             managedNotes: ManagedNotesData,
@@ -62,6 +83,7 @@ export default({
     methods: {
 
         async saveWorkStream(e){
+            //TODO:initiate this method for any data change 
             const create = e.target
             const object = {
                 documentsIndex: this.documentsIndex,
@@ -71,29 +93,34 @@ export default({
                 const readStream = new Blob( [JSON.stringify(object)], { type: 'application/json' }).stream()
                 //const compressedStream = readStream.pipeThrough(new TextEncoderStream())    //(new CompressionStream('gzip'))   TODO: I don't know why decoding pipeline fails
                 const compressedStream = readStream.pipeThrough(new CompressionStream('gzip'))
-                const fileHandle = await showSaveFilePicker( {
-                    suggestedName: ExportAppStateFileName,
-                    types: [
-                        {
-                            description: "GZIP File",
-                            accept: {
-                                "application/gzip": [".gz"]
+                if(!this.config.fileHandle){
+                    this.config.fileHandle = await showSaveFilePicker( {
+                        suggestedName: ExportAppStateFileName,
+                        types: [
+                            {
+                                description: "GZIP File",
+                                accept: {
+                                    "application/gzip": [".gz"]
+                                }
                             }
-                        }
-                    ]
-                })
-                const writableStream = await fileHandle.createWritable()
-                compressedStream.pipeTo(writableStream)
+                        ]
+                    })
+                    this.config.fileName = this.config.fileHandle.name
+                }
+                const writableStream = await this.config.fileHandle.createWritable()
+                const result = await compressedStream.pipeTo(writableStream)
+                this.$bvModal.hide("save-continue-modal")
               } catch (err) {
+                this.resultDisplay.error = `The Workspace Save failed for the following error:&nbsp
+                                            ${err.name}: ${err.message}`;
                 console.error(err.name, err.message);
               }
-              this.$bvModal.hide("save-continue-modal")
+              //this.$bvModal.hide("save-continue-modal"), note:must be above o/w user may close browser before save is complete
         },
 
 
     }
 })
-
 </script>
 
 
@@ -123,4 +150,5 @@ input[type="file"] {
     padding: 6px 12px;
     cursor: pointer;
 }
+
 </style>

@@ -38,27 +38,16 @@ python create_estimation_model.py --input_dir = "./tests/logs/"
 
 ## ToDo
 
-__Release: 0.2.0__
-
-* ~~improve scalability of search~~
-  - search slows with addition of more documents
-  - study problem and hypothesize
-    + current hypo: creating snippets is too long, just get scores, then generate snippets once row is opened
-  - modify workflow
-  - review results
-
-* ~~check for whether reference numbers are used or not~~
-  - ~~if not, don't extract~~
-
-* ~~can't save Workspace: 'allocation size overflow, SaveWork.vue:68:34'~~
-  - alert before closing browser or tab
-
-* ~~add webllm and determine feasibility~~
-
-* Browser app has ~50MB limit, then it cannot save workspace
-
-
 __ Staging__
+
+* pwa design for long-term evolution
+  - move current data stores to pinia state management
+  - serve html from integrated engine (split logic between client / server)
+  - autosave to file
+  - apply mozilla Viewer for display
+  - change layout to index and full-page pdf
+
+* snippet generation is not aligned to doc pages (`./support/utils.js (ln.37)`)
 
 * exact phrase search
   - ~~page for snippet is sometimes incorrect, ensure this is aligned; ex: search:`result` in prob,~~  
@@ -72,7 +61,6 @@ __ Staging__
   - fix `query` var to show actual terms searched and formatted nicely with logical operators
   - Notes' export / import modals' buttons need style
   - About modals' buttons need style
-* snippet generation is not aligned to doc pages (`./support/utils.js (ln.37)`)
   
 * file loading
   - checks
@@ -87,7 +75,7 @@ __ Staging__
     + find limits for upload capacity: number of files and total size, [ref](https://queue.acm.org/detail.cfm?id=3595862)
     + checks to determine if file load takes too long
     + additional error handling for the browser
-* move current data stores to pinia state management
+
 * test
   - unit testing - vitest, jest: https://vuejs.org/guide/scaling-up/testing.html
   - load testing File Reader
@@ -108,7 +96,7 @@ __ Staging__
   - search within distance (proximity)
   - big pdf, ppt, excel, docx
   - 30-40 pdfs for loan file (hand-written, signatures, etc.)
-* change layout to index and full-page pdf
+
 * additional support
   - edge examples of what text is parsed (lines, equations, tables, graphs[wierdly]...) and what isn't (formatting [tables, endnotes, ...], style, line breaks)
   - add Tour, About, and Settings buttons (https://driverjs.com/docs/installation/)
@@ -119,6 +107,7 @@ __ Staging__
   - highlight text snippet in document image (remove `char.` locator)
   - useTextSelection: https://vueuse.org/core/useTextSelection/
   - custom scss for: modal z-index, button sizes
+
 * output
   - output to Word document
   - extract / capture images and diagrams to place in managed notes
@@ -134,9 +123,6 @@ __ Staging__
   - lazily return snippets
   - do not automatically move to page on snippet hover; instead, require a click
   - improve search speed
-
-  
-
 
 * wink nlp
   - subject
